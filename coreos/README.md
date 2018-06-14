@@ -24,3 +24,5 @@ This directory has information on.
 --------
 
 [Base AMI](1688.4.0/aws/coreos_production_ami_all.json) retrieved from http://stable.release.core-os.net/amd64-usr/1688.4.0/
+
+* DCOS 1.11.3 or above
