@@ -20,3 +20,7 @@ This directory has information on.
 [Base AMI](835.13.0/aws/coreos_production_ami_all.json) retrieved from http://stable.release.core-os.net/amd64-usr/835.13.0/
 
 
+1688.4.0
+--------
+
+[Base AMI](1688.4.0/aws/coreos_production_ami_all.json) retrieved from http://stable.release.core-os.net/amd64-usr/1688.4.0/
