@@ -4,16 +4,24 @@
 
 def master_branches = ["master", ] as String[]
 
+builders = [:]
+
 ansiColor('xterm') {
   // using mesos node because it's a lightweight alpine docker image instead of full VM
-  node('mesos-ubuntu') {
+  node('mesos') {
     stage("Verify author") {
       user_is_authorized(master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify')
     }
+  }
 
-    stage("Build") {
-      checkout scm
-      sh 'ci/hello_world.sh'
+  1.upto(3) {
+    builders["build${it}"] = task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
+      stage("Build") {
+        checkout scm
+        sh 'ci/hello_world.sh'
+      }
     }
   }
 }
+
+parallel builders
