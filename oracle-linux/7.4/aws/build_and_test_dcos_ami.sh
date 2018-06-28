@@ -18,6 +18,8 @@ function err { local x=$? ; msg "$*" ; return $(( x == 0 ? 1 : x )) ;}
 
 function publish_packer {
     msg "packer publishing start"
+    packer validate packer.json
+    packer build packer.json
 }
 
 function get_ami_id {
