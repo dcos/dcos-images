@@ -11,10 +11,9 @@ ansiColor('xterm') {
       user_is_authorized(master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify')
     }
 
-    stage("a hello world") {
+    stage("Build") {
       checkout scm
-      sh 'chmod +x ci_test_script.sh'
-      sh './ci_test_script.sh'
+      sh 'ci/hello_world.sh'
     }
   }
 }
