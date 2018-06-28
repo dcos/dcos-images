@@ -4,7 +4,7 @@
 
 def master_branches = ["master", ] as String[]
 
-builders = [:]
+def builders = [:]
 
 ansiColor('xterm') {
   // using mesos node because it's a lightweight alpine docker image instead of full VM
