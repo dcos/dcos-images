@@ -7,3 +7,9 @@ Steps to Test
     a) setup the environment to publish the AMI.
     b) use the dcos-terraform to use the AMI and launch the cluster
     c) Run the dcos-integration test on the cluster.
+
+
+Examples to look for
+--------------------
+
+* https://jenkins.mesosphere.com/service/jenkins/job/marathon-lb/job/marathon-lb-integration-tests-PRs/
