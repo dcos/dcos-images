@@ -5,7 +5,6 @@
 def master_branches = ["master", ] as String[]
 
 def builders = [:]
-
   // using mesos node because it's a lightweight alpine docker image instead of full VM
 node('mesos') {
   stage("Verify author") {
@@ -13,13 +12,16 @@ node('mesos') {
   }
 }
 
+changedFiles = sh(returnStdout: true, script: "git diff --name-only origin/master").trim()
+checkout scm
+println(changedFiles)
+
 def list = ["A", "B", "C"]
 for (item in list) {
   builders["build-${item}"] = {
     task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
       stage("Build") {
-        checkout scm
-        sh 'ci/hello_world.sh'
+        //sh 'ci/hello_world.sh'
       }
     }
   }
