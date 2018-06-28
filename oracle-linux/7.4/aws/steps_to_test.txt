@@ -1,0 +1,9 @@
+Steps to Test
+=============
+
+1. Clone the repo.
+2. Run build_and_test_dcos_ami.sh
+3. Inside, build_and_test_dcos_ami.sh
+    a) setup the environment to publish the AMI.
+    b) use the dcos-terraform to use the AMI and launch the cluster
+    c) Run the dcos-integration test on the cluster.
