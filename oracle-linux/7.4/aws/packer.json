@@ -2,7 +2,8 @@
   "variables": {
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-    "region":         "us-west-2"
+    "region":         "us-west-2",
+    "id-var" : "{{env `AMI_PUBLISH_DATE`}}"
   },
   "builders": [
     {
@@ -13,7 +14,7 @@
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "oracle",
-      "ami_name": "dcos-image-dcos-ami-test-oel-7.4-{{date +%d%b%Y-%H-%M}}",
+      "ami_name": "dcos-image-dcos-ami-test-oel-7.4-{{ user `id-var` }}",
       "ami_description": "DC/OS Cloud Image for Oracle Linux 7.4",
       "ami_regions": [
         "ap-northeast-1",

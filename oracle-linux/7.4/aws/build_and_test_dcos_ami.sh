@@ -15,7 +15,6 @@ function msg { println "$*" >&2 ;}
 function err { local x=$? ; msg "$*" ; return $(( x == 0 ? 1 : x )) ;}
 
 
-
 function publish_packer {
     msg "packer publishing start"
     packer validate packer.json
