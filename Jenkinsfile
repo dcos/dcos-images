@@ -12,16 +12,17 @@ node('mesos') {
   }
 }
 
-changedFiles = sh(returnStdout: true, script: "git diff --name-only origin/master").trim()
-checkout scm
-println(changedFiles)
+git --help
 
 def list = ["A", "B", "C"]
 for (item in list) {
   builders["build-${item}"] = {
     task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
       stage("Build") {
-        //sh 'ci/hello_world.sh'
+        //changedFiles = sh(returnStdout: true, script: "git diff --name-only origin/master").trim()
+        checkout scm
+        println(changedFiles)
+        sh 'ci/hello_world.sh'
       }
     }
   }
