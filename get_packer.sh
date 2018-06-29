@@ -4,4 +4,3 @@ unzip ./packer*.zip
 chmod +x packer
 mv packer /usr/local/bin
 packer --help
-
