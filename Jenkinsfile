@@ -24,6 +24,7 @@ node('mesos-ubuntu') {
       shcmd('git fetch --all')
       branch = shcmd('git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3')
       shcmd('git checkout ' + branch)
+      shcmd('git fetch origin master')
       baseCommit = shcmd("git merge-base --fork-point master")
       diffOutput = shcmd("git diff --name-only " + baseCommit)
       changedFiles = diffOutput.split('\n')
