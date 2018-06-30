@@ -20,6 +20,8 @@ node('mesos-ubuntu') {
         return output
       }
       checkout scm
+      shcmd("git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'")
+      shcmd('git fetch --all')
       shcmd('git fetch')
       shcmd('git --help')
       shcmd('git log')
