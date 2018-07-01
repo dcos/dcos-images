@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import json
 import shlex
 import datetime
 import logging
@@ -57,11 +58,11 @@ def run_captured(cmd: str, ignore_failure=False) -> subprocess.CompletedProcess:
 
 
 def _packer_validate():
-    run_captured("packer validate packer.json")
+    run_stream("packer validate packer.json")
 
 
 def _packer_publish():
-    run_captured("packer build packer.json")
+    run_stream("packer build packer.json")
 
 
 @log
@@ -70,8 +71,22 @@ def publish_packer():
     _packer_publish()
 
 
+def get_ami_id():
+    with open("dcos_cloud_images_ami.json") as fj:
+        dcos_cloud_images_dict = json.load(fj)
+        last_published = dcos_cloud_images_dict["last_run_uuid"]
+        for build in dcos_cloud_images_dict["builds"]:
+            if build["packer_run_uuid"] == last_published:
+                ami_map = dict(item.split(":") for item in build["artifact_id"].split(","))
+                return ami_map["us-west-2"]
+
+@log
+def terraform_init():
+    run_stream("terraform init -from-module github.com/dcos/terraform-dcos/aws")
+
+
 def main():
-    publish_packer()
+    print(get_ami_id())
 
 
 if __name__ == '__main__':
