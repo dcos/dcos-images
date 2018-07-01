@@ -87,6 +87,7 @@ def terraform_init():
 
 def main():
     print(get_ami_id())
+    terraform_init()
 
 
 if __name__ == '__main__':
