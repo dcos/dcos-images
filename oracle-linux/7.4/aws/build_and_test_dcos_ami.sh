@@ -23,10 +23,14 @@ function publish_packer {
 
 function get_ami_id {
     msg "gets the ami id from the packer build"
+    ami_id=$(cat dcos_cloud_images_ami.json | jq '.'builds[-1].artifact_id | gawk -v RS='[,"]' -F: '$1 == "us-west-2" {print $2}')
+    echo ami_id
 }
 
 function use_ami_with_terraform {
     msg "uses the ami with the terraform installer and sets up the dcos cluster."
+    ami_id_to_use=$(get_ami_id)
+    echo ami_id_to_use
 }
 
 function run_dcos_integration_test {
@@ -36,7 +40,6 @@ function run_dcos_integration_test {
 function main {
     msg "running build for oracle linux (get it from env)."
     publish_packer
-    get_ami_id
     use_ami_with_terraform
     run_dcos_integration_test
 }
