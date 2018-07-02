@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+import os
+import contextlib
 import json
 import shlex
 import datetime
@@ -19,6 +21,10 @@ logging.basicConfig(
         filename="log-{timestamp}.log".format(timestamp=logfile_time),
         level=logging.DEBUG)
 
+def fail(msg):
+    print(msg)
+    sys.exit(-1)
+
 
 def log(func):
     @wraps(func)
@@ -27,6 +33,18 @@ def log(func):
         return func(*args, **kwargs)
     return with_logging
 
+
+@contextlib.contextmanager
+def pushd(dir):
+    cwd = os.getcwd()
+    try:
+        path = os.path.abspath(dir)
+        os.chdir(path)
+        yield
+    except OSError:
+        pass
+    finally:
+        os.chdir(cwd)
 
 def print_result(cmd, result: subprocess.CompletedProcess):
     print("Failed: '{command}' [retcode: {retcode}].".format(command=cmd, retcode=result.returncode))
@@ -43,6 +61,8 @@ def run_stream(cmd: str, ignore_failure=False) -> None:
         if out != b'':
             sys.stdout.write(out.decode("utf-8"))
         sys.stdout.flush()
+    err = process.stderr.read()
+    sys.stderr.write(err.decode("utf-8"))
     if (not ignore_failure) and (0 !=process.returncode):
         sys.exit(-1)
     return
@@ -55,6 +75,14 @@ def run_captured(cmd: str, ignore_failure=False) -> subprocess.CompletedProcess:
     if (not ignore_failure) and (0 != process.returncode):
         sys.exit(-1)
     return process
+
+
+def execute_with_dir_context_with_progress(dir, cmd):
+    logging.debug("[command] {cmd}".format(cmd=cmd))
+    if not os.path.exists(dir):
+        fail("{dir} does not exists.".format(dir=dir))
+    with pushd(dir):
+        run_stream(cmd)
 
 
 def _packer_validate():
@@ -81,13 +109,31 @@ def get_ami_id():
                 return ami_map["us-west-2"]
 
 @log
-def terraform_init():
-    run_stream("terraform init -from-module github.com/dcos/terraform-dcos/aws")
+def terraform_init(dirname):
+    execute_with_dir_context_with_progress(dirname, "terraform init -from-module github.com/dcos/terraform-dcos/aws")
+
+@log
+def terraform_add_os(dirname):
+    execute_with_dir_context_with_progress(dirname, "cp ../variables.tf modules/dcos-tested-aws-oses/")
+    execute_with_dir_context_with_progress(dirname, "mkdir -p modules/dcos-tested-aws-oses/platform/cloud/aws/oracle")
+    execute_with_dir_context_with_progress(dirname, "cp ../setup.sh modules/dcos-tested-aws-oses/platform/cloud/aws/oracle")
+
+@log
+def terraform_copy_desired_cluster_profile(dirname):
+    execute_with_dir_context_with_progress(dirname, "cp ../desired_cluster_profile.tfvars desired_cluster_profile.tfvars")
+
+@log
+def terraform_apply(dirname):
+    execute_with_dir_context_with_progress(dirname, "terraform apply -var-file desired_cluster_profile.tfvars --auto-approve")
 
 
 def main():
-    print(get_ami_id())
-    terraform_init()
+    ami_id = get_ami_id()
+    os.mkdir(ami_id)
+    terraform_init(ami_id)
+    terraform_add_os(ami_id)
+    terraform_copy_desired_cluster_profile(ami_id)
+    terraform_apply(ami_id)
 
 
 if __name__ == '__main__':
