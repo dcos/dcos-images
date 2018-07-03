@@ -40,7 +40,9 @@ node('mesos-ubuntu') {
       println("changed file ${file}")
       if (file.contains('install_dcos_prerequisites.sh') || file.contains('packer.json')) {
         // remove file name, keep only directory name
-        String path = file.split('/').pop().join('/')
+        def split_list = path.tokenize('/')
+        split_list.pop()
+        String path = split_list.join('/')
         if (!paths.contains(path)) {
           paths.add(path)
           println("new path ${path}")
