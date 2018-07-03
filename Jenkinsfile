@@ -21,21 +21,25 @@ node('mesos-ubuntu') {
 
   checkout scm
   stage("Get changeset") {
+    // Jenkins checks out the changes in a detached head state with no concept of what to fetch remotely. So here we
+    // change the git config so that fetch will pull all changes from all branches from the remote repository
     shcmd("git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'")
     shcmd('git fetch --all')
+    // Get branch name from checked out commit
     branch = shcmd('git ls-remote --heads origin | grep $(git rev-parse HEAD) | cut -d / -f 3')
-    shcmd('git checkout master')
     shcmd("git checkout ${branch}")
     shcmd('git config --global user.name "mesosphere_jenkins"')
     shcmd('git config --global user.email "mesosphere_jenkins"')
-    shcmd('git rebase master')
+    shcmd('git rebase origin/master')
 
-    diffOutput = shcmd('git diff --name-only master')
+    // get changed files from the PR
+    diffOutput = shcmd('git diff --name-only origin/master')
     changedFiles = diffOutput.split('\n')
+    // Create a list of paths to directories than contain changed packer.json or install_dcos_prerequisites.sh
     for(file in changedFiles) {
       println("changed file ${file}")
-      if (file.contains('install_dcos_prerequisites.sh') || file.contains('packer.json')
-          || file.contains('build_and_test_dcos_ami.sh')) {
+      if (file.contains('install_dcos_prerequisites.sh') || file.contains('packer.json')) {
+        // remove file name, keep only directory name
         String path = file.split('/').pop().join('/')
         if (!paths.contains(path)) {
           paths.add(path)
@@ -46,8 +50,12 @@ node('mesos-ubuntu') {
   }
 
   stage("Get packer") {
-    shcmd('chmod +x get_packer.sh')
-    shcmd('./get_packer.sh')
+    shcmd("""apt-get install -y curl &&
+          curl -L -O https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
+          unzip ./packer*.zip &&
+          chmod +x packer &&
+          mv packer /usr/local/bin"""
+    )
   }
 }
 
@@ -57,7 +65,7 @@ for (path in paths) {
   builders["build-and-test-${item}"] = {
     task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
       stage("Build and test") {
-        println(sh(script: 'python3 build_test_ami.py ' + path, returnStdout: true).trim())
+        println(sh(script: "python3 build_test_ami.py ${path}", returnStdout: true).trim())
       }
     }
   }
