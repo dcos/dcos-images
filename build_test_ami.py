@@ -21,6 +21,7 @@ logging.basicConfig(
         filename="log-{timestamp}.log".format(timestamp=logfile_time),
         level=logging.DEBUG)
 
+
 def fail(msg):
     print(msg)
     sys.exit(-1)
@@ -128,6 +129,7 @@ def terraform_apply(dirname):
 
 
 def main():
+    #publish_packer()
     ami_id = get_ami_id()
     os.mkdir(ami_id)
     terraform_init(ami_id)
