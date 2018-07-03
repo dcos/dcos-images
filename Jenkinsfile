@@ -54,8 +54,17 @@ node('mesos-ubuntu') {
           curl -L -O https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
           unzip ./packer*.zip &&
           chmod +x packer &&
-          mv packer /usr/local/bin"""
-    )
+          mv packer /usr/local/bin &&
+          packer --help""")
+  }
+
+  stage("Get terraform") {
+    shcmd("""apt-get install -y curl &&
+          curl -L -O https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip &&
+          unzip ./terraform*.zip &&
+          chmod +x terraform &&
+          mv terraform /usr/local/bin &&
+          terraform --help""")
   }
 }
 
@@ -65,7 +74,7 @@ for (path in paths) {
   builders["build-and-test-${item}"] = {
     task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
       stage("Build and test") {
-        println(sh(script: "python3 build_test_ami.py ${path}", returnStdout: true).trim())
+        println(sh(script: "python3 build_and_test_amis.py ${path}", returnStdout: true).trim())
       }
     }
   }
