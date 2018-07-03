@@ -49,9 +49,23 @@ node('mesos-ubuntu') {
     shcmd('chmod +x get_packer.sh')
     shcmd('./get_packer.sh')
   }
+
+  stage("Get Terraform") {
+    shcmd('apt-get install -y curl')
+    shcmd('curl -L -O https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip')
+    shcmd('unzip ./terraform*.zip')
+    shcmd('chmod +x terraform')
+    shcmd('mv terraform /usr/local/bin')
+    shcmd('terraform --help')
+  }
+
+  stage("Build AMI") {
+    shcmd("python3 --version")
+  }
 }
 
 def builders = [:]
+
 for (path in paths) {
   println("Building path ${path}")
   builders["build-and-test-${item}"] = {
