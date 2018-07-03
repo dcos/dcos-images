@@ -47,7 +47,7 @@
   "post-processors": [
     [
       {
-        "output": "dcos_cloud_images_ami.json",
+        "output": "dcos_images.json",
         "strip_path": true,
         "type": "manifest"
       }

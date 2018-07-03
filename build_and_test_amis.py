@@ -1,18 +1,16 @@
 #! /usr/bin/env python3
 
+import datetime
 import os
 import contextlib
 import json
 import shlex
-import datetime
 import logging
+import subprocess
+import sys
+
 from functools import wraps
 
-from subprocess import PIPE, run
-
-import subprocess
-
-import sys
 
 logfile_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
 
@@ -101,7 +99,7 @@ def publish_packer():
 
 
 def get_ami_id():
-    with open("dcos_cloud_images_ami.json") as fj:
+    with open("dcos_images.json") as fj:
         dcos_cloud_images_dict = json.load(fj)
         last_published = dcos_cloud_images_dict["last_run_uuid"]
         for build in dcos_cloud_images_dict["builds"]:
@@ -127,9 +125,8 @@ def terraform_copy_desired_cluster_profile(dirname):
 def terraform_apply(dirname):
     execute_with_dir_context_with_progress(dirname, "terraform apply -var-file desired_cluster_profile.tfvars --auto-approve")
 
-
 def main():
-    #publish_packer()
+    publish_packer()
     ami_id = get_ami_id()
     os.mkdir(ami_id)
     terraform_init(ami_id)
