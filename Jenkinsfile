@@ -3,6 +3,7 @@
 @Library('sec_ci_libs@v2-latest') _
 
 def master_branches = ["master", ] as String[]
+def paths = []
 
 // using mesos node because it's a lightweight alpine docker image instead of full VM
 node('mesos') {
@@ -18,7 +19,6 @@ node('mesos-ubuntu') {
       return output
   }
 
-  def paths = []
   checkout scm
   stage("Get changeset") {
     shcmd("git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'")
@@ -33,6 +33,7 @@ node('mesos-ubuntu') {
     diffOutput = shcmd('git diff --name-only master')
     changedFiles = diffOutput.split('\n')
     for(file in changedFiles) {
+      println("changed file ${file}")
       if (file.contains('install_dcos_prerequisites.sh') || file.contains('packer.json')
           || file.contains('build_and_test_dcos_ami.sh')) {
         String path = file.split('/').pop().join('/')
@@ -48,19 +49,17 @@ node('mesos-ubuntu') {
     shcmd('chmod +x get_packer.sh')
     shcmd('./get_packer.sh')
   }
+}
 
-  stage("Build and test") {
-    def builders = [:]
-    for (path in paths) {
-      println("Building path ${path}")
-      builders["build-${item}"] = {
-        task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
-          stage("Build and test") {
-            println(sh(script: 'python3 build_test_ami.py ' + path, returnStdout: true).trim())
-          }
-        }
+def builders = [:]
+for (path in paths) {
+  println("Building path ${path}")
+  builders["build-and-test-${item}"] = {
+    task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
+      stage("Build and test") {
+        println(sh(script: 'python3 build_test_ami.py ' + path, returnStdout: true).trim())
       }
     }
-    parallel builders
   }
 }
+parallel builders
