@@ -45,6 +45,7 @@ def pushd(dir):
     finally:
         os.chdir(cwd)
 
+
 def print_result(cmd, result: subprocess.CompletedProcess):
     print("Failed: '{command}' [retcode: {retcode}].".format(command=cmd, retcode=result.returncode))
     print("STDOUT:\n{stdout}\nSTDERR:\n{stderr}".format(stdout=result.stdout, stderr=result.stderr))
@@ -124,6 +125,7 @@ def terraform_copy_desired_cluster_profile(dirname):
 @log
 def terraform_apply(dirname):
     execute_with_dir_context_with_progress(dirname, "terraform apply -var-file desired_cluster_profile.tfvars --auto-approve")
+
 
 def main():
     publish_packer()
