@@ -69,7 +69,7 @@ def run_stream(cmd: str, ignore_failure=False) -> None:
 
 def run_captured(cmd: str, ignore_failure=False) -> subprocess.CompletedProcess:
     cmd = shlex.split(cmd)
-    process = run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     print_result(cmd, process)
     if (not ignore_failure) and (0 != process.returncode):
         sys.exit(-1)
