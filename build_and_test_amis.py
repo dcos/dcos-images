@@ -110,37 +110,46 @@ def get_ami_id(dirname):
                     return ami_map["us-west-2"]
 
 @log
-def terraform_init(dirname):
-    execute_with_dir_context_with_progress(dirname, "terraform init -from-module github.com/dcos/terraform-dcos/aws")
+def terraform_init(target_dir):
+    execute_with_dir_context_with_progress(target_dir, "terraform init -from-module github.com/dcos/terraform-dcos/aws")
 
 @log
-def terraform_add_os(dirname):
-    execute_with_dir_context_with_progress(dirname, "cp ../variables.tf modules/dcos-tested-aws-oses/")
-    execute_with_dir_context_with_progress(dirname, "mkdir -p modules/dcos-tested-aws-oses/platform/cloud/aws/oracle")
-    execute_with_dir_context_with_progress(dirname, "cp ../setup.sh modules/dcos-tested-aws-oses/platform/cloud/aws/oracle")
+def terraform_add_os(source_dir, target_dir):
+    terraform_variables = os.path.join(source_dir, "variables.tf")
+    terraform_setup_file = os.path.join(source_dir, "setup.sh")
+
+    run_captured("cp {terraform_variables} {target_dir}/modules/dcos-tested-aws-oses/".format(terraform_variables=terraform_variables, target_dir=target_dir))
+
+    execute_with_dir_context_with_progress(target_dir, "mkdir -p modules/dcos-tested-aws-oses/platform/cloud/aws/oracle")
+    run_captured("cp {terraform_setup_file} {target_dir}/modules/dcos-tested-aws-oses/platform/cloud/aws/oracle".format(terraform_setup_file=terraform_setup_file, target_dir=target_dir))
 
 @log
-def terraform_copy_desired_cluster_profile(dirname):
-    execute_with_dir_context_with_progress(dirname, "cp ../desired_cluster_profile.tfvars desired_cluster_profile.tfvars")
+def terraform_copy_desired_cluster_profile(source_dir, target_dir):
+    desired_cluster_profile= os.path.join(source_dir, "desired_cluster_profile.tfvars")
+    run_captured("cp {desired_cluster_profile} {target_dir}/desired_cluster_profile.tfvars".format(desired_cluster_profile=desired_cluster_profile, target_dir=target_dir))
 
 @log
-def terraform_apply(dirname):
-    execute_with_dir_context_with_progress(dirname, "terraform apply -var-file desired_cluster_profile.tfvars --auto-approve")
+def terraform_apply(target_dir):
+    execute_with_dir_context_with_progress(target_dir, "terraform apply -var-file desired_cluster_profile.tfvars --auto-approve")
 
 
 def main():
+    path = 'oracle-linux/7.4/DCOS-1.11.3/docker-1.13.1/aws'
+    """
     if len(sys.argv) != 2:
         print("Usage: ./build_and_test_amis.py os-support-dir.")
         print("Please refer to README the expected files in the support-dir.")
         sys.exit(1)
     dirname = sys.argv[1]
-    publish_packer(dirname)
-    ami_id = get_ami_id(dirname)
-    os.mkdir(ami_id)
-    terraform_init(ami_id)
-    terraform_add_os(ami_id)
-    terraform_copy_desired_cluster_profile(ami_id)
-    terraform_apply(ami_id)
+    """
+    dirname = path
+    # publish_packer(dirname)
+    target_dir = get_ami_id(dirname)
+    os.mkdir(target_dir)
+    terraform_init(target_dir)
+    terraform_add_os(dirname, target_dir)
+    terraform_copy_desired_cluster_profile(dirname, target_dir)
+    terraform_apply(target_dir)
 
 
 if __name__ == '__main__':
