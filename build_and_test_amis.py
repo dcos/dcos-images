@@ -85,28 +85,29 @@ def execute_with_dir_context_with_progress(dir, cmd):
         run_stream(cmd)
 
 
-def _packer_validate():
-    run_stream("packer validate packer.json")
+def _packer_validate(dirname):
+    execute_with_dir_context_with_progress(dirname, "packer validate packer.json")
 
 
-def _packer_publish():
-    run_stream("packer build packer.json")
+def _packer_publish(dirname):
+    execute_with_dir_context_with_progress(dirname, "packer build packer.json")
 
 
 @log
-def publish_packer():
-    _packer_validate()
-    _packer_publish()
+def publish_packer(dirname):
+    _packer_validate(dirname)
+    _packer_publish(dirname)
 
 
-def get_ami_id():
-    with open("dcos_images.json") as fj:
-        dcos_cloud_images_dict = json.load(fj)
-        last_published = dcos_cloud_images_dict["last_run_uuid"]
-        for build in dcos_cloud_images_dict["builds"]:
-            if build["packer_run_uuid"] == last_published:
-                ami_map = dict(item.split(":") for item in build["artifact_id"].split(","))
-                return ami_map["us-west-2"]
+def get_ami_id(dirname):
+    with pushd(dirname):
+        with open("dcos_images.json") as fj:
+            dcos_cloud_images_dict = json.load(fj)
+            last_published = dcos_cloud_images_dict["last_run_uuid"]
+            for build in dcos_cloud_images_dict["builds"]:
+                if build["packer_run_uuid"] == last_published:
+                    ami_map = dict(item.split(":") for item in build["artifact_id"].split(","))
+                    return ami_map["us-west-2"]
 
 @log
 def terraform_init(dirname):
@@ -128,8 +129,13 @@ def terraform_apply(dirname):
 
 
 def main():
-    publish_packer()
-    ami_id = get_ami_id()
+    if len(sys.argv) != 2:
+        print("Usage: ./build_and_test_amis.py os-support-dir.")
+        print("Please refer to README the expected files in the support-dir.")
+        sys.exit(1)
+    dirname = sys.argv[1]
+    publish_packer(dirname)
+    ami_id = get_ami_id(dirname)
     os.mkdir(ami_id)
     terraform_init(ami_id)
     terraform_add_os(ami_id)
