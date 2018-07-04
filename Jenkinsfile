@@ -73,10 +73,14 @@ node('mesos-ubuntu') {
 def builders = [:]
 for (path in paths) {
   println("Building path ${path}")
-  builders["build-and-test-${item}"] = {
+  builders["build-and-test-${path}"] = {
     task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
       stage("Build and test") {
-        println(sh(script: "python3 build_and_test_amis.py ${path}", returnStdout: true).trim())
+        sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
+          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+            println(sh(script: "python3 build_and_test_amis.py ${path}", returnStdout: true).trim())
+          }
+        }
       }
     }
   }
