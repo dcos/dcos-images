@@ -1,0 +1,37 @@
+{
+  "builds": [
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1530052260,
+      "files": null,
+      "artifact_id": "ap-northeast-1:ami-eecd1d91,ap-northeast-2:ami-7b8e3b15,ap-south-1:ami-baa792d5,ap-southeast-1:ami-cbe1ecb7,ap-southeast-2:ami-5caa723e,ca-central-1:ami-a7991bc3,eu-central-1:ami-bcf0ce57,eu-west-1:ami-a9e7ee43,eu-west-2:ami-292bc24e,eu-west-3:ami-a9e252d4,sa-east-1:ami-b50623d9,us-east-1:ami-bb540bc4,us-east-2:ami-de99a0bb,us-west-1:ami-477c9a24,us-west-2:ami-96f4bcee",
+      "packer_run_uuid": "52ab77e0-bb44-5931-c6f3-fb84011092be"
+    },
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1530171574,
+      "files": null,
+      "artifact_id": "ap-northeast-1:ami-f4d2018b,ap-northeast-2:ami-e87ecb86,ap-south-1:ami-c46357ab,ap-southeast-1:ami-3e383542,ap-southeast-2:ami-c7d30ba5,ca-central-1:ami-ceaa28aa,eu-central-1:ami-d93e0732,eu-west-1:ami-f18e861b,eu-west-2:ami-d40fe6b3,eu-west-3:ami-8fea5af2,sa-east-1:ami-34c0e558,us-east-1:ami-59d58c26,us-east-2:ami-18744c7d,us-west-1:ami-88b554eb,us-west-2:ami-37da914f",
+      "packer_run_uuid": "421951c9-6c20-9f52-4639-e9298ae45f64"
+    },
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1530231896,
+      "files": null,
+      "artifact_id": "ap-northeast-1:ami-f595478a,ap-northeast-2:ami-b844f1d6,ap-south-1:ami-ec497d83,ap-southeast-1:ami-efc5c993,ap-southeast-2:ami-f404dc96,ca-central-1:ami-79b1331d,eu-central-1:ami-836c5268,eu-west-1:ami-e3f6fe09,eu-west-2:ami-2a6b824d,eu-west-3:ami-09d56574,sa-east-1:ami-bbdcf9d7,us-east-1:ami-05cc947a,us-east-2:ami-4f5e662a,us-west-1:ami-ffe1009c,us-west-2:ami-f0216b88",
+      "packer_run_uuid": "7d28fc0d-9895-6fe4-82a9-96f153a85d18"
+    },
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1530464311,
+      "files": null,
+      "artifact_id": "ap-northeast-1:ami-0444dfe9,ap-northeast-2:ami-28f14546,ap-south-1:ami-719ca81e,ap-southeast-1:ami-80353afc,ap-southeast-2:ami-32aa7150,ca-central-1:ami-c24dcfa6,eu-central-1:ami-30073fdb,eu-west-1:ami-af9c9645,eu-west-2:ami-b7ab43d0,eu-west-3:ami-17d9696a,sa-east-1:ami-e172568d,us-east-1:ami-b50c2bca,us-east-2:ami-c61f27a3,us-west-1:ami-7e18f91d,us-west-2:ami-aa9fcad2",
+      "packer_run_uuid": "08c507c9-cf49-39bd-3234-cf39255b8c69"
+    }
+  ],
+  "last_run_uuid": "08c507c9-cf49-39bd-3234-cf39255b8c69"
+}
