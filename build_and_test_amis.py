@@ -134,14 +134,14 @@ def terraform_apply(target_dir):
 
 
 def main():
-    path = 'oracle-linux/7.4/DCOS-1.11.3/docker-1.13.1/aws'
+    print("Demo: OS Certification.")
     """
+    #path = 'oracle-linux/7.4/DCOS-1.11.3/docker-1.13.1/aws'
     if len(sys.argv) != 2:
         print("Usage: ./build_and_test_amis.py os-support-dir.")
         print("Please refer to README the expected files in the support-dir.")
         sys.exit(1)
     dirname = sys.argv[1]
-    """
     dirname = path
     # publish_packer(dirname)
     target_dir = get_ami_id(dirname)
@@ -150,6 +150,7 @@ def main():
     terraform_add_os(dirname, target_dir)
     terraform_copy_desired_cluster_profile(dirname, target_dir)
     terraform_apply(target_dir)
+    """
 
 
 if __name__ == '__main__':
