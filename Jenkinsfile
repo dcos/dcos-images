@@ -73,7 +73,7 @@ node('mesos-ubuntu') {
 def builders = [:]
 for (path in paths) {
   println("Building path ${path}")
-  builders["build-and-test-${item}"] = {
+  builders["build-and-test-${path}"] = {
     task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
       stage("Build and test") {
         println(sh(script: "python3 build_and_test_amis.py ${path}", returnStdout: true).trim())
