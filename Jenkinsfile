@@ -40,12 +40,12 @@ node('mesos-ubuntu') {
       println("changed file ${file}")
       if (file.contains('install_dcos_prerequisites.sh') || file.contains('packer.json')) {
         // remove file name, keep only directory name
-        def split_list = path.tokenize('/')
+        def split_list = file.tokenize('/')
         split_list.pop()
-        String path = split_list.join('/')
-        if (!paths.contains(path)) {
-          paths.add(path)
-          println("new path ${path}")
+        String p = split_list.join('/')
+        if (!paths.contains(p)) {
+          paths.add(p)
+          println("new path ${p}")
         }
       }
     }
@@ -71,14 +71,14 @@ node('mesos-ubuntu') {
 }
 
 def builders = [:]
-for (path in paths) {
-  println("Building path ${path}")
-  builders["build-and-test-${path}"] = {
+for (p in paths) {
+  println("Building path ${p}")
+  builders["build-and-test-${p}"] = {
     task_wrapper('mesos-ubuntu', master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify') {
       stage("Build and test") {
         sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
           withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-            println(sh(script: "python3 build_and_test_amis.py ${path}", returnStdout: true).trim())
+            println(sh(script: "python3 build_and_test_amis.py ${p}", returnStdout: true).trim())
           }
         }
       }
