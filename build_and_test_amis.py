@@ -37,13 +37,12 @@ def log(func):
 def pushd(dir):
     cwd = os.getcwd()
     try:
-        path = os.path.abspath(dir)
-        os.chdir(path)
-        yield
+        cwd = os.path.abspath(dir)
     except OSError:
         pass
     finally:
         os.chdir(cwd)
+        yield
 
 
 def print_result(cmd, result: subprocess.CompletedProcess):
@@ -114,19 +113,17 @@ def terraform_init(target_dir):
     execute_with_dir_context_with_progress(target_dir, "terraform init -from-module github.com/dcos/terraform-dcos/aws")
 
 @log
-def terraform_add_os(source_dir, target_dir):
-    terraform_variables = os.path.join(source_dir, "variables.tf")
-    terraform_setup_file = os.path.join(source_dir, "setup.sh")
-
-    run_captured("cp {terraform_variables} {target_dir}/modules/dcos-tested-aws-oses/".format(terraform_variables=terraform_variables, target_dir=target_dir))
+def terraform_add_os(target_dir):
+    run_captured("cp variables.tf {}/modules/dcos-tested-aws-oses/".format(target_dir))
 
     execute_with_dir_context_with_progress(target_dir, "mkdir -p modules/dcos-tested-aws-oses/platform/cloud/aws/oracle")
-    run_captured("cp {terraform_setup_file} {target_dir}/modules/dcos-tested-aws-oses/platform/cloud/aws/oracle".format(terraform_setup_file=terraform_setup_file, target_dir=target_dir))
+    run_captured("cp setup.sh {}/modules/dcos-tested-aws-oses/platform/cloud/aws/oracle".format(target_dir))
 
 @log
 def terraform_copy_desired_cluster_profile(source_dir, target_dir):
     desired_cluster_profile= os.path.join(source_dir, "desired_cluster_profile.tfvars")
-    run_captured("cp {desired_cluster_profile} {target_dir}/desired_cluster_profile.tfvars".format(desired_cluster_profile=desired_cluster_profile, target_dir=target_dir))
+    run_captured("cp {desired_cluster_profile} {target_dir}/desired_cluster_profile.tfvars".format(
+        desired_cluster_profile=desired_cluster_profile, target_dir=target_dir))
 
 @log
 def terraform_apply(target_dir):
@@ -134,20 +131,18 @@ def terraform_apply(target_dir):
 
 
 def main():
-    path = 'oracle-linux/7.4/DCOS-1.11.3/docker-1.13.1/aws'
-    """
     if len(sys.argv) != 2:
-        print("Usage: ./build_and_test_amis.py os-support-dir.")
-        print("Please refer to README the expected files in the support-dir.")
+        print("Usage: python build_and_test_amis.py <directory path>.")
+        print("The <directory path> specified as an argument should contain all the files necessary to build the AMIs "
+              "and launch a terraform cluster. See README for more details.")
         sys.exit(1)
     dirname = sys.argv[1]
-    """
-    dirname = path
+    print('Building path ' + dirname)
     # publish_packer(dirname)
     target_dir = get_ami_id(dirname)
     os.mkdir(target_dir)
     terraform_init(target_dir)
-    terraform_add_os(dirname, target_dir)
+    terraform_add_os(target_dir)
     terraform_copy_desired_cluster_profile(dirname, target_dir)
     terraform_apply(target_dir)
 
