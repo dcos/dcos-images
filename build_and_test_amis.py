@@ -1,151 +1,119 @@
-#! /usr/bin/env python3
-
-import datetime
+#!/usr/bin/env python3
 import os
-import contextlib
 import json
-import shlex
-import logging
 import subprocess
 import sys
-
-from functools import wraps
-
-
-logfile_time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
-
-logging.basicConfig(
-        format="%(asctime)s %(message)s",
-        filename="log-{timestamp}.log".format(timestamp=logfile_time),
-        level=logging.DEBUG)
+import shutil
+import re
 
 
-def fail(msg):
-    print(msg)
-    sys.exit(-1)
+VARIABLES_TF = """
+variable "aws_default_os_user" {
+ type = "map"
+   default = {
+    {var.os}  = "{ssh_user}"
+   }
+}
 
-
-def log(func):
-    @wraps(func)
-    def with_logging(*args, **kwargs):
-        logging.info("[function] {0}".format(func.__name__))
-        return func(*args, **kwargs)
-    return with_logging
-
-
-@contextlib.contextmanager
-def pushd(dir):
-    cwd = os.getcwd()
-    try:
-        cwd = os.path.abspath(dir)
-    except OSError:
-        pass
-    finally:
-        os.chdir(cwd)
-        yield
-
-
-def print_result(cmd, result: subprocess.CompletedProcess):
-    print("Failed: '{command}' [retcode: {retcode}].".format(command=cmd, retcode=result.returncode))
-    print("STDOUT:\n{stdout}\nSTDERR:\n{stderr}".format(stdout=result.stdout, stderr=result.stderr))
-
-
-def run_stream(cmd: str, ignore_failure=False) -> None:
-    cmd = shlex.split(cmd)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    while True:
-        out = process.stdout.read(1)
-        if out == b'' and process.poll() is not None:
-            break
-        if out != b'':
-            sys.stdout.write(out.decode("utf-8"))
-        sys.stdout.flush()
-    err = process.stderr.read()
-    sys.stderr.write(err.decode("utf-8"))
-    if (not ignore_failure) and (0 !=process.returncode):
-        sys.exit(-1)
-    return
-
-
-def run_captured(cmd: str, ignore_failure=False) -> subprocess.CompletedProcess:
-    cmd = shlex.split(cmd)
-    process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-    print_result(cmd, process)
-    if (not ignore_failure) and (0 != process.returncode):
-        sys.exit(-1)
-    return process
-
-
-def execute_with_dir_context_with_progress(dir, cmd):
-    logging.debug("[command] {cmd}".format(cmd=cmd))
-    if not os.path.exists(dir):
-        fail("{dir} does not exists.".format(dir=dir))
-    with pushd(dir):
-        run_stream(cmd)
-
-
-def _packer_validate(dirname):
-    execute_with_dir_context_with_progress(dirname, "packer validate packer.json")
-
-
-def _packer_publish(dirname):
-    execute_with_dir_context_with_progress(dirname, "packer build packer.json")
-
-
-@log
-def publish_packer(dirname):
-    _packer_validate(dirname)
-    _packer_publish(dirname)
+variable "aws_ami" {
+ type = "map"
+   default = {
+    {var.os_var.region} = "{ami}"
+  }
+}
+"""
 
 
 def get_ami_id(dirname):
-    with pushd(dirname):
-        with open("dcos_images.json") as fj:
-            dcos_cloud_images_dict = json.load(fj)
-            last_published = dcos_cloud_images_dict["last_run_uuid"]
-            for build in dcos_cloud_images_dict["builds"]:
-                if build["packer_run_uuid"] == last_published:
-                    ami_map = dict(item.split(":") for item in build["artifact_id"].split(","))
-                    return ami_map["us-west-2"]
-
-@log
-def terraform_init(target_dir):
-    execute_with_dir_context_with_progress(target_dir, "terraform init -from-module github.com/dcos/terraform-dcos/aws")
-
-@log
-def terraform_add_os(target_dir):
-    run_captured("cp variables.tf {}/modules/dcos-tested-aws-oses/".format(target_dir))
-
-    execute_with_dir_context_with_progress(target_dir, "mkdir -p modules/dcos-tested-aws-oses/platform/cloud/aws/oracle")
-    run_captured("cp setup.sh {}/modules/dcos-tested-aws-oses/platform/cloud/aws/oracle".format(target_dir))
-
-@log
-def terraform_copy_desired_cluster_profile(source_dir, target_dir):
-    desired_cluster_profile= os.path.join(source_dir, "desired_cluster_profile.tfvars")
-    run_captured("cp {desired_cluster_profile} {target_dir}/desired_cluster_profile.tfvars".format(
-        desired_cluster_profile=desired_cluster_profile, target_dir=target_dir))
-
-@log
-def terraform_apply(target_dir):
-    execute_with_dir_context_with_progress(target_dir, "terraform apply -var-file desired_cluster_profile.tfvars --auto-approve")
+    with open(os.path.join(dirname, 'dcos_images.json')) as f:
+        dcos_cloud_images_dict = json.load(f)
+        last_published = dcos_cloud_images_dict["last_run_uuid"]
+        for build in dcos_cloud_images_dict["builds"]:
+            if build["packer_run_uuid"] == last_published:
+                ami_map = dict(item.split(":") for item in build["artifact_id"].split(","))
+                return ami_map["us-west-2"]
 
 
-def main():
+def terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name):
+    new_os = os.path.join(tf_dir, 'modules/dcos-tested-aws-oses/platform/cloud/{}/{}'.format(platform, os_name))
+    os.makedirs(new_os)
+    vars_path = os.path.join(tf_dir, 'modules/dcos-tested-aws-oses/variables.tf')
+    with open(vars_path, 'w') as f:
+        vars_string = vars_string.replace('{ami}', ami)
+        f.write(vars_string)
+    shutil.copyfile(os.path.join(build_dir, 'setup.sh'), os.path.join(new_os, 'setup.sh'))
+
+
+def generate_variables_tf(ssh_user, cluster_profile, platform):
+    vars_tf = VARIABLES_TF.replace('{ssh_user}', ssh_user)
+    os_name = None
+    region = None
+    with open(cluster_profile, 'r') as f:
+        for line in f.readlines():
+            if os_name and region:
+                break
+            m = re.search('".+"', line)
+            if m:
+                value = m.group(0)[1:-1]
+            else:
+                raise Exception('desired_cluster_profile.tfvars syntax error. Bad line: ' + line)
+            if not os_name:
+                m = re.search('\s*os\s*=', line)
+                if m:
+                    os_name = value
+                    vars_tf = vars_tf.replace('{var.os}', os_name)
+            if not region:
+                if '{}_region'.format(platform) in line:
+                    region = value
+    err = ''
+    if os_name is None:
+        err += 'required os variable not found in desired_cluster_profile.tfvars\n'
+    if region is None:
+        err += 'required {}_region variable not found in desired_cluster_profile.tfvars'.format(platform)
+    if err:
+        raise Exception(err)
+    vars_tf = vars_tf.replace('{var.os_var.region}', '{}_{}'.format(os_name, region))
+    return vars_tf, os_name
+
+
+def prepare_terraform(build_dir):
+    """ Preparing the terraform directory and its variables before attempting to build any AMI with packer, because if
+    there's an error with terraform, we want to catch it right from the start and avoid building an AMI (long process)
+    for nothing
+    """
+    platform = build_dir.split('/')[-1]
+    with open(os.path.join(build_dir, 'packer.json'), 'r') as f:
+        ssh_user = json.load(f)['builders'][0]['ssh_username']
+    cluster_profile = os.path.join(build_dir, 'desired_cluster_profile.tfvars')
+    vars, os_name = generate_variables_tf(ssh_user, cluster_profile, platform)
+    tf_dir = os.path.join(build_dir, 'temp')
+    os.mkdir(tf_dir)
+    init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos/' + platform
+    subprocess.run(init_cmd.split(), check=True, cwd=tf_dir)
+    return vars, platform, tf_dir, cluster_profile, os_name
+
+
+def main(build_dir):
+    vars_string, platform, tf_dir, cluster_profile, os_name = prepare_terraform(build_dir)
+
+    print('Building path ' + build_dir)
+    # subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
+    # subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+
+    ami = get_ami_id(build_dir)
+    terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
+
+    shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
+    subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
+                   cwd=tf_dir)
+    subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
+                   cwd=tf_dir)
+
+
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: python build_and_test_amis.py <directory path>.")
         print("The <directory path> specified as an argument should contain all the files necessary to build the AMIs "
               "and launch a terraform cluster. See README for more details.")
         sys.exit(1)
-    dirname = sys.argv[1]
-    print('Building path ' + dirname)
-    # publish_packer(dirname)
-    target_dir = get_ami_id(dirname)
-    os.mkdir(target_dir)
-    terraform_init(target_dir)
-    terraform_add_os(target_dir)
-    terraform_copy_desired_cluster_profile(dirname, target_dir)
-    terraform_apply(target_dir)
-
-
-if __name__ == '__main__':
-    main()
+    main(sys.argv[1])

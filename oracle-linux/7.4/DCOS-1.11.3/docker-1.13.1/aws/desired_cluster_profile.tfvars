@@ -2,8 +2,6 @@ os = "oracle"
 user = "oracle"
 aws_region = "us-west-2"
 
-aws_profile ="273854932432_Mesosphere-PowerUser"
-
 aws_bootstrap_instance_type = "m3.large"
 aws_master_instance_type = "m4.2xlarge"
 aws_agent_instance_type = "m4.2xlarge"
