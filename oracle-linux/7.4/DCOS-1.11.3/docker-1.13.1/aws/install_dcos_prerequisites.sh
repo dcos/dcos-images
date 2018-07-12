@@ -36,4 +36,4 @@ sudo getent group docker || sudo groupadd docker
 sudo touch /opt/dcos-prereqs.installed
 
 sudo iptables -D INPUT -j REJECT --reject-with icmp-host-prohibited
-echo "test"
+echo "test-gauri"
