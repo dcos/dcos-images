@@ -118,7 +118,7 @@ def run_integration_tests(ssh_user, tf_dir):
     """ Running dcos integration tests on terraform cluster.
     """
     output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
-    output_json = json.loads(output)
+    output_json = json.loads(output.decode("utf-8"))
     env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
 
     master_public_ip = output_json['Master Public IPs']['value']
@@ -134,8 +134,8 @@ def run_integration_tests(ssh_user, tf_dir):
 
     pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
     cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
-    {env} py.test" """.format(env=env_string)
-
+    {env} py.test -s --pdb -vv test_composition.py" """.format(env=env_string)
+ 
     user_and_host = ssh_user + '@' + master_public_ip[0]
 
     # Running integration tests
