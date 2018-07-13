@@ -25,7 +25,7 @@ variable "aws_ami" {
 
 
 def get_ami_id(dirname):
-    with open(os.path.join(dirname, 'dcos_images.json')) as f:
+    with open(os.path.join(dirname, 'dcos_images.json'), 'r') as f:
         dcos_cloud_images_dict = json.load(f)
         last_published = dcos_cloud_images_dict["last_run_uuid"]
         for build in dcos_cloud_images_dict["builds"]:
@@ -93,12 +93,36 @@ def prepare_terraform(build_dir):
     return vars, platform, tf_dir, cluster_profile, os_name
 
 
+def find_file(name, path):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)
+
+
+def update_source_image(build_dir, packer_file):
+    os_version_dir = '/'.join(build_dir.split('/')[:2])
+    with open(packer_file, 'r+') as f1:
+        content = f1.read()
+        m = re.search('"source_ami.+', content)
+        if not m:
+            raise Exception("source_ami field not found in packer.json")
+
+        base_images_file = find_file('base_images.json', os_version_dir)
+        if base_images_file is None:
+            raise Exception('base_images.json not found')
+        with open(base_images_file, 'r') as f2:
+            ami = json.load(f2)['us-west-2']
+            content.replace(m.group(0), '"source_ami": "{}",'.format(ami))
+        f1.write(content)
+
+
 def main(build_dir):
     vars_string, platform, tf_dir, cluster_profile, os_name = prepare_terraform(build_dir)
-
     print('Building path ' + build_dir)
-    # subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
-    # subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+    packer_file = os.path.join(build_dir, 'packer.json')
+    update_source_image(build_dir, packer_file)
+    # subprocess.run('packer validate {}'.format(packer_file).split(), check=True, cwd=build_dir)
+    # subprocess.run('packer build {}'.format(packer_file).split(), check=True, cwd=build_dir)
 
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)

@@ -1,0 +1,54 @@
+{
+  "amis": [
+    {
+      "name": "eu-central-1",
+      "pv":   "ami-45190329",
+      "hvm":  "ami-15190379"
+    },
+    {
+      "name": "ap-northeast-1",
+      "pv":   "ami-7dc4c513",
+      "hvm":  "ami-02c9c86c"
+    },
+    {
+      "name": "us-gov-west-1",
+      "pv":   "ami-94b10df5",
+      "hvm":  "ami-e0b70b81"
+    },
+    {
+      "name": "sa-east-1",
+      "pv":   "ami-c70784ab",
+      "hvm":  "ami-c40784a8"
+    },
+    {
+      "name": "ap-southeast-2",
+      "pv":   "ami-569fb835",
+      "hvm":  "ami-949abdf7"
+    },
+    {
+      "name": "ap-southeast-1",
+      "pv":   "ami-5da46d3e",
+      "hvm":  "ami-00a06963"
+    },
+    {
+      "name": "us-east-1",
+      "pv":   "ami-ec3d0c86",
+      "hvm":  "ami-7f3a0b15"
+    },
+    {
+      "name": "us-west-2",
+      "pv":   "ami-7c01e21c",
+      "hvm":  "ami-4f00e32f"
+    },
+    {
+      "name": "us-west-1",
+      "pv":   "ami-6793e207",
+      "hvm":  "ami-a8aedfc8"
+    },
+    {
+      "name": "eu-west-1",
+      "pv":   "ami-4b18aa38",
+      "hvm":  "ami-2a1fad59"
+    }
+  ]
+}
