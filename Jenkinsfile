@@ -78,7 +78,7 @@ for (p in paths) {
       stage("Build and test") {
         sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
           withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-            println(sh(script: "python3 build_and_test_amis.py ${p}", returnStdout: true).trim())
+            //println(sh(script: "python3 build_and_test_amis.py ${p}", returnStdout: true).trim())
           }
         }
       }
