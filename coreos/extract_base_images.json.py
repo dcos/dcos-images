@@ -12,4 +12,5 @@ for root, dirs, files in os.walk(os.getcwd()):
                 content = json.load(f1)
                 for entry in content['amis']:
                     result[entry['name']] = entry['hvm']
-                f2.write(json.dumps(result))
+                f2.write(json.dumps(result, indent=2))
+
