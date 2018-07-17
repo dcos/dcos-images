@@ -114,25 +114,30 @@ def update_source_image(build_dir, packer_file):
         f.write(content)
 
 
-def main(build_dir, tf_dir):
+def main(build_dir, tf_dir, dry_run):
     vars_string, platform, cluster_profile, os_name = prepare_terraform(build_dir, tf_dir)
     print('Building path ' + build_dir)
     packer_file = os.path.join(build_dir, 'packer.json')
     update_source_image(build_dir, packer_file)
-    # subprocess.run('packer validate {}'.format(packer_file).split(), check=True, cwd=build_dir)
-    # subprocess.run('packer build {}'.format(packer_file).split(), check=True, cwd=build_dir)
+    subprocess.run('packer validate {}'.format(packer_file).split(), check=True, cwd=build_dir)
+    if not dry_run:
+        subprocess.run('packer build {}'.format(packer_file).split(), check=True, cwd=build_dir)
 
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
-    try:
-        subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
+    if dry_run:
+        subprocess.run('terraform plan -var-file desired_cluster_profile.tfvars'.split(), check=True,
                        cwd=tf_dir)
-    finally:
-        # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
-        subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
-                       cwd=tf_dir)
+    else:
+        try:
+            subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
+                           cwd=tf_dir)
+        finally:
+            # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
+            subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
+                           cwd=tf_dir)
 
 
 if __name__ == '__main__':
@@ -142,10 +147,11 @@ if __name__ == '__main__':
               "and launch a terraform cluster. See README for more details.")
         sys.exit(1)
     build_dir = os.path.abspath(sys.argv[1])
+    dry_run = build_dir == 'dry_run'
     tf_dir = os.path.join(build_dir, 'temp')
     os.mkdir(tf_dir)
     try:
-        main(build_dir, tf_dir)
+        main(build_dir, tf_dir, dry_run)
     finally:
         # whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
         if os.path.exists(tf_dir):
