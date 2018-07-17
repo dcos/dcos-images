@@ -155,7 +155,7 @@ def run_integration_tests(ssh_user, tf_dir):
 
     pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
     cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
-    {env} py.test" """.format(env=env_string)
+    {env} py.test -s -vv" """.format(env=env_string)
  
     user_and_host = ssh_user + '@' + master_public_ip[0]
 
