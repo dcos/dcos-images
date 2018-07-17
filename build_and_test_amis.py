@@ -88,7 +88,7 @@ def prepare_terraform(build_dir, tf_dir):
     vars, os_name = generate_variables_tf(ssh_user, cluster_profile, platform)
     init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos/' + platform
     subprocess.run(init_cmd.split(), check=True, cwd=tf_dir)
-    return vars, platform, cluster_profile, os_name
+    return vars, platform, cluster_profile, os_name, ssh_user
 
 
 def find_file(name, path):
@@ -114,8 +114,57 @@ def update_source_image(build_dir, packer_file):
         f.write(content)
 
 
+def get_private_ips():
+    """ Script to get the private IPs of agents. This script is temporary as this functionality will be added into
+    terraform in the near future.
+    """
+    private_ips_script = """ cat > private-ip.tf <<'EOF'
+output "Private Agent Private IPs" {
+  value = ["${aws_instance.agent.*.private_ip}"]
+}
+
+output "Public Agent Private IPs" {
+  value = ["${aws_instance.public-agent.*.private_ip}"]
+}
+
+output "Master Private IPs" {
+  value = ["${aws_instance.master.*.private_ip}"]
+}
+EOF
+"""
+    return private_ips_script
+
+
+def run_integration_tests(ssh_user, tf_dir):
+    """ Running dcos integration tests on terraform cluster.
+    """
+    output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
+    output_json = json.loads(output.decode("utf-8"))
+    env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
+
+    master_public_ip = output_json['Master Public IPs']['value']
+    master_private_ips = output_json['Master Private IPs']['value']
+    private_agent_private_ips = output_json['Private Agent Private IPs']['value']
+    public_agent_private_ips = output_json['Public Agent Private IPs']['value']
+
+    env_dict['MASTER_HOSTS'] = ','.join(m for m in master_private_ips)
+    env_dict['SLAVE_HOSTS'] = ','.join(m for m in private_agent_private_ips)
+    env_dict['PUBLIC_SLAVE_HOSTS'] = ','.join(m for m in public_agent_private_ips)
+
+    env_string = ' '.join(['{}={}'.format(key, env_dict[key]) for key in env_dict.keys()])
+
+    pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
+    cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
+    {env} py.test -s -vv" """.format(env=env_string)
+ 
+    user_and_host = ssh_user + '@' + master_public_ip[0]
+
+    # Running integration tests
+    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
+
+
 def main(build_dir, tf_dir):
-    vars_string, platform, cluster_profile, os_name = prepare_terraform(build_dir, tf_dir)
+    vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir)
     print('Building path ' + build_dir)
     packer_file = os.path.join(build_dir, 'packer.json')
     update_source_image(build_dir, packer_file)
@@ -126,11 +175,21 @@ def main(build_dir, tf_dir):
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
+
+    # Getting private IPs of all cluster agents.
+    subprocess.call(get_private_ips(), shell=True, cwd=tf_dir)
+
     try:
         subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
                        cwd=tf_dir)
+
+        # Run DC/OS integration tests.
+        run_integration_tests(ssh_user, tf_dir)
     finally:
-        # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
+        # Removing private-ip.tf before destroying cluster.
+        subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir)
+
+        # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster.
         subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
                        cwd=tf_dir)
 
