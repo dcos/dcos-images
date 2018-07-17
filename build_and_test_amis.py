@@ -141,7 +141,7 @@ if __name__ == '__main__':
         print("The <directory path> specified as an argument should contain all the files necessary to build the AMIs "
               "and launch a terraform cluster. See README for more details.")
         sys.exit(1)
-    build_dir = os.path.abspath(sys.argv[1])
+    build_dir = sys.argv[1]
     tf_dir = os.path.join(build_dir, 'temp')
     os.mkdir(tf_dir)
     try:
