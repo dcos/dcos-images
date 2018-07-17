@@ -2,8 +2,8 @@
 
 @Library('sec_ci_libs@v2-latest') _
 
-def master_branches = ["master", ] as String[]
 def paths = []
+def master_branches = ["master", ] as String[]
 
 // using mesos node because it's a lightweight alpine docker image instead of full VM
 node('mesos') {
@@ -36,16 +36,16 @@ node('mesos-ubuntu') {
     diffOutput = shcmd('git diff --name-only origin/master')
     changedFiles = diffOutput.split('\n')
     // Create a list of paths to directories than contain changed packer.json or install_dcos_prerequisites.sh
-    for(file in changedFiles) {
-      println("changed file ${file}")
-      if (file.contains('install_dcos_prerequisites.sh') || file.contains('packer.json')) {
-        // remove file name, keep only directory name
-        def split_list = file.tokenize('/')
+    for(changedFile in changedFiles) {
+      if (changedFile.contains('install_dcos_prerequisites.sh') || changedFile.contains('packer.json')) {
+        println("changed file ${changedFile}")
+        // remove changed file's name, keep only directory name
+        def split_list = changedFile.tokenize('/')
         split_list.pop()
-        String p = split_list.join('/')
-        if (!paths.contains(p)) {
-          paths.add(p)
-          println("new path ${p}")
+        String dir = split_list.join('/')
+        if (!paths.contains(dir)) {
+          paths.add(dir)
+          println("new path ${dir}")
         }
       }
     }
@@ -78,7 +78,7 @@ for (p in paths) {
       stage("Build and test") {
         sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
           withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-            println(sh(script: "python3 build_and_test_amis.py ${p}", returnStdout: true).trim())
+            //println(sh(script: python3 build_and_test_amis.py ${p}, returnStdout: true).trim())
           }
         }
       }

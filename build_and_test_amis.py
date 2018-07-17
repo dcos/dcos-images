@@ -25,7 +25,7 @@ variable "aws_ami" {
 
 
 def get_ami_id(dirname):
-    with open(os.path.join(dirname, 'dcos_images.json')) as f:
+    with open(os.path.join(dirname, 'dcos_images.json'), 'r') as f:
         dcos_cloud_images_dict = json.load(f)
         last_published = dcos_cloud_images_dict["last_run_uuid"]
         for build in dcos_cloud_images_dict["builds"]:
@@ -76,38 +76,63 @@ def generate_variables_tf(ssh_user, cluster_profile, platform):
     return vars_tf, os_name
 
 
-def prepare_terraform(build_dir):
+def prepare_terraform(build_dir, tf_dir):
     """ Preparing the terraform directory and its variables before attempting to build any AMI with packer, because if
     there's an error with terraform, we want to catch it right from the start and avoid building an AMI (long process)
     for nothing
     """
-    platform = build_dir.split('/')[-1]
+    platform = build_dir.split('/')[2]
     with open(os.path.join(build_dir, 'packer.json'), 'r') as f:
         ssh_user = json.load(f)['builders'][0]['ssh_username']
     cluster_profile = os.path.join(build_dir, 'desired_cluster_profile.tfvars')
     vars, os_name = generate_variables_tf(ssh_user, cluster_profile, platform)
-    tf_dir = os.path.join(build_dir, 'temp')
-    os.mkdir(tf_dir)
     init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos/' + platform
     subprocess.run(init_cmd.split(), check=True, cwd=tf_dir)
-    return vars, platform, tf_dir, cluster_profile, os_name
+    return vars, platform, cluster_profile, os_name
 
 
-def main(build_dir):
-    vars_string, platform, tf_dir, cluster_profile, os_name = prepare_terraform(build_dir)
+def find_file(name, path):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)
 
+
+def update_source_image(build_dir, packer_file):
+    os_version_dir = '/'.join(build_dir.split('/')[:2])
+    with open(packer_file, 'r') as f:
+        content = f.read()
+    m = re.search('"source_ami.+', content)
+    if not m:
+        raise Exception("source_ami field not found in packer.json")
+    base_images_file = find_file('base_images.json', os_version_dir)
+    if base_images_file is None:
+        raise Exception('base_images.json not found')
+    with open(base_images_file, 'r') as f:
+        ami = json.load(f)['us-west-2']
+        content.replace(m.group(0), '"source_ami": "{}",'.format(ami))
+    with open(packer_file, 'w') as f:
+        f.write(content)
+
+
+def main(build_dir, tf_dir):
+    vars_string, platform, cluster_profile, os_name = prepare_terraform(build_dir, tf_dir)
     print('Building path ' + build_dir)
-    # subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
-    # subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+    packer_file = os.path.join(build_dir, 'packer.json')
+    update_source_image(build_dir, packer_file)
+    # subprocess.run('packer validate {}'.format(packer_file).split(), check=True, cwd=build_dir)
+    # subprocess.run('packer build {}'.format(packer_file).split(), check=True, cwd=build_dir)
 
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
-    subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
-                   cwd=tf_dir)
-    subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
-                   cwd=tf_dir)
+    try:
+        subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
+                       cwd=tf_dir)
+    finally:
+        # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
+        subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars --auto-approve'.split(), check=True,
+                       cwd=tf_dir)
 
 
 if __name__ == '__main__':
@@ -116,4 +141,12 @@ if __name__ == '__main__':
         print("The <directory path> specified as an argument should contain all the files necessary to build the AMIs "
               "and launch a terraform cluster. See README for more details.")
         sys.exit(1)
-    main(sys.argv[1])
+    build_dir = os.path.abspath(sys.argv[1])
+    tf_dir = os.path.join(build_dir, 'temp')
+    os.mkdir(tf_dir)
+    try:
+        main(build_dir, tf_dir)
+    finally:
+        # whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
+        if os.path.exists(tf_dir):
+            shutil.rmtree(tf_dir, ignore_errors=True)
