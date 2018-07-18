@@ -20,6 +20,7 @@ node('mesos-ubuntu') {
 
   checkout scm
   def paths = []
+  
   stage("Get changeset") {
     // Jenkins checks out the changes in a detached head state with no concept of what to fetch remotely. So here we
     // change the git config so that fetch will pull all changes from all branches from the remote repository
@@ -72,7 +73,7 @@ node('mesos-ubuntu') {
   stage("Test build_and_test_amis.py (dry run)") {
     sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        println(sh(script: 'python3 build_and_test_amis.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run', returnStdout: true).trim())
+        shcmd('python3 build_and_test_amis.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
       }
     }
   }
@@ -82,9 +83,19 @@ node('mesos-ubuntu') {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
         for (p in paths) {
           println("Building path ${p}")
-          println(sh(script: "python3 build_and_test_amis.py ${p}", returnStdout: true).trim())
+          shcmd("python3 build_and_test_amis.py ${p}")
         }
       }
+    }
+  }
+  
+  stage("Publish dcos_images.json") {
+    sshagent(['mesosphere-ci-github']) {
+      shcmd('git branch')
+      shcmd('touch empty_file')
+      shcmd('git add empty_file')
+      shcmd('git commit -m "test"')
+      shcmd('git push')
     }
   }
 }
