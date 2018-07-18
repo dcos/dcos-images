@@ -54,13 +54,15 @@ node('mesos-ubuntu') {
 
   stage("Publish dcos_images.json") {
     sshagent(['mesosphere-ci-github']) {
+      shcmd('ssh-add -D')
+      shcmd('ssh-add mesosphere-ci-github')
       shcmd('git config --global push.default matching')
       shcmd('git remote remove origin')
       shcmd('git remote add origin git@github.com:dcos/dcos-images.git')
       shcmd('touch empty_file')
       shcmd('git add empty_file')
       shcmd('git commit -m "test"')
-      shcmd('git push')
+      shcmd('git push -v')
     }
   }
 }
