@@ -53,16 +53,15 @@ node('mesos-ubuntu') {
   }
 
   stage("Publish dcos_images.json") {
-    sshagent(['mesosphere-ci-github']) {
-      shcmd('ssh-add -D')
-      shcmd('ssh-add mesosphere-ci-github')
-      shcmd('git config --global push.default matching')
-      shcmd('git remote remove origin')
-      shcmd('git remote add origin git@github.com:dcos/dcos-images.git')
-      shcmd('touch empty_file')
-      shcmd('git add empty_file')
-      shcmd('git commit -m "test"')
-      shcmd('git push -v')
+    withCredentials([string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN')]) {
+      shcmd("""git config --global push.default matching &&
+            git remote remove origin &&
+            git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git &&
+            touch empty_file &&
+            git add empty_file &&
+            git commit -m "mesosphere-ci committed this" &&
+            git push -v"""
+      )
     }
   }
 }
