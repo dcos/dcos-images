@@ -94,21 +94,6 @@
   "provisioners": [
     {
     "type": "file",
-    "source": "./configure_networking.sh",
-    "destination": "/tmp/configure_networking.sh"
-    },
-    {
-    "type": "file",
-    "source": "./configure_services.sh",
-    "destination": "/tmp/configure_services.sh"
-    },
-    {
-    "type": "file",
-    "source": "./configure_system.sh",
-    "destination": "/tmp/configure_system.sh"
-    },
-    {
-    "type": "file",
     "source": "./dcos_vol_setup.sh",
     "destination": "/tmp/dcos_vol_setup.sh"
     },
@@ -116,14 +101,6 @@
     "type": "file",
     "source": "./configure_dcos_system.sh",
     "destination": "/tmp/configure_dcos_system.sh"
-    },
-    {
-    "type": "shell",
-    "inline_shebang": "/bin/bash -e",
-    "inline": [
-    "sudo ROOTFS=/ /tmp/configure_networking.sh",
-    "sudo ROOTFS=/ /tmp/configure_services.sh",
-    "sudo ROOTFS=/ /tmp/configure_system.sh"]
     },
     {
     "type": "shell",
