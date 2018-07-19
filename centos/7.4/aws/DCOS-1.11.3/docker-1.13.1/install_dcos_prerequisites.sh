@@ -6,10 +6,10 @@ sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/
 
 # Install base packages
 
-sudo yum --nogpgcheck -t -y groupinstall core
-sudo yum --nogpgcheck -t -y install openssh-server grub2 tuned kernel chrony
-sudo yum --nogpgcheck -t -y install cloud-init cloud-utils-growpart
-sudo yum  -C -t -y remove NetworkManager firewalld --setopt="clean_requirements_on_remove=1"
+#sudo yum --nogpgcheck -t -y groupinstall core
+#sudo yum --nogpgcheck -t -y install openssh-server grub2 tuned kernel chrony
+#sudo yum --nogpgcheck -t -y install cloud-init cloud-utils-growpart
+#sudo yum  -C -t -y remove NetworkManager firewalld --setopt="clean_requirements_on_remove=1"
 
 # Install docker 
 sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
