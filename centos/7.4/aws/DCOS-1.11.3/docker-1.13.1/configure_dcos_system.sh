@@ -6,9 +6,9 @@ echo ">>> In configure_dcos_system.sh:"
 echo ">>> Kernel: $(uname -r)"
 
 # disabled due to packer build error
-# echo ">>> Disabling SELinux"
-# sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
-# setenforce permissive
+echo ">>> Disabling SELinux"
+sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
+setenforce permissive
 
 echo ">>> Adjusting SSH Daemon Configuration"
 

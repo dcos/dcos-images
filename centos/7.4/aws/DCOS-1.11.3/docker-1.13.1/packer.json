@@ -13,7 +13,7 @@
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "centos",
-      "ami_name": "dcos-image-dcos-ami-centos-7.5-test14",
+      "ami_name": "dcos-image-dcos-ami-centos-7.5-test15",
       "ami_description": "DC/OS Cloud Image for CentOS-7.5",
       "ami_regions": [
         "ap-northeast-1",
