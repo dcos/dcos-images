@@ -9,12 +9,12 @@
     {
       "type": "amazon-ebs",
       "instance_type": "m4.xlarge",
+      "ami_name": "dcos-ami-{{timestamp}}",
       "source_ami": "ami-dcc58ea4",
       "region": "us-west-2",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "oracle",
-      "ami_name": "dcos-image-dcos-ami-test-oel-7.4-{{ user `id-var` }}",
       "ami_description": "DC/OS Cloud Image for Oracle Linux 7.4",
       "ami_regions": [
         "ap-northeast-1",
