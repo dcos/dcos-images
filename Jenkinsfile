@@ -72,7 +72,7 @@ node('mesos-ubuntu') {
   stage("Test build_and_test_amis.py (dry run)") {
     sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        println(sh(script: 'python3 build_and_test_amis.py "centos/7.4/aws/DCOS-1.11.3/docker-1.13.1" -k test_composition.py test_applications.py', returnStdout: true).trim())
+        println(sh(script: 'python3 build_and_test_amis.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run', returnStdout: true).trim())
       }
     }
   }

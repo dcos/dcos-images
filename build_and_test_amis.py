@@ -152,7 +152,7 @@ def run_integration_tests(ssh_user, tf_dir, custom_tests):
     env_dict['SLAVE_HOSTS'] = ','.join(m for m in private_agent_private_ips)
     env_dict['PUBLIC_SLAVE_HOSTS'] = ','.join(m for m in public_agent_private_ips)
 
-    tests_string = ' '.join(test for test in custom_tests)
+    tests_string = ' '.join(custom_tests)
     env_string = ' '.join(['{}={}'.format(key, env_dict[key]) for key in env_dict.keys()])
 
     pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
@@ -168,9 +168,9 @@ def run_integration_tests(ssh_user, tf_dir, custom_tests):
 def main(build_dir, tf_dir, dry_run, custom_tests):
     vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir)
     update_source_image(build_dir)
-    #subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
-    #if not dry_run:
-        #subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+    subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
+    if not dry_run:
+        subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
