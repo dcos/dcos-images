@@ -168,9 +168,9 @@ def run_integration_tests(ssh_user, tf_dir, custom_tests):
 def main(build_dir, tf_dir, dry_run, custom_tests):
     vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir)
     update_source_image(build_dir)
-    subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
-    if not dry_run:
-        subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+    #subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
+    #if not dry_run:
+        #subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
@@ -200,7 +200,7 @@ if __name__ == '__main__':
                         help='Specifying this flag will run the script without: running the packer build, creating a '
                              'terraform cluster and running the integration tests. It will still run "packer validate" '
                              'and "terraform plan".')
-    parser.add_argument('-k', dest='custom_tests', default=None, nargs='*', help='come up with a witty help statement')
+    parser.add_argument('-k', dest='custom_tests', default=[], nargs='*', help='Run specific integration tests.')
     args = parser.parse_args()
     tf_dir = os.path.join(args.build_dir, 'temp')
     os.mkdir(tf_dir)
