@@ -20,6 +20,7 @@ node('mesos-ubuntu') {
 
   checkout scm
   def paths = []
+  
   stage("Get changeset") {
     // Jenkins checks out the changes in a detached head state with no concept of what to fetch remotely. So here we
     // change the git config so that fetch will pull all changes from all branches from the remote repository
@@ -51,40 +52,16 @@ node('mesos-ubuntu') {
     }
   }
 
-  stage("Get packer") {
-    shcmd("""apt-get install -y curl &&
-          curl -L -O https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
-          unzip ./packer*.zip &&
-          chmod +x packer &&
-          mv packer /usr/local/bin &&
-          packer --help""")
-  }
-
-  stage("Get terraform") {
-    shcmd("""apt-get install -y curl &&
-          curl -L -O https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip &&
-          unzip ./terraform*.zip &&
-          chmod +x terraform &&
-          mv terraform /usr/local/bin &&
-          terraform --help""")
-  }
-
-  stage("Test build_and_test_amis.py (dry run)") {
-    sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
-      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        println(sh(script: 'python3 build_and_test_amis.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run', returnStdout: true).trim())
-      }
-    }
-  }
-
-  stage("Build and test images") {
-    sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
-      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        for (p in paths) {
-          println("Building path ${p}")
-          println(sh(script: "python3 build_and_test_amis.py ${p}", returnStdout: true).trim())
-        }
-      }
+  stage("Publish dcos_images.json") {
+    withCredentials([string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN')]) {
+      shcmd("""git config --global push.default matching &&
+            git remote remove origin &&
+            git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git &&
+            touch empty_file &&
+            git add empty_file &&
+            git commit -m "mesosphere-ci committed this" &&
+            git push -v"""
+      )
     }
   }
 }
