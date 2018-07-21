@@ -170,7 +170,9 @@ def main(build_dir, tf_dir, dry_run, custom_tests):
     update_source_image(build_dir)
     subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
     if not dry_run:
-        subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+        cp = subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+        cp.check_returncode()
+
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
