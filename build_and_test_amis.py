@@ -136,7 +136,7 @@ def add_private_ips_to_terraform(tf_dir):
         f.write(content)
 
 
-def run_integration_tests(ssh_user, tf_dir):
+def run_integration_tests(ssh_user, tf_dir, custom_tests):
     """ Running dcos integration tests on terraform cluster.
     """
     output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
@@ -152,19 +152,20 @@ def run_integration_tests(ssh_user, tf_dir):
     env_dict['SLAVE_HOSTS'] = ','.join(m for m in private_agent_private_ips)
     env_dict['PUBLIC_SLAVE_HOSTS'] = ','.join(m for m in public_agent_private_ips)
 
+    tests_string = ' '.join(custom_tests)
     env_string = ' '.join(['{}={}'.format(key, env_dict[key]) for key in env_dict.keys()])
 
     pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
     cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
-    {env} py.test -s -vv" """.format(env=env_string)
+    {env} py.test -s -vv {tests_list}" """.format(env=env_string, tests_list=tests_string)
 
     user_and_host = ssh_user + '@' + master_public_ip[0]
 
-    # Running integration tests
+    # Running integration tests.
     subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
 
 
-def main(build_dir, tf_dir, dry_run):
+def main(build_dir, tf_dir, dry_run, custom_tests):
     vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir)
     update_source_image(build_dir)
     subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
@@ -173,20 +174,20 @@ def main(build_dir, tf_dir, dry_run):
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
-    add_private_ips_to_terraform(tf_dir)
     # Getting private IPs of all cluster agents.
+    add_private_ips_to_terraform(tf_dir)
     if dry_run:
         subprocess.run('terraform plan -var-file desired_cluster_profile.tfvars'.split(), check=True, cwd=tf_dir)
     else:
         try:
             subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
                            cwd=tf_dir)
-            # Run DC/OS integration tests.
-            run_integration_tests(ssh_user, tf_dir)
+            # Running DC/OS integration tests.
+            run_integration_tests(ssh_user, tf_dir, custom_tests)
         finally:
             # Removing private-ip.tf before destroying cluster.
             subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir)
-            # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
+            # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster.
             subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars -auto-approve'.split(),
                            check=True, cwd=tf_dir)
 
@@ -199,11 +200,12 @@ if __name__ == '__main__':
                         help='Specifying this flag will run the script without: running the packer build, creating a '
                              'terraform cluster and running the integration tests. It will still run "packer validate" '
                              'and "terraform plan".')
+    parser.add_argument('-k', dest='custom_tests', default=[], nargs='*', help='Run specific integration tests.')
     args = parser.parse_args()
     tf_dir = os.path.join(args.build_dir, 'temp')
     os.mkdir(tf_dir)
     try:
-        main(args.build_dir, tf_dir, args.dry_run)
+        main(args.build_dir, tf_dir, args.dry_run, args.custom_tests)
     finally:
         # whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
         if os.path.exists(tf_dir):
