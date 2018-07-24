@@ -161,7 +161,7 @@ def run_integration_tests(ssh_user, tf_dir, custom_tests):
 
     user_and_host = ssh_user + '@' + master_public_ip[0]
 
-    # Running integration tests.
+    # Running integration tests
     subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
 
 
@@ -180,14 +180,22 @@ def main(build_dir, tf_dir, dry_run, custom_tests):
         subprocess.run('terraform plan -var-file desired_cluster_profile.tfvars'.split(), check=True, cwd=tf_dir)
     else:
         try:
+            # create terraform cluster
             subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
                            cwd=tf_dir)
-            # Running DC/OS integration tests.
+            # publish (push) dcos_images.json that was generated back to the PR
+            # running this step before integration tests because passing all tests is not necessarily a requirement
+            # to qualify and publish images, as flakiness and false negatives can happen
+            subprocess.run("""git add dcos_images.json &&
+                           git commit -m "Publish dcos_images.json for {}" &&
+                           git push -v""".format(build_dir),
+                           check=True, cwd=build_dir, shell=True)
+            # Run DC/OS integration tests.
             run_integration_tests(ssh_user, tf_dir, custom_tests)
         finally:
             # Removing private-ip.tf before destroying cluster.
             subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir)
-            # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster.
+            # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
             subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars -auto-approve'.split(),
                            check=True, cwd=tf_dir)
 
