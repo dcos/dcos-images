@@ -5,6 +5,7 @@ import json
 import subprocess
 import shutil
 import re
+import yaml
 
 
 VARIABLES_TF = """
@@ -136,7 +137,7 @@ def add_private_ips_to_terraform(tf_dir):
         f.write(content)
 
 
-def run_integration_tests(ssh_user, tf_dir, custom_tests):
+def run_integration_tests(ssh_user, tf_dir, tests):
     """ Running dcos integration tests on terraform cluster.
     """
     output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
@@ -152,7 +153,7 @@ def run_integration_tests(ssh_user, tf_dir, custom_tests):
     env_dict['SLAVE_HOSTS'] = ','.join(m for m in private_agent_private_ips)
     env_dict['PUBLIC_SLAVE_HOSTS'] = ','.join(m for m in public_agent_private_ips)
 
-    tests_string = ' '.join(custom_tests)
+    tests_string = ' '.join(tests)
     env_string = ' '.join(['{}={}'.format(key, env_dict[key]) for key in env_dict.keys()])
 
     pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
@@ -165,12 +166,24 @@ def run_integration_tests(ssh_user, tf_dir, custom_tests):
     subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
 
 
-def main(build_dir, tf_dir, dry_run, custom_tests):
+def publish_dcos_images(build_dir):
+    """publish (push) dcos_images.json that was generated back to the PR
+    running this step before integration tests because passing all tests is not necessarily a requirement
+    to qualify and publish images, as flakiness and false negatives can happen"""
+    subprocess.run("""git add dcos_images.json &&
+                   git commit -m "Publish dcos_images.json for {}" &&
+                   git push -v""".format(build_dir),
+                   check=True, cwd=build_dir, shell=True)
+
+
+def main(build_dir, tf_dir, dry_run, tests, publish_step):
     vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir)
     update_source_image(build_dir)
     subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
-    if not dry_run:
+    if not dry_run and publish_step != 'never':
         subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+        if publish_step == 'packer_build':
+            publish_dcos_images(build_dir)
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
@@ -183,21 +196,44 @@ def main(build_dir, tf_dir, dry_run, custom_tests):
             # create terraform cluster
             subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
                            cwd=tf_dir)
-            # publish (push) dcos_images.json that was generated back to the PR
-            # running this step before integration tests because passing all tests is not necessarily a requirement
-            # to qualify and publish images, as flakiness and false negatives can happen
-            subprocess.run("""git add dcos_images.json &&
-                           git commit -m "Publish dcos_images.json for {}" &&
-                           git push -v""".format(build_dir),
-                           check=True, cwd=build_dir, shell=True)
+            if publish_step == 'dcos_installation':
+                publish_dcos_images(build_dir)
             # Run DC/OS integration tests.
-            run_integration_tests(ssh_user, tf_dir, custom_tests)
+            run_integration_tests(ssh_user, tf_dir, tests)
+            if publish_step == 'integration_tests':
+                publish_dcos_images(build_dir)
         finally:
             # Removing private-ip.tf before destroying cluster.
             subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir)
             # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
             subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars -auto-approve'.split(),
                            check=True, cwd=tf_dir)
+
+
+def validate_config(content):
+    valid_steps = ['packer_build', 'dcos_installation', 'integration_tests', 'never']
+    valid_keys = ['publish_dcos_images_after', 'tests_to_run']
+    for k in content:
+        if k not in valid_keys:
+            raise Exception('Unrecognized config parameter ' + k)
+    if not isinstance(content.get('tests_to_run', []), list):
+        raise Exception("config parameter 'tests_to_run' value must be a list")
+    step = content.get('publish_dcos_images_after', 'dcos_installation')
+    if step not in valid_steps:
+        raise Exception("Invalid value {} for config parameter 'publish_dcos_images_after'. Valid values: {}".
+                        format(step, valid_steps))
+
+
+def get_config_info(build_dir):
+    config_path = os.path.join(build_dir, 'publish_and_test_config.yaml')
+    if not os.path.exists(config_path):
+        return 'dcos_installation', []
+    with open(config_path, 'r') as f:
+        content = yaml.load(f)
+        validate_config(content)
+        content.setdefault('publish_dcos_images_after', 'dcos_installation')
+        content.setdefault('tests_to_run', [])
+        return content['publish_dcos_images_after'], content['tests_to_run']
 
 
 if __name__ == '__main__':
@@ -208,12 +244,14 @@ if __name__ == '__main__':
                         help='Specifying this flag will run the script without: running the packer build, creating a '
                              'terraform cluster and running the integration tests. It will still run "packer validate" '
                              'and "terraform plan".')
-    parser.add_argument('-k', dest='custom_tests', default=[], nargs='*', help='Run specific integration tests.')
+    parser.add_argument('-k', dest='custom_tests', default=None, nargs='*', help='Run specific integration tests.')
     args = parser.parse_args()
+    publish_step, custom_tests = get_config_info(args.build_dir)
+    tests = args.custom_tests if args.custom_tests is not None else custom_tests
     tf_dir = os.path.join(args.build_dir, 'temp')
     os.mkdir(tf_dir)
     try:
-        main(args.build_dir, tf_dir, args.dry_run, args.custom_tests)
+        main(args.build_dir, tf_dir, args.dry_run, tests, publish_step)
     finally:
         # whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
         if os.path.exists(tf_dir):

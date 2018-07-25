@@ -62,6 +62,13 @@ node('mesos-ubuntu') {
     }
   }
 
+  stage("Install python requirements") {
+    shcmd("""apt-get -y update &&
+          apt-get -y install python3-pip
+          pip3 install -r requirements.txt"""
+    )
+  }
+
   stage("Get packer") {
     shcmd("""apt-get install -y curl &&
           curl -L -O https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
