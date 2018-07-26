@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-
+import sun.misc.SharedSecrets;
 @Library('sec_ci_libs@v2-latest') _
 
 def master_branches = ["master", ] as String[]
@@ -16,6 +16,27 @@ node('mesos-ubuntu') {
       output = sh(script: command, returnStdout: true).trim()
       println(output)
       return output
+  }
+
+  def runSubprocessWithLogStreaming = { String command ->
+    File file = new File("logs");
+    file.createNewFile()
+    FileInputStream fileInputStream = new FileInputStream(file)
+    FileDescriptor fd = fileInputStream.getFD();
+    int fdNum = SharedSecrets.getJavaIOFileDescriptorAccess().get(fd)
+    command += ' ' + String.valueOf(fdNum)
+    command = "/usr/bin/env python3 -c '${command}'"
+    command.execute()
+    Scanner scanner = new Scanner(file)
+    while(true) {
+      if (scanner.hasNextLine()) {
+        line = scanner.nextLine()
+        System.out.println(line)
+        if (line.contains('build_test_publish_amis.py done')) {
+          break
+        }
+      }
+    }
   }
 
   checkout scm
@@ -64,7 +85,7 @@ node('mesos-ubuntu') {
 
   stage("Install python requirements") {
     shcmd("""apt-get -y update &&
-          apt-get -y install python3-pip
+          apt-get -y install python3-pip &&
           pip3 install -r requirements.txt"""
     )
   }
@@ -92,7 +113,7 @@ node('mesos-ubuntu') {
   stage("Test build_and_test_amis.py (dry run)") {
     sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        shcmd('python3 build_test_publish_amis.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
+        runSubprocessWithLogStreaming('python3 build_test_publish_amis.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
       }
     }
   }
@@ -108,7 +129,7 @@ node('mesos-ubuntu') {
         )
         for (p in paths) {
           println("Building path ${p}")
-          shcmd("python3 build_test_publish_amis.py ${p}")
+          runSubprocessWithLogStreaming("python3 build_test_publish_amis.py ${p}")
         }
       }
     }
