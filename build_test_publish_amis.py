@@ -6,6 +6,7 @@ import subprocess
 import shutil
 import re
 import yaml
+import traceback
 
 
 VARIABLES_TF = """
@@ -77,7 +78,7 @@ def generate_variables_tf(ssh_user, cluster_profile, platform):
     return vars_tf, os_name
 
 
-def prepare_terraform(build_dir, tf_dir):
+def prepare_terraform(build_dir, tf_dir, fd):
     """ Preparing the terraform directory and its variables before attempting to build any AMI with packer, because if
     there's an error with terraform, we want to catch it right from the start and avoid building an AMI (long process)
     for nothing
@@ -88,7 +89,7 @@ def prepare_terraform(build_dir, tf_dir):
     cluster_profile = os.path.join(build_dir, 'desired_cluster_profile.tfvars')
     vars, os_name = generate_variables_tf(ssh_user, cluster_profile, platform)
     init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos/' + platform
-    subprocess.run(init_cmd.split(), check=True, cwd=tf_dir)
+    subprocess.run(init_cmd.split(), check=True, cwd=tf_dir, stdout=fd, stderr=fd)
     return vars, platform, cluster_profile, os_name, ssh_user
 
 
@@ -137,10 +138,10 @@ def add_private_ips_to_terraform(tf_dir):
         f.write(content)
 
 
-def run_integration_tests(ssh_user, tf_dir, tests):
+def run_integration_tests(ssh_user, tf_dir, tests, fd):
     """ Running dcos integration tests on terraform cluster.
     """
-    output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
+    output = subprocess.run(['terraform', 'output', '-json'], check=True, cwd=tf_dir, stdout=fd, stderr=fd)
     output_json = json.loads(output.decode("utf-8"))
     env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
 
@@ -163,51 +164,53 @@ def run_integration_tests(ssh_user, tf_dir, tests):
     user_and_host = ssh_user + '@' + master_public_ip[0]
 
     # Running integration tests
-    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
+    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir,
+                   stdout=fd, stderr=fd)
 
 
-def publish_dcos_images(build_dir):
+def publish_dcos_images(build_dir, fd):
     """publish (push) dcos_images.json that was generated back to the PR
     running this step before integration tests because passing all tests is not necessarily a requirement
     to qualify and publish images, as flakiness and false negatives can happen"""
     subprocess.run("""git add dcos_images.json &&
                    git commit -m "Publish dcos_images.json for {}" &&
                    git push -v""".format(build_dir),
-                   check=True, cwd=build_dir, shell=True)
+                   check=True, cwd=build_dir, shell=True, stdout=fd, stderr=fd)
 
 
-def main(build_dir, tf_dir, dry_run, tests, publish_step):
-    vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir)
+def build_test_publish(build_dir, tf_dir, dry_run, tests, publish_step, fd):
+    vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir, fd)
     update_source_image(build_dir)
-    subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
+    subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir, stdout=fd, stderr=fd)
     if not dry_run and publish_step != 'never':
-        subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+        subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir, stdout=fd, stderr=fd)
         if publish_step == 'packer_build':
-            publish_dcos_images(build_dir)
+            publish_dcos_images(build_dir, fd)
     ami = get_ami_id(build_dir)
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
     # Getting private IPs of all cluster agents.
     add_private_ips_to_terraform(tf_dir)
     if dry_run:
-        subprocess.run('terraform plan -var-file desired_cluster_profile.tfvars'.split(), check=True, cwd=tf_dir)
+        subprocess.run('terraform plan -var-file desired_cluster_profile.tfvars'.split(), check=True, cwd=tf_dir,
+                       stdout=fd, stderr=fd)
     else:
         try:
             # create terraform cluster
             subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
-                           cwd=tf_dir)
+                           cwd=tf_dir, stdout=fd, stderr=fd)
             if publish_step == 'dcos_installation':
-                publish_dcos_images(build_dir)
+                publish_dcos_images(build_dir, fd)
             # Run DC/OS integration tests.
-            run_integration_tests(ssh_user, tf_dir, tests)
+            run_integration_tests(ssh_user, tf_dir, tests, fd)
             if publish_step == 'integration_tests':
-                publish_dcos_images(build_dir)
+                publish_dcos_images(build_dir, fd)
         finally:
             # Removing private-ip.tf before destroying cluster.
-            subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir)
+            subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir, stdout=fd, stderr=fd)
             # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
             subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars -auto-approve'.split(),
-                           check=True, cwd=tf_dir)
+                           check=True, cwd=tf_dir, stdout=fd, stderr=fd)
 
 
 def validate_config(content):
@@ -236,23 +239,35 @@ def get_config_info(build_dir):
         return content['publish_dcos_images_after'], content['tests_to_run']
 
 
+def main(args):
+    publish_step, custom_tests = get_config_info(args.build_dir)
+    tests = args.custom_tests if args.custom_tests is not None else custom_tests
+    tf_dir = os.path.join(args.build_dir, 'temp')
+    os.mkdir(tf_dir)
+    try:
+        build_test_publish(args.build_dir, tf_dir, args.dry_run, tests, publish_step, args.fd)
+    finally:
+        # whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
+        if os.path.exists(tf_dir):
+            shutil.rmtree(tf_dir, ignore_errors=True)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Builds and tests DC/OS images')
-    parser.add_argument('build_dir', help='The directory that contains all the files necessary to build a dcos image '
-                                          'using packer and launch a terraform cluster.')
+    parser.add_argument('build_dir',
+                        help='The directory that contains all the files necessary to build a dcos image '
+                             'using packer and launch a terraform cluster.')
+    parser.add_argument('--fd', type=int, default=1, action='store', dest='fd',
+                        help='File descriptor to write logs to.')
     parser.add_argument('--dry-run', action='store_true', dest='dry_run', default=False,
                         help='Specifying this flag will run the script without: running the packer build, creating a '
                              'terraform cluster and running the integration tests. It will still run "packer validate" '
                              'and "terraform plan".')
     parser.add_argument('-k', dest='custom_tests', default=None, nargs='*', help='Run specific integration tests.')
     args = parser.parse_args()
-    publish_step, custom_tests = get_config_info(args.build_dir)
-    tests = args.custom_tests if args.custom_tests is not None else custom_tests
-    tf_dir = os.path.join(args.build_dir, 'temp')
-    os.mkdir(tf_dir)
     try:
-        main(args.build_dir, tf_dir, args.dry_run, tests, publish_step)
+        main(args)
+    except:
+        os.write(args.fd, traceback.format_exc().encode())
     finally:
-        # whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
-        if os.path.exists(tf_dir):
-            shutil.rmtree(tf_dir, ignore_errors=True)
+        os.write(args.fd, 'build_test_publish_amis.py done\n'.encode())
