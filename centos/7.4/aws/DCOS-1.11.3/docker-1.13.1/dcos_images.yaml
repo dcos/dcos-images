@@ -1,0 +1,15 @@
+ap-northeast-1: ami-69661284
+ap-northeast-2: ami-8a7ccbe4
+ap-south-1: ami-c13705ae
+ap-southeast-1: ami-2b094fc1
+ap-southeast-2: ami-09fd5b6b
+ca-central-1: ami-b8a32edc
+eu-central-1: ami-91f7f47a
+eu-west-1: ami-8f594365
+eu-west-2: ami-d1f61cb6
+eu-west-3: ami-f58f3f88
+sa-east-1: ami-db0726b7
+us-east-1: ami-163c3169
+us-east-2: ami-9c0933f9
+us-west-1: ami-9d0ae7fe
+us-west-2: ami-456c353d

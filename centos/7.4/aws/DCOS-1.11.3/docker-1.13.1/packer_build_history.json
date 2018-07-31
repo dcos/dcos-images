@@ -2,27 +2,27 @@
   "builds": [
     {
       "name": "amazon-ebs",
-      "builder_type": "amazon-ebs",
-      "build_time": 1530025546,
-      "files": null,
       "artifact_id": "ap-northeast-1:ami-b65584c9,ap-northeast-2:ami-36813458,ap-south-1:ami-90c9fcff,ap-southeast-1:ami-dd313ca1,ap-southeast-2:ami-dfbc64bd,ca-central-1:ami-be9b19da,eu-central-1:ami-56f4cabd,eu-west-1:ami-48363fa2,eu-west-2:ami-b9d43dde,eu-west-3:ami-80e050fd,sa-east-1:ami-213f1a4d,us-east-1:ami-e4eeb29b,us-east-2:ami-f3ae9796,us-west-1:ami-9f6b8dfc,us-west-2:ami-e7dc949f",
-      "packer_run_uuid": "81cf95a1-add9-2b06-e55d-117dcb26fccb"
+      "files": null,
+      "packer_run_uuid": "81cf95a1-add9-2b06-e55d-117dcb26fccb",
+      "build_time": 1530025546,
+      "builder_type": "amazon-ebs"
     },
     {
       "name": "amazon-ebs",
-      "builder_type": "amazon-ebs",
-      "build_time": 1530034681,
-      "files": null,
       "artifact_id": "ap-northeast-1:ami-ab6cbdd4,ap-northeast-2:ami-8d8336e3,ap-south-1:ami-96b184f9,ap-southeast-1:ami-10c1cc6c,ap-southeast-2:ami-74b56d16,ca-central-1:ami-36991b52,eu-central-1:ami-83efd168,eu-west-1:ami-6ec5cc84,eu-west-2:ami-2c29c04b,eu-west-3:ami-0de15170,sa-east-1:ami-ad0227c1,us-east-1:ami-21e3bf5e,us-east-2:ami-14a09971,us-west-1:ami-d17492b2,us-west-2:ami-d3e9a1ab",
-      "packer_run_uuid": "9d1c5486-67a4-8a7f-a975-063cc7c7b9e3"
+      "files": null,
+      "packer_run_uuid": "9d1c5486-67a4-8a7f-a975-063cc7c7b9e3",
+      "build_time": 1530034681,
+      "builder_type": "amazon-ebs"
     },
     {
       "name": "amazon-ebs",
-      "builder_type": "amazon-ebs",
-      "build_time": 1532458808,
-      "files": null,
       "artifact_id": "ap-northeast-1:ami-69661284,ap-northeast-2:ami-8a7ccbe4,ap-south-1:ami-c13705ae,ap-southeast-1:ami-2b094fc1,ap-southeast-2:ami-09fd5b6b,ca-central-1:ami-b8a32edc,eu-central-1:ami-91f7f47a,eu-west-1:ami-8f594365,eu-west-2:ami-d1f61cb6,eu-west-3:ami-f58f3f88,sa-east-1:ami-db0726b7,us-east-1:ami-163c3169,us-east-2:ami-9c0933f9,us-west-1:ami-9d0ae7fe,us-west-2:ami-456c353d",
-      "packer_run_uuid": "6dc59e81-912f-b391-1eb4-0a7348ea7712"
+      "files": null,
+      "packer_run_uuid": "6dc59e81-912f-b391-1eb4-0a7348ea7712",
+      "build_time": 1532458808,
+      "builder_type": "amazon-ebs"
     }
   ],
   "last_run_uuid": "6dc59e81-912f-b391-1eb4-0a7348ea7712"
