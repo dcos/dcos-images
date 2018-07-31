@@ -15,7 +15,7 @@
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "oracle",
-      "ami_description": "DC/OS Cloud Image for Oracle Linux 7.4",
+      "ami_description": "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1",
       "ami_regions": [
         "ap-northeast-1",
         "ap-northeast-2",
