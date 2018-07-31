@@ -25,16 +25,6 @@ variable "aws_ami" {
 """
 
 
-def get_ami_id(dirname):
-    with open(os.path.join(dirname, 'dcos_images.json'), 'r') as f:
-        dcos_cloud_images_dict = json.load(f)
-        last_published = dcos_cloud_images_dict["last_run_uuid"]
-        for build in dcos_cloud_images_dict["builds"]:
-            if build["packer_run_uuid"] == last_published:
-                ami_map = dict(item.split(":") for item in build["artifact_id"].split(","))
-                return ami_map["us-west-2"]
-
-
 def terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name):
     new_os = os.path.join(tf_dir, 'modules/dcos-tested-aws-oses/platform/cloud/{}/{}'.format(platform, os_name))
     os.makedirs(new_os)
@@ -167,13 +157,22 @@ def run_integration_tests(ssh_user, tf_dir, tests):
 
 
 def publish_dcos_images(build_dir):
-    """publish (push) dcos_images.json that was generated back to the PR
+    """publish (push) dcos_images.yaml that was generated back to the PR
     running this step before integration tests because passing all tests is not necessarily a requirement
     to qualify and publish images, as flakiness and false negatives can happen"""
-    subprocess.run("""git add dcos_images.json &&
-                   git commit -m "Publish dcos_images.json for {}" &&
+    subprocess.run("""git add dcos_images.yaml packer_build_history.json &&
+                   git commit -m "Publish dcos_images.yaml for {}" &&
                    git push -v""".format(build_dir),
                    check=True, cwd=build_dir, shell=True)
+
+
+def extract_dcos_images(build_dir):
+    with open(os.path.join(build_dir, 'packer_build_history.json')) as f:
+        content = json.load(f)
+    builds = content['builds'][-1]['artifact_id'].split(',')
+    builds = {build.split(':')[0]: build.split(':')[1] for build in builds}
+    with open(os.path.join(build_dir, 'dcos_images.yaml'), 'w') as f:
+        f.write(yaml.dump(builds, default_flow_style=False))
 
 
 def main(build_dir, tf_dir, dry_run, tests, publish_step):
@@ -182,9 +181,11 @@ def main(build_dir, tf_dir, dry_run, tests, publish_step):
     subprocess.run('packer validate packer.json'.split(), check=True, cwd=build_dir)
     if not dry_run and publish_step != 'never':
         subprocess.run('packer build packer.json'.split(), check=True, cwd=build_dir)
+        extract_dcos_images(build_dir)
         if publish_step == 'packer_build':
             publish_dcos_images(build_dir)
-    ami = get_ami_id(build_dir)
+    with open(os.path.join(build_dir, 'dcos_images.yaml')) as f:
+        ami = yaml.load(f)['us-west-2']
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
     # Getting private IPs of all cluster agents.

@@ -47,7 +47,7 @@
   "post-processors": [
     [
       {
-        "output": "dcos_images.json",
+        "output": "packer_build_history.json",
         "strip_path": true,
         "type": "manifest"
       }
