@@ -40,6 +40,7 @@
   ],
   "provisioners": [
     {
+      "execute_command": "chmod +x {{ .Path }}; sudo env {{ .Vars }} {{ .Path }}",
       "type": "shell",
       "script": "./install_dcos_prerequisites.sh"
     }
