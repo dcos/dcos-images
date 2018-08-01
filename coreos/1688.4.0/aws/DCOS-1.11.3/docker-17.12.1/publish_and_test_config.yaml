@@ -1,0 +1,5 @@
+# options: packer_build, dcos_installation, integration_tests, never. Default is dcos_installation. For more details, see README
+publish_dcos_images_after: never # only set to never to avoid rebuilding the images after pushing an update to the PR. Had been successful previously with dcos_installation.
+# list of integration tests that will run. Default is running all the tests.
+tests_to_run:
+  - test_composition.py
