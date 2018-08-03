@@ -1,6 +1,8 @@
 # dcos-images
 
-The reference for DC/OS images and how to build them
+The reference for DC/OS images and how to build them.  
+The goal of this repo is to standardize, across all DC/OS users and developers, the usage and build process of OS cloud
+images to run DC/OS.
 
 ## Which DC/OS image should I use?
 Look for the dcos_images.yaml file in the directory path that matches your requirements.  
@@ -14,8 +16,15 @@ Example: [centos/7.4/aws/DCOS-1.11.3/docker-1.13.1/dcos_images.yaml](https://git
 
 There's also a [DC/OS Platform Version Compatibility Matrix](https://docs.mesosphere.com/version-policy/#dcos-platform-version-compatibility-matrix)
 
-## How to build new DC/OS images
-All the files required to build new DC/OS images are in the yellow-colored boxes of this [diagram](flow-diagram.png).  
+## How to build new DC/OS images  
+For the simplest use case, all it takes to trigger a build for new DC/OS images is creating a pull request with changes
+to either an install_dcos_prerequisites.sh file or packer.json file.  
+![flow-chart](flow-diagram.png)  
+To modify the following chart, go to [draw.io](https://www.draw.io/) and import draw-io-diagram.xml (located at the root level of this repo)  
+[See diagram footnotes for help](#diagram-footnotes)
+
+### Building DC/OS images for a new sa
+All the files required to build new DC/OS images are in the yellow-colored boxes in the diagram above   
 If you're adding a new operating system, you'll need to create all these files. You should definitely use existing ones
 as a starting point.  
 Let's go over each one:
@@ -62,9 +71,7 @@ job that is still running the tests or creating a cluster, so jenkins will also 
 that job. Depending on the results of that job, it will be up to you to judge if the results are good enough to merge
 the pull request and new DC/OS images in the repo.
 
-To modify the following chart, go to [draw.io](https://www.draw.io/) and import draw-io-diagram.xml (located at the root level of this repo)
-![flow-chart](flow-diagram.png)
-
+### Diagram footnotes
 __*1__: install_dcos_prerequisites.sh is directly referenced inside of packer.json
 
 __*2__: base_images.json is NOT directly referenced in packer.json. The source_image field inside of packer.json matches
