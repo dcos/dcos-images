@@ -136,7 +136,7 @@ def get_agent_ips():
     output_json = json.loads(output.decode("utf-8"))
     env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
 
-    master_public_ips = output_json['Mesos Master Public IP']['value']
+    master_public_ips = output_json['Master Public IPs']['value']
     master_private_ips = output_json['Master Private IPs']['value']
     private_agent_private_ips = output_json['Private Agent Private IPs']['value']
     public_agent_private_ips = output_json['Public Agent Private IPs']['value']
