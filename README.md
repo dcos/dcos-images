@@ -19,8 +19,8 @@ There's also a [DC/OS Platform Version Compatibility Matrix](https://docs.mesosp
 ## How to build new DC/OS images  
 For the simplest use case, all it takes to trigger a build for new DC/OS images is creating a pull request with changes
 to either an install_dcos_prerequisites.sh file or packer.json file.  
-![flow-chart](flow-diagram.png)  
-To modify the following chart, go to [draw.io](https://www.draw.io/) and import draw-io-diagram.xml (located at the root level of this repo)  
+![flow-chart](flowchart_draw_io.png)  
+To modify the following chart, go to [draw.io](https://www.draw.io/) and import flowchart_draw_io.xml (located at the root level of this repo)  
 [See diagram footnotes for help](#diagram-footnotes)
 
 ### Building DC/OS images for a new sa
