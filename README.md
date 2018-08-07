@@ -23,7 +23,7 @@ to either an install_dcos_prerequisites.sh file or packer.json file.
 To modify the following chart, go to [draw.io](https://www.draw.io/) and import flowchart_draw_io.xml (located at the root level of this repo)  
 [See diagram footnotes for help](#diagram-footnotes)
 
-### Building DC/OS images for a new sa
+### Required config files to build new DC/OS images
 All the files required to build new DC/OS images are in the yellow-colored boxes in the diagram above   
 If you're adding a new operating system, you'll need to create all these files. You should definitely use existing ones
 as a starting point.  
@@ -62,7 +62,7 @@ boot.
 
 As soon as a pull request is created, if either an install_dcos_prerequisites.sh file or packer.json files are changed,
 the appropriate job will be triggered to build, test and publish new AMIs. If none of these two file types are changed,
-there will only be a dry run to check that the Jenkinsfile and build_test_publish_amis.py work properly.  
+there will only be a dry run to check that the Jenkinsfile and build_test_publish_images.py work properly.  
 When images are built, jenkins will commit them back to the pull request as a dcos_images.yaml file. Jenkins will commit
 those images right after they are built, after the cluster successfully launches, after the tests run successfully or
 never, depending on your publish_and_test_config.yaml. That commit will trigger a new jenkins build because of the
@@ -77,7 +77,7 @@ __*1__: install_dcos_prerequisites.sh is directly referenced inside of packer.js
 __*2__: base_images.json is NOT directly referenced in packer.json. The source_image field inside of packer.json matches
 one of the images inside the base_image.json that existed at the time of the last packer build for that packer.json.
 That base_images.json may or may not be the same as the current one.  
-Before running a packer build, build_test_publish_amis.py will replace whatever source_image the packer.json specifies
+Before running a packer build, build_test_publish_images.py will replace whatever source_image the packer.json specifies
 with the current us-west-2 image in base_images.json
 
 __*3__: In the case where we just want to test the image without rebuilding a new one, we can configure
@@ -91,7 +91,7 @@ __*4__: The contents of setup.sh will not be baked into the resulting images DC/
 script only when a cluster is created with those DC/OS images.
 
 __*5__: More test suites will be added in the future, such as framework tests. Only minor modifications will need to be made
-in build_test_publish_amis.py. Which integration tests are ran can be configured in publish_and_test_config.yaml
+in build_test_publish_images.py. Which integration tests are ran can be configured in publish_and_test_config.yaml
 by specifying the field 'tests_to_run' and a list of values [as seen here](https://github.com/dcos/dcos-images/blob/master/oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1/publish_and_test_config.yaml#L4).
 If you want to run all the tests, simply remove that field.
 
