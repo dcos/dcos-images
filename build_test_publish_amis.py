@@ -174,7 +174,7 @@ def download_cli(cli_version='dcos-1.12'):
 def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket='infinity-artifacts'):
     """ Running data services framework tests - specifically helloworld.
     """
-    subprocess.run('git clone git@github.com:mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
+    subprocess.run('git clone https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
     download_cli() if dcos_major_version == 'master' else download_cli('dcos-{}'.format(dcos_major_version))
     setup_cmd = 'dcos cluster setup --no-check --username=bootstrapuser --password=deleteme https://{}'.format(master_public_ip)
     subprocess.run(setup_cmd.split())
