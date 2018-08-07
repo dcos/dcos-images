@@ -134,7 +134,6 @@ def get_agent_ips():
     """
     output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
     output_json = json.loads(output.decode("utf-8"))
-    env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
 
     master_public_ips = output_json['Master Public IPs']['value']
     master_private_ips = output_json['Master Private IPs']['value']
@@ -146,20 +145,23 @@ def get_agent_ips():
 def run_integration_tests(ssh_user, master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips, tf_dir, tests):
     """ Running dcos integration tests on terraform cluster.
     """
+    env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
+
     env_dict['MASTER_HOSTS'] = ','.join(m for m in master_private_ips)
     env_dict['SLAVE_HOSTS'] = ','.join(m for m in private_agent_private_ips)
     env_dict['PUBLIC_SLAVE_HOSTS'] = ','.join(m for m in public_agent_private_ips)
 
+    tests_string = ' '.join(tests)
     env_string = ' '.join(['{}={}'.format(key, env_dict[key]) for key in env_dict.keys()])
 
     pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
     cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
-    {env} py.test -s -vv {tests_list}" """.format(env=env_string, tests_list=tests_string)
+    {env} py.test -s -vv --maxfail=3 {tests_list}" """.format(env=env_string, tests_list=tests_string)
 
     user_and_host = ssh_user + '@' + master_public_ips[0]
 
     # Running integration tests
-    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
+    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
 
 
 def download_cli(cli_version='dcos-1.12'):
