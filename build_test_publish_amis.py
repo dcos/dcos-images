@@ -156,7 +156,7 @@ def run_integration_tests(ssh_user, master_public_ips, master_private_ips, priva
 
     pytest_cmd = """ bash -c "source /opt/mesosphere/environment.export &&
     cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
-    {env} py.test -s -vv --maxfail=3 {tests_list}" """.format(env=env_string, tests_list=tests_string)
+    {env} py.test -s -vv {tests_list}" """.format(env=env_string, tests_list=tests_string)
 
     user_and_host = ssh_user + '@' + master_public_ips[0]
 
