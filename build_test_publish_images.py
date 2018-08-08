@@ -196,9 +196,9 @@ def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket=
     """ Running data services framework tests - specifically helloworld.
     """
     subprocess.run('git clone https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
-    download_cli(tf_dir) if dcos_major_version == 'master' else download_cli(tf_dir, 'dcos-{}'.format(dcos_major_version))
+    # download_cli(tf_dir) if dcos_major_version == 'master' else download_cli(tf_dir, 'dcos-{}'.format(dcos_major_version))
     
-    authenticate(tf_dir, master_public_ip)
+    # authenticate(tf_dir, master_public_ip)
     cluster_url = 'https://{}'.format(master_public_ip)
 
     # Setting environment variables
@@ -268,7 +268,6 @@ def main(build_dir, tf_dir, dry_run, tests, publish_step):
     else:
         try:
             # Create terraform cluster
-            subprocess.run('cat desired_cluster_profile.tfvars'.split(), check=True, cwd=tf_dir)
             subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
                            cwd=tf_dir)
             if publish_step == 'dcos_installation':
