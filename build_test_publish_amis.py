@@ -3,9 +3,11 @@ import argparse
 import copy
 import json
 import os
+import pexpect
 import re
 import requests
 import shutil
+import stat
 import subprocess
 import yaml
 
@@ -164,20 +166,28 @@ def run_integration_tests(ssh_user, master_public_ips, master_private_ips, priva
     subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
 
 
-def download_cli(cli_version='dcos-1.12'):
+def download_cli(tf_dir, cli_version='dcos-1.12'):
     """ Installing DC/OS CLI based on the version of DC/OS that is being tested to run framework tests.
     """
-    r = requests.get('https://downloads.dcos.io/binaries/cli/linux/x86-64/{}/dcos'.format(cli_version))
-    assert r.status_code == 200, 'Failed to download DC/OS CLI version {}.'.format(cli_version)
+    download_url = 'https://downloads.dcos.io/binaries/cli/linux/x86-64/{}/dcos'.format(cli_version)
+    download_path = os.path.join(tf_dir, "dcos")
+    with open(download_path, 'wb') as f:
+        r = requests.get(download_url, stream=True, verify=True)
+        for chunk in r.iter_content(8192):
+            f.write(chunk)
+
+    # Making binary executable.
+    st = os.stat(download_path)
+    os.chmod(download_path, st.st_mode | stat.S_IEXEC)
 
 
 def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket='infinity-artifacts'):
     """ Running data services framework tests - specifically helloworld.
     """
     subprocess.run('git clone https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
-    download_cli() if dcos_major_version == 'master' else download_cli('dcos-{}'.format(dcos_major_version))
+    download_cli(tf_dir) if dcos_major_version == 'master' else download_cli(tf_dir, 'dcos-{}'.format(dcos_major_version))
     setup_cmd = 'dcos cluster setup --no-check --username=bootstrapuser --password=deleteme https://{}'.format(master_public_ip)
-    subprocess.run(setup_cmd.split())
+    subprocess.run(setup_cmd.split(), check=True, cwd=tf_dir)
 
     cluster_url = 'https://{}'.format(master_public_ip)
 
@@ -254,6 +264,7 @@ def main(build_dir, tf_dir, dry_run, tests, publish_step):
             # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
             subprocess.run('terraform destroy -var-file desired_cluster_profile.tfvars -auto-approve'.split(),
                            check=True, cwd=tf_dir)
+            
 
 
 def validate_config(content):
