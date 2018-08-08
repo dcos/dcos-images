@@ -203,7 +203,7 @@ def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket=
 
     # Setting environment variables
     new_env = copy.deepcopy(os.environ)
-    new_env.update({'CLUSTER_URL': '{}'.format(cluster_url), 'DCOS_LOGIN_USERNAME': 'bootstrapuser', 'DCOS_LOGIN_PASSWORD': 'deleteme', 'STUB_UNIVERSE_URL': 'https://infinity-artifacts-ci.s3.amazonaws.com/autodelete7d/hello-world/20180808-102039-zQ7fJO5vUHNA21pE/stub-universe-hello-world.json', 'S3_BUCKET': '{}'.format(s3_bucket)})
+    new_env.update({'CLUSTER_URL': '{}'.format(cluster_url), 'DCOS_LOGIN_USERNAME': 'bootstrapuser', 'DCOS_LOGIN_PASSWORD': 'deleteme', 'S3_BUCKET': '{}'.format(s3_bucket)})
 
     # Running helloworld framework tests
     subprocess.run('./{}/dcos-commons/test.sh -o helloworld'.format(tf_dir).split(), env=new_env)
