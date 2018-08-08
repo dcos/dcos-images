@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import argparse
-import os
+import copy
 import json
-import subprocess
-import shutil
+import os
 import re
+import requests
+import shutil
+import subprocess
 import yaml
 
 
@@ -127,17 +129,23 @@ def add_private_ips_to_terraform(tf_dir):
         f.write(content)
 
 
-def run_integration_tests(ssh_user, tf_dir, tests):
-    """ Running dcos integration tests on terraform cluster.
+def get_agent_ips():
+    """ Retrieving both the public and private IPs of agents.
     """
     output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
     output_json = json.loads(output.decode("utf-8"))
-    env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
 
-    master_public_ip = output_json['Master Public IPs']['value']
+    master_public_ips = output_json['Master Public IPs']['value']
     master_private_ips = output_json['Master Private IPs']['value']
     private_agent_private_ips = output_json['Private Agent Private IPs']['value']
     public_agent_private_ips = output_json['Public Agent Private IPs']['value']
+    return master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips
+
+
+def run_integration_tests(ssh_user, master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips, tf_dir, tests):
+    """ Running dcos integration tests on terraform cluster.
+    """
+    env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
 
     env_dict['MASTER_HOSTS'] = ','.join(m for m in master_private_ips)
     env_dict['SLAVE_HOSTS'] = ','.join(m for m in private_agent_private_ips)
@@ -150,10 +158,35 @@ def run_integration_tests(ssh_user, tf_dir, tests):
     cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
     {env} py.test -s -vv {tests_list}" """.format(env=env_string, tests_list=tests_string)
 
-    user_and_host = ssh_user + '@' + master_public_ip[0]
+    user_and_host = ssh_user + '@' + master_public_ips[0]
 
     # Running integration tests
-    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
+    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
+
+
+def download_cli(cli_version='dcos-1.12'):
+    """ Installing DC/OS CLI based on the version of DC/OS that is being tested to run framework tests.
+    """
+    r = requests.get('https://downloads.dcos.io/binaries/cli/linux/x86-64/{}/dcos'.format(cli_version))
+    assert r.status_code == 200, 'Failed to download DC/OS CLI version {}.'.format(cli_version)
+
+
+def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket='infinity-artifacts'):
+    """ Running data services framework tests - specifically helloworld.
+    """
+    subprocess.run('git clone https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
+    download_cli() if dcos_major_version == 'master' else download_cli('dcos-{}'.format(dcos_major_version))
+    setup_cmd = 'dcos cluster setup --no-check --username=bootstrapuser --password=deleteme https://{}'.format(master_public_ip)
+    subprocess.run(setup_cmd.split())
+
+    cluster_url = 'https://{}'.format(master_public_ip)
+
+    # Setting environment variables
+    new_env = copy.deepcopy(os.environ)
+    new_env.update({'CLUSTER_URL': '{}'.format(cluster_url), 'DCOS_LOGIN_USERNAME': 'bootstrapuser', 'DCOS_LOGIN_PASSWORD': 'deleteme', 'S3_BUCKET': '{}'.format(s3_bucket)})
+
+    # Running helloworld framework tests
+    subprocess.run('./{}/dcos-commons/test.sh -o helloworld'.format(tf_dir).split(), env=new_env)
 
 
 def publish_dcos_images(build_dir):
@@ -188,21 +221,33 @@ def main(build_dir, tf_dir, dry_run, tests, publish_step):
         ami = yaml.load(f)['us-west-2']
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
+    dcos_version = build_dir.split('/')[3].split('-')[1]
+    dcos_major_version = dcos_version[0:4] if not dcos_version.isalpha() else 'master'
+    url = "https://downloads.dcos.io/dcos/{}/dcos_generate_config.sh"
+    dcos_download_url = url.format('stable/' + dcos_version) if not dcos_version.isalpha() else url.format('testing/' + dcos_version)
+    with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
+       f.write('\ndcos_version = "{}"\n'.format(dcos_version))
+       f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
     # Getting private IPs of all cluster agents.
     add_private_ips_to_terraform(tf_dir)
     if dry_run:
         subprocess.run('terraform plan -var-file desired_cluster_profile.tfvars'.split(), check=True, cwd=tf_dir)
     else:
         try:
-            # create terraform cluster
+            # Create terraform cluster
+            subprocess.run('cat desired_cluster_profile.tfvars'.split(), check=True, cwd=tf_dir)
             subprocess.run('terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'.split(), check=True,
                            cwd=tf_dir)
             if publish_step == 'dcos_installation':
                 publish_dcos_images(build_dir)
+            # Retrieving agent IPs.
+            master_public_ips, master_private_ips, agent_ips, public_agent_ips = get_agent_ips()
             # Run DC/OS integration tests.
-            run_integration_tests(ssh_user, tf_dir, tests)
+            run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips, tf_dir, tests)
             if publish_step == 'integration_tests':
                 publish_dcos_images(build_dir)
+            # Run data services framework tests.
+            run_framework_tests(dcos_major_version, master_public_ips[0], tf_dir)
         finally:
             # Removing private-ip.tf before destroying cluster.
             subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir)
