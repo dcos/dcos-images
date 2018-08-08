@@ -332,6 +332,6 @@ if __name__ == '__main__':
     try:
         main(args.build_dir, tf_dir, args.dry_run, tests, publish_step)
     finally:
-        whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
+        # whatever happens we want to make sure the terraform directory is deleted. This is convenient for local testing
         if os.path.exists(tf_dir):
             shutil.rmtree(tf_dir, ignore_errors=True)
