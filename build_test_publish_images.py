@@ -6,7 +6,7 @@ import subprocess
 import shutil
 import re
 import yaml
-
+import requests
 
 VARIABLES_TF = """
 variable "aws_default_os_user" {
@@ -157,13 +157,26 @@ def run_integration_tests(ssh_user, tf_dir, tests):
 
 
 def publish_dcos_images(build_dir):
-    """publish (push) dcos_images.yaml that was generated back to the PR
-    running this step before integration tests because passing all tests is not necessarily a requirement
-    to qualify and publish images, as flakiness and false negatives can happen"""
+    """Publish (push) dcos_images.yaml that was generated back to the PR.
+    Running this step before integration tests because passing all tests is not necessarily a requirement to qualify and
+    publish images, as flakiness and false negatives can happen. The second step is commenting on the PR the link to
+    the jenkins build url. This is useful because this new commit will trigger another parallel build and we don't
+    want to lose track of the initial one."""
     subprocess.run("""git add dcos_images.yaml packer_build_history.json packer.json &&
                    git commit -m "Publish dcos_images.yaml for {}" &&
                    git push -v""".format(build_dir),
                    check=True, cwd=build_dir, shell=True)
+
+    headers = {
+        'Authorization': 'token ' + os.environ['DCOS_IMAGES_PERSONAL_ACCESS_TOKEN'],
+        'Accept': 'application/vnd.github.v3+json'
+    }
+    msg = 'Link to initial jenkins build running cluster creation and integration tests: {}'.format(
+        os.environ['JENKINS_BUILD_URL'])
+    r = requests.post(
+        'https://api.github.com/repos/dcos/dcos-images/issues/{}/comments'.format(os.environ['PULL_REQUEST_ID']),
+        data=json.dumps({'body': msg}), headers=headers)
+    print('Result of POST request to comment on pr:' + str(r.json()))
 
 
 def extract_dcos_images(build_dir):
