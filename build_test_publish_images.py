@@ -166,39 +166,11 @@ def run_integration_tests(ssh_user, master_public_ips, master_private_ips, priva
     subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
 
 
-def download_cli(tf_dir, cli_version='dcos-1.12'):
-    """ Installing DC/OS CLI based on the version of DC/OS that is being tested to run framework tests.
-    """
-    download_url = 'https://downloads.dcos.io/binaries/cli/linux/x86-64/{}/dcos'.format(cli_version)
-    download_path = os.path.join(tf_dir, "dcos")
-    with open(download_path, 'wb') as f:
-        r = requests.get(download_url, stream=True, verify=True)
-        for chunk in r.iter_content(8192):
-            f.write(chunk)
-
-    # Making binary executable.
-    st = os.stat(download_path)
-    os.chmod(download_path, st.st_mode | stat.S_IEXEC)
-
-
-def authenticate(tf_dir, master_public_ip):
-    """ Setting up and authenticating into Open DC/OS cluster.
-    """
-    auth_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik9UQkVOakZFTWtWQ09VRTRPRVpGTlRNMFJrWXlRa015Tnprd1JrSkVRemRCTWpBM1FqYzVOZyJ9.eyJlbWFpbCI6ImFsYmVydEBiZWtzdGlsLm5ldCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczovL2Rjb3MuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTA5OTY0NDk5MDExMTA4OTA1MDUwIiwiYXVkIjoiM3lGNVRPU3pkbEk0NVExeHNweHplb0dCZTlmTnhtOW0iLCJleHAiOjIwOTA4ODQ5NzQsImlhdCI6MTQ2MDE2NDk3NH0.OxcoJJp06L1z2_41_p65FriEGkPzwFB_0pA9ULCvwvzJ8pJXw9hLbmsx-23aY2f-ydwJ7LSibL9i5NbQSR2riJWTcW4N7tLLCCMeFXKEK4hErN2hyxz71Fl765EjQSO5KD1A-HsOPr3ZZPoGTBjE0-EFtmXkSlHb1T2zd0Z8T5Z2-q96WkFoT6PiEdbrDA-e47LKtRmqsddnPZnp0xmMQdTr2MjpVgvqG7TlRvxDcYc-62rkwQXDNSWsW61FcKfQ-TRIZSf2GS9F9esDF4b5tRtrXcBNaorYa9ql0XAWH5W_ct4ylRNl3vwkYKWa4cmPvOqT5Wlj9Tf0af4lNO40PQ'
-
-    child = pexpect.spawn('dcos cluster setup {}'.format(master_public_ip), cwd=tf_dir)
-    child.expect('Enter OpenID Connect ID Token:')
-    child.sendline(auth_token)
-    child.expect(pexpect.EOF, timeout=None)
-
-
-def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket='infinity-artifacts'):
+def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket='osqual-frameworks-artifacts'):
     """ Running data services framework tests - specifically helloworld.
     """
     subprocess.run('git clone --single-branch -b sshkey-gpowale https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
-    # download_cli(tf_dir) if dcos_major_version == 'master' else download_cli(tf_dir, 'dcos-{}'.format(dcos_major_version))
-    
-    # authenticate(tf_dir, master_public_ip)
+
     cluster_url = 'https://{}'.format(master_public_ip)
 
     # Setting environment variables
