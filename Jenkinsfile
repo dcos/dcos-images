@@ -65,9 +65,7 @@ node('mesos-ubuntu') {
   stage("Install python requirements") {
     shcmd("""apt-get -y update &&
           apt-get -y install python3-pip
-          pip3 install -r requirements.txt
-          pip3 install requests
-          pip3 install pexpect"""
+          pip3 install -r requirements.txt"""
     )
   }
 

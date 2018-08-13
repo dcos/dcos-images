@@ -3,9 +3,7 @@ import argparse
 import copy
 import json
 import os
-import pexpect
 import re
-import requests
 import shutil
 import stat
 import subprocess
@@ -131,19 +129,6 @@ def add_private_ips_to_terraform(tf_dir):
         f.write(content)
 
 
-def get_agent_ips():
-    """ Retrieving both the public and private IPs of agents.
-    """
-    output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
-    output_json = json.loads(output.decode("utf-8"))
-
-    master_public_ips = output_json['Master Public IPs']['value']
-    master_private_ips = output_json['Master Private IPs']['value']
-    private_agent_private_ips = output_json['Private Agent Private IPs']['value']
-    public_agent_private_ips = output_json['Public Agent Private IPs']['value']
-    return master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips
-
-
 def run_integration_tests(ssh_user, master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips, tf_dir, tests):
     """ Running dcos integration tests on terraform cluster.
     """
@@ -166,16 +151,23 @@ def run_integration_tests(ssh_user, master_public_ips, master_private_ips, priva
     subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
 
 
-def run_framework_tests(dcos_major_version, master_public_ip, tf_dir, s3_bucket='osqual-frameworks-artifacts'):
+def run_framework_tests(master_public_ip, tf_dir, s3_bucket='osqual-frameworks-artifacts'):
     """ Running data services framework tests - specifically helloworld.
     """
+    # Using the sshkey-gpowale branch on the dcos-commons repository for testing.
     subprocess.run('git clone --single-branch -b sshkey-gpowale https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
 
     cluster_url = 'https://{}'.format(master_public_ip)
 
     # Setting environment variables
     new_env = copy.deepcopy(os.environ)
-    new_env.update({'CLUSTER_URL': '{}'.format(cluster_url), 'DCOS_LOGIN_USERNAME': 'bootstrapuser', 'DCOS_LOGIN_PASSWORD': 'deleteme', 'STUB_UNIVERSE_URL': 'https://infinity-artifacts-ci.s3.amazonaws.com/autodelete7d/hello-world/20180808-102039-zQ7fJO5vUHNA21pE/stub-universe-hello-world.json', 'S3_BUCKET': '{}'.format(s3_bucket)})
+    environment_variables = {
+        'CLUSTER_URL': '{}'.format(cluster_url),
+        'DCOS_LOGIN_USERNAME': 'bootstrapuser',
+        'DCOS_LOGIN_PASSWORD': 'deleteme',
+        'S3_BUCKET': '{}'.format(s3_bucket)
+    }
+    new_env.update(environment_variables)
 
     # Running helloworld framework tests
     subprocess.run('./{}/dcos-commons/test.sh -o --headless helloworld'.format(tf_dir).split(), env=new_env)
@@ -213,6 +205,28 @@ def extract_dcos_images(build_dir):
         f.write(yaml.dump(builds, default_flow_style=False))
 
 
+def get_agent_ips():
+    """ Retrieving both the public and private IPs of agents.
+    """
+    output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
+    output_json = json.loads(output.decode("utf-8"))
+
+    master_public_ips = output_json['Master Public IPs']['value']
+    master_private_ips = output_json['Master Private IPs']['value']
+    private_agent_private_ips = output_json['Private Agent Private IPs']['value']
+    public_agent_private_ips = output_json['Public Agent Private IPs']['value']
+    return master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips
+
+
+def write_dcos_version_to_cluster_profile(dcos_version, dcos_download_url, tf_dir):
+    """ Writing the dcos_version and custom_dcos_download_path cluster profile parameters
+    to desired_cluster_profile.tfvars.
+    """
+    with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
+       f.write('\ndcos_version = "{}"\n'.format(dcos_version))
+       f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
+
+
 def main(build_dir, tf_dir, dry_run, tests, publish_step):
     vars_string, platform, cluster_profile, os_name, ssh_user = prepare_terraform(build_dir, tf_dir)
     update_source_image(build_dir)
@@ -227,12 +241,9 @@ def main(build_dir, tf_dir, dry_run, tests, publish_step):
     terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, 'desired_cluster_profile.tfvars'))
     dcos_version = build_dir.split('/')[3].split('-')[1]
-    dcos_major_version = dcos_version[0:4] if not dcos_version.isalpha() else 'master'
     url = "https://downloads.dcos.io/dcos/{}/dcos_generate_config.sh"
-    dcos_download_url = url.format('stable/' + dcos_version) if not dcos_version.isalpha() else url.format('testing/' + dcos_version)
-    with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
-       f.write('\ndcos_version = "{}"\n'.format(dcos_version))
-       f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
+    dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format('stable/' + dcos_version)
+    write_dcos_version_to_cluster_profile(dcos_version, dcos_download_url, tf_dir)
     # Getting private IPs of all cluster agents.
     add_private_ips_to_terraform(tf_dir)
     if dry_run:
@@ -251,7 +262,7 @@ def main(build_dir, tf_dir, dry_run, tests, publish_step):
             if publish_step == 'integration_tests':
                 publish_dcos_images(build_dir)
             # Run data services framework tests.
-            run_framework_tests(dcos_major_version, master_public_ips[0], tf_dir)
+            run_framework_tests(master_public_ips[0], tf_dir)
         finally:
             # Removing private-ip.tf before destroying cluster.
             subprocess.run(["rm", "private-ip.tf"], check=True, cwd=tf_dir)
