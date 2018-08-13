@@ -390,8 +390,7 @@ def main(build_dir: str, dry_run: bool, custom_tests: list):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Build, Test and Qualify DC/OS Image.")
 
-    parser.add_argument("build_dir",
-                        dest="build_dir",
+    parser.add_argument(dest="build_dir",
                         required=True,
                         help="The directory that contains all the files necessary as a input to build a DCOS image.")
 
