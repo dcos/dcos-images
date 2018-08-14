@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-
-"""Build, Test and Publish AMI for DC/OS Support Qualification.
-
-"""
-
 import argparse
-import os
+import copy
 import json
-import subprocess
-import shutil
+import os
 import re
+import shutil
+import stat
+import subprocess
 import yaml
+import requests
 
 CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER = 'publish_dcos_images_after'
 CONFIG_KEY_TESTS_TO_RUN = 'tests_to_run'
@@ -195,18 +193,10 @@ def _add_private_ips_to_terraform(tf_dir):
         f.write(content)
 
 
-def run_integration_tests(ssh_user, tf_dir, tests):
+def run_integration_tests(ssh_user, master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips, tf_dir, tests):
     """Run DCOS Integration tests on Terraform cluster.
-
     """
-    output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
-    output_json = json.loads(output.decode("utf-8"))
     env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
-
-    master_public_ip = output_json['Master Public IPs']['value']
-    master_private_ips = output_json['Master Private IPs']['value']
-    private_agent_private_ips = output_json['Private Agent Private IPs']['value']
-    public_agent_private_ips = output_json['Public Agent Private IPs']['value']
 
     env_dict['MASTER_HOSTS'] = ','.join(m for m in master_private_ips)
     env_dict['SLAVE_HOSTS'] = ','.join(m for m in private_agent_private_ips)
@@ -219,20 +209,55 @@ def run_integration_tests(ssh_user, tf_dir, tests):
     cd `find /opt/mesosphere/active/ -name dcos-integration-test* | sort | tail -n 1` &&
     {env} py.test -s -vv {tests_list}" """.format(env=env_string, tests_list=tests_string)
 
-    user_and_host = ssh_user + '@' + master_public_ip[0]
+    user_and_host = ssh_user + '@' + master_public_ips[0]
 
     # Running integration tests
-    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
+    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
+
+
+def run_framework_tests(master_public_ip, tf_dir, s3_bucket='osqual-frameworks-artifacts'):
+    """ Running data services framework tests - specifically helloworld.
+    """
+    # Using the sshkey-gpowale branch on the dcos-commons repository for testing.
+    subprocess.run('git clone --single-branch -b sshkey-gpowale https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
+
+    cluster_url = 'https://{}'.format(master_public_ip)
+
+    # Setting environment variables
+    new_env = copy.deepcopy(os.environ)
+    environment_variables = {
+        'CLUSTER_URL': '{}'.format(cluster_url),
+        'DCOS_LOGIN_USERNAME': 'bootstrapuser',
+        'DCOS_LOGIN_PASSWORD': 'deleteme',
+        'S3_BUCKET': '{}'.format(s3_bucket)
+    }
+    new_env.update(environment_variables)
+
+    # Running helloworld framework tests
+    subprocess.run('./{}/dcos-commons/test.sh -o --headless helloworld'.format(tf_dir).split(), env=new_env)
 
 
 def publish_dcos_images(build_dir):
-    """publish (push) dcos_images.yaml that was generated back to the PR
-    running this step before integration tests because passing all tests is not necessarily a requirement
-    to qualify and publish images, as flakiness and false negatives can happen"""
+    """Publish (push) dcos_images.yaml that was generated back to the PR.
+    Running this step before integration tests because passing all tests is not necessarily a requirement to qualify and
+    publish images, as flakiness and false negatives can happen. The second step is commenting on the PR the link to
+    the jenkins build url. This is useful because this new commit will trigger another parallel build and we don't
+    want to lose track of the initial one."""
     subprocess.run("""git add dcos_images.yaml packer_build_history.json packer.json &&
                    git commit -m "Publish dcos_images.yaml for {}" &&
                    git push -v""".format(build_dir),
                    check=True, cwd=build_dir, shell=True)
+
+    headers = {
+        'Authorization': 'token ' + os.environ['DCOS_IMAGES_PERSONAL_ACCESS_TOKEN'],
+        'Accept': 'application/vnd.github.v3+json'
+    }
+    msg = 'Link to initial jenkins build running cluster creation and integration tests: {}'.format(
+        os.environ['JENKINS_BUILD_URL'])
+    r = requests.post(
+        'https://api.github.com/repos/dcos/dcos-images/issues/{}/comments'.format(os.environ['PULL_REQUEST_ID']),
+        data=json.dumps({'body': msg}), headers=headers)
+    print('Result of POST request to comment on pr:' + str(r.json()))
 
 
 def extract_dcos_images(build_dir):
@@ -310,6 +335,32 @@ def packer_validate_and_build(build_dir, dry_run, publish_step):
             publish_dcos_images(build_dir)
 
 
+def _write_dcos_version_to_cluster_profile(tf_dir):
+    """ Writing the dcos_version and custom_dcos_download_path cluster profile parameters
+    to desired_cluster_profile.tfvars.
+    """
+    dcos_version = build_dir.split('/')[3].split('-')[1]
+    url = "https://downloads.dcos.io/dcos/{}/dcos_generate_config.sh"
+    dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format('stable/' + dcos_version)
+    write_dcos_version_to_cluster_profile(dcos_version, dcos_download_url, tf_dir)
+    with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
+       f.write('\ndcos_version = "{}"\n'.format(dcos_version))
+       f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
+
+
+def _get_agent_ips():
+    """ Retrieving both the public and private IPs of agents.
+    """
+    output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
+    output_json = json.loads(output.decode("utf-8"))
+
+    master_public_ips = output_json['Master Public IPs']['value']
+    master_private_ips = output_json['Master Private IPs']['value']
+    private_agent_private_ips = output_json['Private Agent Private IPs']['value']
+    public_agent_private_ips = output_json['Public Agent Private IPs']['value']
+    return master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips
+
+
 def setup_terraform(build_dir, tf_dir):
     with open(os.path.join(build_dir, DCOS_IMAGES_YAML)) as f:
         ami = yaml.load(f)[DEFAULT_AWS_REGION]
@@ -319,6 +370,8 @@ def setup_terraform(build_dir, tf_dir):
     _terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, CLUSTER_PROFILE_TFVARS))
+
+    _write_dcos_version_to_cluster_profile(tf_dir)
 
     _add_private_ips_to_terraform(tf_dir)
 
@@ -341,11 +394,18 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step):
         if publish_step == PUBLISH_STEP_DCOS_INSTALLATION:
             publish_dcos_images(build_dir)
 
+        # Retrieving agent IPs.
+        master_public_ips, master_private_ips, agent_ips, public_agent_ips = _get_agent_ips()
+
         # Run Integration Tests.
-        run_integration_tests(ssh_user, tf_dir, tests)
+        run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips, tf_dir,
+                              tests)
 
         if publish_step == PUBLISH_STEP_INTEGRATION_TESTS:
             publish_dcos_images(build_dir)
+
+        # Run data services framework tests.
+        run_framework_tests(master_public_ips[0], tf_dir)
     finally:
         # Removing private-ip.tf before destroying cluster.
         subprocess.run(rm_private_ip_file_cmd.split(), check=True, cwd=tf_dir)

@@ -97,7 +97,7 @@ node('mesos-ubuntu') {
   stage("Test build_and_test_amis.py (dry run)") {
     sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        shcmd('python3 build_test_publish_amis.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
+        shcmd('python3 build_test_publish_images.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
       }
     }
   }
@@ -111,9 +111,13 @@ node('mesos-ubuntu') {
               git remote remove origin &&
               git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git"""
         )
-        for (p in paths) {
-          println("Building path ${p}")
-          shcmd("python3 build_test_publish_amis.py ${p}")
+        withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
+                 "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
+                 "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
+          for (p in paths) {
+            println("Building path ${p}")
+            shcmd("python3 build_test_publish_images.py ${p}")
+          }
         }
       }
     }

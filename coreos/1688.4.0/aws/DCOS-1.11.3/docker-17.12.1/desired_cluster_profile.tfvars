@@ -1,5 +1,5 @@
-os = "centos"
-user = "centos"
+os = "coreos"
+user = "core"
 aws_region = "us-west-2"
 
 aws_bootstrap_instance_type = "m3.large"
@@ -11,6 +11,9 @@ ssh_key_name = "dcos-images"
 # Inbound Master Access
 admin_cidr = "0.0.0.0/0"
 
+dcos_version = "master"
+custom_dcos_download = "https://downloads.dcos.io/dcos/stable/dcos_generate_config.sh"
+
 num_of_masters = "1"
-num_of_private_agents = "5"
+num_of_private_agents = "2"
 num_of_public_agents = "1"
