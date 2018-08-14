@@ -180,11 +180,11 @@ def _add_private_ips_to_terraform(tf_dir):
     output "Private Agent Private IPs" {
     value = ["${aws_instance.agent.*.private_ip}"]
     }
-    
+
     output "Public Agent Private IPs" {
       value = ["${aws_instance.public-agent.*.private_ip}"]
     }
-    
+
     output "Master Private IPs" {
       value = ["${aws_instance.master.*.private_ip}"]
     }
@@ -193,7 +193,8 @@ def _add_private_ips_to_terraform(tf_dir):
         f.write(content)
 
 
-def run_integration_tests(ssh_user, master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips, tf_dir, tests):
+def run_integration_tests(ssh_user, master_public_ips, master_private_ips, private_agent_private_ips,
+                          public_agent_private_ips, tf_dir, tests):
     """Run DCOS Integration tests on Terraform cluster.
     """
     env_dict = {'MASTER_HOSTS': '', 'PUBLIC_SLAVE_HOSTS': '', 'SLAVE_HOSTS': ''}
@@ -219,7 +220,8 @@ def run_framework_tests(master_public_ip, tf_dir, s3_bucket='osqual-frameworks-a
     """ Running data services framework tests - specifically helloworld.
     """
     # Using the sshkey-gpowale branch on the dcos-commons repository for testing.
-    subprocess.run('git clone --single-branch -b sshkey-gpowale https://github.com/mesosphere/dcos-commons.git'.split(), check=True, cwd=tf_dir)
+    subprocess.run('git clone --single-branch -b sshkey-gpowale https://github.com/mesosphere/dcos-commons.git'.split(),
+                   check=True, cwd=tf_dir)
 
     cluster_url = 'https://{}'.format(master_public_ip)
 
@@ -299,7 +301,7 @@ def _validate_config(content):
 
     if step not in valid_steps:
         raise ValueError("Invalid value for config parameter 'publish_dcos_images_after'. Valid values: ".format(
-                step, valid_steps))
+            step, valid_steps))
 
 
 def _get_config_info(build_dir):
@@ -341,11 +343,12 @@ def _write_dcos_version_to_cluster_profile(tf_dir):
     """
     dcos_version = build_dir.split('/')[3].split('-')[1]
     url = "https://downloads.dcos.io/dcos/{}/dcos_generate_config.sh"
-    dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format('stable/' + dcos_version)
+    dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format(
+        'stable/' + dcos_version)
     write_dcos_version_to_cluster_profile(dcos_version, dcos_download_url, tf_dir)
     with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
-       f.write('\ndcos_version = "{}"\n'.format(dcos_version))
-       f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
+        f.write('\ndcos_version = "{}"\n'.format(dcos_version))
+        f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
 
 
 def _get_agent_ips():
@@ -461,7 +464,7 @@ if __name__ == '__main__':
                         default=False,
                         help="Dry Run the Build, Test, Qualify Process.\n"
                              "This will exclude running the packer build, creating a terraform cluster "
-                             "and running the integration tests.\n" 
+                             "and running the integration tests.\n"
                              "This tests the 'packer validate', and 'terraform plan' work on the configuration "
                              "files specified thus validating our configuration and the build process itself.")
 
