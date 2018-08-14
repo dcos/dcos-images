@@ -23,6 +23,13 @@ node('mesos-ubuntu') {
   def jenkins_git_user = "mesosphere_jenkins"
   def branch = ""
 
+  stage("Install python requirements") {
+    shcmd("""apt-get -y update &&
+          apt-get -y install python3-pip
+          pip3 install -r requirements.txt"""
+    )
+  }
+
   stage("Run unit tests") {
     shcmd("python3 -m unittest")
   }
@@ -38,7 +45,7 @@ node('mesos-ubuntu') {
     shcmd("""git checkout ${branch} &&
           git config --global user.name "${jenkins_git_user}" &&
           git config --global user.email "${jenkins_git_user}" &&
-          git rebase origin/master"""
+          git merge origin/master"""
     )
   }
 
@@ -65,13 +72,6 @@ node('mesos-ubuntu') {
         }
       }
     }
-  }
-
-  stage("Install python requirements") {
-    shcmd("""apt-get -y update &&
-          apt-get -y install python3-pip
-          pip3 install -r requirements.txt"""
-    )
   }
 
   stage("Get packer") {
