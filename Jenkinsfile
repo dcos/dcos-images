@@ -24,7 +24,7 @@ node('mesos-ubuntu') {
   def branch = ""
 
   stage("Run unit tests") {
-    shcmd("python -m unittest")
+    shcmd("python3 -m unittest")
   }
 
   stage("Set up git repo") {
