@@ -29,10 +29,11 @@ class TestBuildPublishAmis(unittest.TestCase):
 
         mock_tf_build_dir.return_value = self._tf_build_dir
 
-        build_test_publish_images.execute_qualification_process(self._build_dir,
-                                                              self._dry_run,
-                                                              self._tests,
-                                                              self._publish_step)
+        build_test_publish_images.execute_qualification_process(
+            self._build_dir,
+            self._dry_run,
+            self._tests,
+            self._publish_step)
 
         mock_packer_validate_and_build.assert_called_with(self._build_dir, self._dry_run, self._publish_step)
         mock_setup_terraform.assert_called_with(self._build_dir, self._tf_build_dir)
@@ -63,10 +64,11 @@ class TestBuildPublishAmis(unittest.TestCase):
         mock_setup_terraform.side_effect = ValueError("Error during terraform setup.")
 
         try:
-            build_test_publish_images.execute_qualification_process(self._build_dir,
-                                                                  self._dry_run,
-                                                                  self._tests,
-                                                                  self._publish_step)
+            build_test_publish_images.execute_qualification_process(
+                self._build_dir,
+                self._dry_run,
+                self._tests,
+                self._publish_step)
             self.fail("ValueError was not raised during terraform setup.")
         except ValueError:
             pass
@@ -93,10 +95,11 @@ class TestBuildPublishAmis(unittest.TestCase):
         mock_setup_cluster_and_test.side_effect = Exception("Error during cluster setup.")
 
         try:
-            build_test_publish_images.execute_qualification_process(self._build_dir,
-                                                                  self._dry_run,
-                                                                  self._tests,
-                                                                  self._publish_step)
+            build_test_publish_images.execute_qualification_process(
+                self._build_dir,
+                self._dry_run,
+                self._tests,
+                self._publish_step)
             self.fail("No error raised during cluster setup.")
         except Exception:
             pass

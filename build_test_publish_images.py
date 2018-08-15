@@ -337,7 +337,7 @@ def packer_validate_and_build(build_dir, dry_run, publish_step):
             publish_dcos_images(build_dir)
 
 
-def _write_dcos_version_to_cluster_profile(tf_dir):
+def _write_dcos_version_to_cluster_profile(build_dir, tf_dir):
     """ Writing the dcos_version and custom_dcos_download_path cluster profile parameters
     to desired_cluster_profile.tfvars.
     """
@@ -345,13 +345,12 @@ def _write_dcos_version_to_cluster_profile(tf_dir):
     url = "https://downloads.dcos.io/dcos/{}/dcos_generate_config.sh"
     dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format(
         'stable/' + dcos_version)
-    write_dcos_version_to_cluster_profile(dcos_version, dcos_download_url, tf_dir)
     with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
         f.write('\ndcos_version = "{}"\n'.format(dcos_version))
         f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
 
 
-def _get_agent_ips():
+def _get_agent_ips(tf_dir):
     """ Retrieving both the public and private IPs of agents.
     """
     output = subprocess.check_output(['terraform', 'output', '-json'], cwd=tf_dir)
@@ -374,7 +373,7 @@ def setup_terraform(build_dir, tf_dir):
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, CLUSTER_PROFILE_TFVARS))
 
-    _write_dcos_version_to_cluster_profile(tf_dir)
+    _write_dcos_version_to_cluster_profile(build_dir, tf_dir)
 
     _add_private_ips_to_terraform(tf_dir)
 
@@ -398,7 +397,7 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step):
             publish_dcos_images(build_dir)
 
         # Retrieving agent IPs.
-        master_public_ips, master_private_ips, agent_ips, public_agent_ips = _get_agent_ips()
+        master_public_ips, master_private_ips, agent_ips, public_agent_ips = _get_agent_ips(tf_dir)
 
         # Run Integration Tests.
         run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips, tf_dir,
@@ -454,7 +453,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Build, Test and Qualify DC/OS Image.")
 
     parser.add_argument(dest="build_dir",
-                        required=True,
                         help="The directory that contains all the files necessary as a input to build a DCOS image.")
 
     parser.add_argument("--dry-run",
