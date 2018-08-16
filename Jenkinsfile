@@ -45,7 +45,7 @@ node('mesos-ubuntu') {
     shcmd("""git checkout ${branch} &&
           git config --global user.name "${jenkins_git_user}" &&
           git config --global user.email "${jenkins_git_user}" &&
-          git merge origin/master"""
+          git rebase origin/master"""
     )
   }
 

@@ -247,7 +247,7 @@ def publish_dcos_images(build_dir):
     want to lose track of the initial one."""
     subprocess.run("""git add dcos_images.yaml packer_build_history.json packer.json &&
                    git commit -m "Publish dcos_images.yaml for {}" &&
-                   git push -v""".format(build_dir),
+                   git push -fv""".format(build_dir),
                    check=True, cwd=build_dir, shell=True)
 
     headers = {

@@ -21,6 +21,7 @@ sudo systemctl start docker
 sudo systemctl enable docker
 sudo yum install -y wget
 sudo yum install -y git
+sudo yum install -y bind-utils
 sudo yum install -y unzip
 sudo yum install -y curl
 sudo yum install -y xz
