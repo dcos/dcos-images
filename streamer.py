@@ -1,5 +1,8 @@
 import time
-
+import sys
+import logging
+log = logging.getLogger(__name__)
 while True:
     time.sleep(1)
-    print('pistache ctait son chien')
+    log.info('hello world')
+    sys.stdout.flush()

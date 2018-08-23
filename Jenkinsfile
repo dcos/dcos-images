@@ -4,11 +4,14 @@ import org.apache.tools.ant.util.*;
 
 
 node('mesos-ubuntu') {
-  stage("stream") {
-    def proc = "python streamer.py".execute()
-    proc.consumeProcessOutput(System.out, System.err)
-    println("about to wait")
-    proc.waitFor()
-    println("noooooooooooooo")
-  }
+    checkout scm
+    def proc = "/usr/bin/env python3 -c 'streamer.py'".execute()
+def b = new StringBuffer()
+proc.consumeProcessErrorStream(b)
+
+for (i = 0; i < 100; i++) {
+  println proc.text
+  println b.toString()
+  sleep(1000)
+}
 }
