@@ -12,6 +12,8 @@ import requests
 
 CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER = 'publish_dcos_images_after'
 CONFIG_KEY_TESTS_TO_RUN = 'tests_to_run'
+CONFIG_KEY_RUN_FRAMEWORK_TESTS = 'run_framework_tests'
+CONFIG_KEY_RUN_INTEGRATION_TESTS = 'run_integration_tests'
 
 PUBLISH_STEP_NEVER = "never"
 PUBLISH_STEP_INTEGRATION_TESTS = "integration_tests"
@@ -281,7 +283,8 @@ def _validate_config(content):
     :param content: config file used for validation.
     :return:
     """
-    valid_keys = [CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER, CONFIG_KEY_TESTS_TO_RUN]
+    valid_keys = [CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER, CONFIG_KEY_TESTS_TO_RUN, CONFIG_KEY_RUN_INTEGRATION_TESTS,
+                  CONFIG_KEY_RUN_FRAMEWORK_TESTS]
 
     valid_steps = [PUBLISH_STEP_PACKER_BUILD,
                    PUBLISH_STEP_DCOS_INSTALLATION,
@@ -294,31 +297,40 @@ def _validate_config(content):
         if k not in valid_keys:
             raise ValueError("Unrecognized config parameter: {key}".format(key=k))
 
-    if not isinstance(content.get("tests_to_run", []), list):
-        raise ValueError("Config parameter 'tests_to_run' value must be a list.")
+    for key in CONFIG_KEY_RUN_INTEGRATION_TESTS, CONFIG_KEY_RUN_FRAMEWORK_TESTS:
+        if not isinstance(content.get(key, True), bool):
+            raise ValueError("Config parameter '{}' value must be a boolean.".format(key))
 
-    step = content.get("publish_dcos_images_after", _default_publish_dcos_images_after_step)
+    if not isinstance(content.get(CONFIG_KEY_TESTS_TO_RUN, []), list):
+        raise ValueError("Config parameter '{}' value must be a list.".format(CONFIG_KEY_TESTS_TO_RUN))
+
+    step = content.get(CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER, _default_publish_dcos_images_after_step)
 
     if step not in valid_steps:
-        raise ValueError("Invalid value for config parameter 'publish_dcos_images_after'. Valid values: ".format(
-            step, valid_steps))
+        raise ValueError("Invalid value {} for config parameter '{}'. Valid values: {}".format(
+            step, CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER, valid_steps))
 
 
 def _get_config_info(build_dir):
     config_path = os.path.join(build_dir, TEST_CONFIG_YAML)
 
     # No actions to take by default.
-    _default_action = []
+    _default_test_list = []
+    _default_run_integration_tests = True
+    _default_run_framework_tests = True
 
     if not os.path.exists(config_path):
-        return PUBLISH_STEP_DCOS_INSTALLATION, _default_action
+        return (PUBLISH_STEP_DCOS_INSTALLATION, _default_test_list, _default_run_integration_tests,
+                _default_run_framework_tests)
 
     with open(config_path) as f:
         content = yaml.load(f)
         _validate_config(content)
 
         return (content.get(CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER, PUBLISH_STEP_DCOS_INSTALLATION),
-                content.get(CONFIG_KEY_TESTS_TO_RUN, _default_action))
+                content.get(CONFIG_KEY_TESTS_TO_RUN, _default_test_list),
+                content.get(CONFIG_KEY_RUN_INTEGRATION_TESTS, _default_run_integration_tests),
+                content.get(CONFIG_KEY_RUN_FRAMEWORK_TESTS, _default_run_framework_tests))
 
 
 def packer_validate_and_build(build_dir, dry_run, publish_step):
@@ -378,7 +390,7 @@ def setup_terraform(build_dir, tf_dir):
     _add_private_ips_to_terraform(tf_dir)
 
 
-def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step):
+def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_integration, run_framework):
     ssh_user = get_ssh_user_from_packer_json(build_dir)
 
     tf_plan_cmd = 'terraform plan -var-file desired_cluster_profile.tfvars'
@@ -400,14 +412,16 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step):
         master_public_ips, master_private_ips, agent_ips, public_agent_ips = _get_agent_ips(tf_dir)
 
         # Run Integration Tests.
-        run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips, tf_dir,
-                              tests)
+        if run_integration:
+            run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips, tf_dir,
+                                  tests)
 
         if publish_step == PUBLISH_STEP_INTEGRATION_TESTS:
             publish_dcos_images(build_dir)
 
         # Run data services framework tests.
-        run_framework_tests(master_public_ips[0], tf_dir)
+        if run_framework:
+            run_framework_tests(master_public_ips[0], tf_dir)
     finally:
         # Removing private-ip.tf before destroying cluster.
         subprocess.run(rm_private_ip_file_cmd.split(), check=True, cwd=tf_dir)
@@ -422,14 +436,17 @@ def get_tf_build_dir(build_dir):
     return tf_build_dir
 
 
-def execute_qualification_process(build_dir, dry_run, tests, publish_step):
+def execute_qualification_process(build_dir, dry_run, tests, publish_step, run_integration, run_framework):
     """Execute DC/OS Qualification process.
 
-    :param build_dir:
-    :param tf_dir:
-    :param dry_run:
-    :param tests:
-    :param publish_step:
+    :param build_dir: path of the directory that contains all configuration files for the OS to be qualified
+    :param tf_dir: directory resulting from terraform init
+    :param dry_run: if True, only the code, unit tests and pipeline will be tested. If false, it will build images, spin
+        up a cluster and test it (qualification process)
+    :param tests: list of tests to run
+    :param publish_step: step after which images publishing will be done
+    :param run_integration: if True, will run integration tests
+    :param run_framework: if True, will run framework tests
     :return:
     """
     packer_validate_and_build(build_dir, dry_run, publish_step)
@@ -438,15 +455,15 @@ def execute_qualification_process(build_dir, dry_run, tests, publish_step):
 
     try:
         setup_terraform(build_dir, tf_build_dir)
-        setup_cluster_and_test(build_dir, tf_build_dir, dry_run, tests, publish_step)
+        setup_cluster_and_test(build_dir, tf_build_dir, dry_run, tests, publish_step, run_integration, run_framework)
     finally:
         shutil.rmtree(tf_build_dir, ignore_errors=True)
 
 
 def main(build_dir: str, dry_run: bool, custom_tests: list):
-    publish_step, custom_tests_from_config = _get_config_info(build_dir)
+    publish_step, custom_tests_from_config, run_integration, run_framework = _get_config_info(build_dir)
     tests_to_run = custom_tests or custom_tests_from_config
-    execute_qualification_process(build_dir, dry_run, tests_to_run, publish_step)
+    execute_qualification_process(build_dir, dry_run, tests_to_run, publish_step, run_integration, run_framework)
 
 
 if __name__ == '__main__':
