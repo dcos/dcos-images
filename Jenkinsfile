@@ -22,6 +22,10 @@ node('mesos-ubuntu') {
   def paths = []
   def jenkins_git_user = "mesosphere_jenkins"
   def branch = ""
+  def last_committer = shcmd('git log -1 --pretty=format:\'%an\'')
+  if (last_committer == jenkins_git_user) {
+    return
+  }
 
   stage("Install python requirements") {
     shcmd("""apt-get -y update &&
@@ -47,11 +51,6 @@ node('mesos-ubuntu') {
           git config --global user.email "${jenkins_git_user}" &&
           git merge origin/master"""
     )
-  }
-
-  def last_committer = shcmd('git log -1 --pretty=format:\'%an\'')
-  if (last_committer == jenkins_git_user) {
-    return
   }
 
   stage("Get changeset") {

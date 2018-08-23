@@ -111,6 +111,7 @@
     "sudo /tmp/configure_dcos_system.sh"]
     },
     {
+    "execute_command": "{{ .Vars }} sudo -E -S bash -c \"cat {{ .Path }} > ~/install_dcos_prerequisites.sh && chmod +x ~/install_dcos_prerequisites.sh && (crontab -l 2>/dev/null; echo '@reboot ~/install_dcos_prerequisites.sh') | crontab -\"",
     "type": "shell",
     "script": "./install_dcos_prerequisites.sh"
     }
