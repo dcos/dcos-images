@@ -166,10 +166,10 @@ def update_source_image_in_packer_json(build_dir):
 
     with open(base_images_file) as f:
         ami = json.load(f)[DEFAULT_AWS_REGION]
-        content.replace(m.group(0), '"source_ami": "{}",'.format(ami))
+        replaced_content = content.replace(m.group(0), '"source_ami": "{}",'.format(ami))
 
     with open(packer_file, 'w') as f:
-        f.write(content)
+        f.write(replaced_content)
 
 
 def _add_private_ips_to_terraform(tf_dir):
