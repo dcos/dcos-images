@@ -330,14 +330,14 @@ def packer_validate_and_build(build_dir, dry_run, publish_step):
 
     update_source_image_in_packer_json(build_dir)
 
-    # subprocess.run(_PACKER_VALIDATE_COMMAND.split(), check=True, cwd=build_dir)
+    subprocess.run(_PACKER_VALIDATE_COMMAND.split(), check=True, cwd=build_dir)
 
-    # if not dry_run and publish_step != PUBLISH_STEP_NEVER:
-    #     subprocess.run(_PACKER_BUILD_COMMAND.split(), check=True, cwd=build_dir)
-    #     extract_dcos_images(build_dir)
+    if not dry_run and publish_step != PUBLISH_STEP_NEVER:
+        subprocess.run(_PACKER_BUILD_COMMAND.split(), check=True, cwd=build_dir)
+        extract_dcos_images(build_dir)
 
-    #     if publish_step == PUBLISH_STEP_PACKER_BUILD:
-    #         publish_dcos_images(build_dir)
+        if publish_step == PUBLISH_STEP_PACKER_BUILD:
+            publish_dcos_images(build_dir)
 
 
 def _write_dcos_version_to_cluster_profile(build_dir, tf_dir):
@@ -376,7 +376,7 @@ def setup_terraform(build_dir, tf_dir):
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, CLUSTER_PROFILE_TFVARS))
 
-    #_write_dcos_version_to_cluster_profile(build_dir, tf_dir)
+    _write_dcos_version_to_cluster_profile(build_dir, tf_dir)
 
     _add_private_ips_to_terraform(tf_dir)
 
@@ -437,13 +437,13 @@ def execute_qualification_process(build_dir, dry_run, tests, publish_step):
     """
     packer_validate_and_build(build_dir, dry_run, publish_step)
 
-    # tf_build_dir = get_tf_build_dir(build_dir)
+    tf_build_dir = get_tf_build_dir(build_dir)
 
-    # try:
-    #     setup_terraform(build_dir, tf_build_dir)
-    #     setup_cluster_and_test(build_dir, tf_build_dir, dry_run, tests, publish_step)
-    # finally:
-    #     shutil.rmtree(tf_build_dir, ignore_errors=True)
+    try:
+        setup_terraform(build_dir, tf_build_dir)
+        setup_cluster_and_test(build_dir, tf_build_dir, dry_run, tests, publish_step)
+    finally:
+        shutil.rmtree(tf_build_dir, ignore_errors=True)
 
 
 def main(build_dir: str, dry_run: bool, custom_tests: list):
