@@ -20,6 +20,8 @@ PUBLISH_STEP_PACKER_BUILD = "packer_build"
 
 TEST_CONFIG_YAML = 'publish_and_test_config.yaml'
 
+TERRAFORM_VERSION_PIN = "2f9264b43a3f42974204bcd320c41ab2c237f96f"
+
 # files used in qualification process.
 
 BASE_IMAGES_JSON = 'base_images.json'
@@ -121,7 +123,7 @@ def prepare_terraform(build_dir, tf_dir):
     :param tf_dir: Directory for doing terraform operations.
     :return:
     """
-    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos/'
+    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos?ref={}/'.format(TERRAFORM_VERSION_PIN)
 
     # Our input is assumed in the format.
     # <OS>/<version>/<platform>/<DCOS-version>
