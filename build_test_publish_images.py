@@ -121,7 +121,7 @@ def prepare_terraform(build_dir, tf_dir):
     :param tf_dir: Directory for doing terraform operations.
     :return:
     """
-    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos/'
+    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos?ref=2f9264b43a3f42974204bcd320c41ab2c237f96f/'
 
     # Our input is assumed in the format.
     # <OS>/<version>/<platform>/<DCOS-version>
@@ -435,7 +435,7 @@ def execute_qualification_process(build_dir, dry_run, tests, publish_step):
     :param publish_step:
     :return:
     """
-    packer_validate_and_build(build_dir, dry_run, publish_step)
+    # packer_validate_and_build(build_dir, dry_run, publish_step)
 
     tf_build_dir = get_tf_build_dir(build_dir)
 
