@@ -435,7 +435,7 @@ def execute_qualification_process(build_dir, dry_run, tests, publish_step):
     :param publish_step:
     :return:
     """
-    # packer_validate_and_build(build_dir, dry_run, publish_step)
+    packer_validate_and_build(build_dir, dry_run, publish_step)
 
     tf_build_dir = get_tf_build_dir(build_dir)
 
