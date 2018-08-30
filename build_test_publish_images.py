@@ -121,7 +121,7 @@ def prepare_terraform(build_dir, tf_dir):
     :param tf_dir: Directory for doing terraform operations.
     :return:
     """
-    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos/'
+    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos?ref=2f9264b43a3f42974204bcd320c41ab2c237f96f/'
 
     # Our input is assumed in the format.
     # <OS>/<version>/<platform>/<DCOS-version>
