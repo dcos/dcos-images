@@ -54,8 +54,8 @@ node('mesos-ubuntu') {
   }
 
   stage("Get changeset") {
-    // get changed files from the PR
-    diffOutput = shcmd('git diff --name-only origin/master')
+    // get changed files from the PR, excluding deleted files
+    diffOutput = shcmd('git diff --diff-filter=ACMRTUXB --name-only origin/master')
     changedFiles = diffOutput.split('\n')
     // Create a list of paths to directories than contain changed packer.json or install_dcos_prerequisites.sh
     for(changedFile in changedFiles) {

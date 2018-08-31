@@ -158,9 +158,10 @@ def update_source_image_in_packer_json(build_dir):
     with open(packer_file) as f:
         content = f.read()
 
-    m = re.search('"source_ami.+', content)
+    source_ami_matches = re.search('"source_ami.+', content)
+    ami_description_matches = re.search('"ami_description.+', content)
 
-    if not m:
+    if not source_ami_matches:
         raise ValueError("source_ami field not found in packer.json")
 
     base_images_file = _find_files_with_name(os_version_dir, BASE_IMAGES_JSON)
@@ -170,10 +171,12 @@ def update_source_image_in_packer_json(build_dir):
 
     with open(base_images_file) as f:
         ami = json.load(f)[DEFAULT_AWS_REGION]
-        replaced_content = content.replace(m.group(0), '"source_ami": "{}",'.format(ami))
+        content = content.replace(source_ami_matches.group(0), '"source_ami": "{}",'.format(ami))
+        # also update the ami description
+        content = content.replace(ami_description_matches.group(0), '"ami_description": "{}",'.format(build_dir))
 
     with open(packer_file, 'w') as f:
-        f.write(replaced_content)
+        f.write(content)
 
 
 def _add_private_ips_to_terraform(tf_dir):
