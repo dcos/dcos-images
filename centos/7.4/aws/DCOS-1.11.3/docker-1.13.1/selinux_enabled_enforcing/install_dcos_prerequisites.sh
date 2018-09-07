@@ -1,3 +1,5 @@
+set -x
+
 #!/usr/bin/env bash
 sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
 [dockerrepo]

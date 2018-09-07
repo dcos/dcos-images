@@ -117,7 +117,20 @@
     },
     {
     "type": "shell",
-    "script": "./enable_selinux_enforcing.sh",
+    "pause_before": "2m",
+    "script": "./set_selinux_permissive.sh",
+    "expect_disconnect": "true"
+    },
+    {
+    "type": "shell",
+    "pause_before": "2m",
+    "script": "./set_selinux_enforcing.sh",
+    "expect_disconnect": "true"
+    },
+    {
+    "type": "shell",
+    "pause_before": "2m",
+    "script": "./check_selinux_enforcing.sh",
     "expect_disconnect": "true"
     }
   ],
