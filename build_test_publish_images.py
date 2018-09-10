@@ -410,7 +410,7 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step):
             publish_dcos_images(build_dir)
 
         # Run data services framework tests.
-        run_framework_tests(master_public_ips[0], tf_dir)
+        # run_framework_tests(master_public_ips[0], tf_dir)
     finally:
         # Removing private-ip.tf before destroying cluster.
         subprocess.run(rm_private_ip_file_cmd.split(), check=True, cwd=tf_dir)
