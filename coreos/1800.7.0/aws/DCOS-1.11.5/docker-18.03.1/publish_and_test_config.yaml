@@ -2,4 +2,4 @@
 publish_dcos_images_after: never
 # list of integration tests that will run. Default is running all the tests.
 tests_to_run:
-  - test_packaging_api.py
+  - test_packaging.py
