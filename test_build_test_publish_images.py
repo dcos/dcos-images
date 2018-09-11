@@ -13,6 +13,8 @@ class TestBuildPublishAmis(unittest.TestCase):
         self._tests = ["test_one", "test_two"]
         self._publish_step = build_test_publish_images.PUBLISH_STEP_INTEGRATION_TESTS
         self._tf_build_dir = "some-dir/temp"
+        self._run_integration_tests = True
+        self._run_framework_tests = True
 
     @mock.patch("build_test_publish_images.shutil")
     @mock.patch("build_test_publish_images.setup_cluster_and_test")
@@ -33,7 +35,9 @@ class TestBuildPublishAmis(unittest.TestCase):
             self._build_dir,
             self._dry_run,
             self._tests,
-            self._publish_step)
+            self._publish_step,
+            self._run_integration_tests,
+            self._run_framework_tests)
 
         mock_packer_validate_and_build.assert_called_with(self._build_dir, self._dry_run, self._publish_step)
         mock_setup_terraform.assert_called_with(self._build_dir, self._tf_build_dir)
@@ -43,7 +47,9 @@ class TestBuildPublishAmis(unittest.TestCase):
                 self._tf_build_dir,
                 self._dry_run,
                 self._tests,
-                self._publish_step)
+                self._publish_step,
+                self._run_integration_tests,
+                self._run_framework_tests)
 
         mock_shutil.rmtree.assert_called_with(self._tf_build_dir, ignore_errors=True)
 
@@ -68,7 +74,9 @@ class TestBuildPublishAmis(unittest.TestCase):
                 self._build_dir,
                 self._dry_run,
                 self._tests,
-                self._publish_step)
+                self._publish_step,
+                self._run_integration_tests,
+                self._run_framework_tests)
             self.fail("ValueError was not raised during terraform setup.")
         except ValueError:
             pass
@@ -99,7 +107,9 @@ class TestBuildPublishAmis(unittest.TestCase):
                 self._build_dir,
                 self._dry_run,
                 self._tests,
-                self._publish_step)
+                self._publish_step,
+                self._run_integration_tests,
+                self._run_framework_tests)
             self.fail("No error raised during cluster setup.")
         except Exception:
             pass
@@ -112,6 +122,8 @@ class TestBuildPublishAmis(unittest.TestCase):
                 self._tf_build_dir,
                 self._dry_run,
                 self._tests,
-                self._publish_step)
+                self._publish_step,
+                self._run_integration_tests,
+                self._run_framework_tests)
 
         mock_shutil.rmtree.assert_called_with(self._tf_build_dir, ignore_errors=True)

@@ -22,6 +22,10 @@ node('mesos-ubuntu') {
   def paths = []
   def jenkins_git_user = "mesosphere_jenkins"
   def branch = ""
+  def last_committer = shcmd('git log -1 --pretty=format:\'%an\'')
+  if (last_committer == jenkins_git_user) {
+    return
+  }
 
   stage("Install python requirements") {
     shcmd("""apt-get -y update &&
@@ -49,14 +53,9 @@ node('mesos-ubuntu') {
     )
   }
 
-  def last_committer = shcmd('git log -1 --pretty=format:\'%an\'')
-  if (last_committer == jenkins_git_user) {
-    return
-  }
-
   stage("Get changeset") {
-    // get changed files from the PR
-    diffOutput = shcmd('git diff --name-only origin/master')
+    // get changed files from the PR, excluding deleted files
+    diffOutput = shcmd('git diff --diff-filter=ACMRTUXB --name-only origin/master')
     changedFiles = diffOutput.split('\n')
     // Create a list of paths to directories than contain changed packer.json or install_dcos_prerequisites.sh
     for(changedFile in changedFiles) {
