@@ -390,7 +390,7 @@ def setup_terraform(build_dir, tf_dir):
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, CLUSTER_PROFILE_TFVARS))
 
-    _write_dcos_version_to_cluster_profile(build_dir, tf_dir)
+    # _write_dcos_version_to_cluster_profile(build_dir, tf_dir)
 
     _add_private_ips_to_terraform(tf_dir)
 
