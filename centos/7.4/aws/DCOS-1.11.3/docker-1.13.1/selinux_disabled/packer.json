@@ -8,13 +8,13 @@
     {
       "type": "amazon-ebs",
       "instance_type": "m4.xlarge",
-      "source_ami": "ami-b7d69ecf",
+      "source_ami": "ami-02c71d7a",
       "region": "us-west-2",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "centos",
       "ami_name": "dcos-ami-{{timestamp}}",
-      "ami_description": "centos/7.4/aws/DCOS-1.11.3/docker-1.13.1",
+      "ami_description": "centos/7.4/aws/DCOS-1.11.3/docker-1.13.1/selinux_disabled",
       "ami_regions": [
         "ap-northeast-1",
         "ap-northeast-2",
@@ -111,6 +111,7 @@
     "sudo /tmp/configure_dcos_system.sh"]
     },
     {
+    "execute_command": "{{ .Vars }} sudo -E -S bash -c \"cat {{ .Path }} > ~/install_dcos_prerequisites.sh && chmod +x ~/install_dcos_prerequisites.sh && (crontab -l 2>/dev/null; echo '@reboot ~/install_dcos_prerequisites.sh') | crontab -\"",
     "type": "shell",
     "script": "./install_dcos_prerequisites.sh"
     }
