@@ -25,6 +25,7 @@ sudo yum install -y unzip
 sudo yum install -y curl
 sudo yum install -y xz
 sudo yum install -y ipset
+sudo yum install -y bind-utils
 sudo yum install -y ntp
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
