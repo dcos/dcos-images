@@ -15,4 +15,4 @@ num_of_masters = "1"
 num_of_private_agents = "5"
 num_of_public_agents = "1"
 
-custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/pull/3418/commit/bbb2added8a5fb676d5d28d858aab1913c3fda9e/dcos_generate_config.sh"
+custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.11/dcos_generate_config.sh"
