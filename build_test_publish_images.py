@@ -358,7 +358,7 @@ def _write_dcos_version_to_cluster_profile(build_dir, tf_dir):
     """ Writing the dcos_version and custom_dcos_download_path cluster profile parameters
     to desired_cluster_profile.tfvars.
     """
-    dcos_version = build_dir.split('/')[3].split('-')[1]
+    dcos_version = build_dir.split('/')[3][5:]
     url = "https://downloads.dcos.io/dcos/{}/dcos_generate_config.sh"
     dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format(
         'stable/' + dcos_version)
