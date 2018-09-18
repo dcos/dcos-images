@@ -14,5 +14,3 @@ admin_cidr = "0.0.0.0/0"
 num_of_masters = "1"
 num_of_private_agents = "5"
 num_of_public_agents = "1"
-
-custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.10.8/dcos_generate_config.sh"
