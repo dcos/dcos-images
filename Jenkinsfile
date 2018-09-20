@@ -59,7 +59,7 @@ node('mesos-ubuntu') {
     changedFiles = diffOutput.split('\n')
     // Create a list of paths to directories than contain changed packer.json or install_dcos_prerequisites.sh
     for(changedFile in changedFiles) {
-      if (changedFile.contains('install_dcos_prerequisites.sh') || changedFile.contains('packer.json')) {
+      if (changedFile.contains('install_dcos_prerequisites.sh') || changedFile.contains('packer.json') || changedFile.contains('dcos_images.yaml')) {
         println("changed file ${changedFile}")
         // remove changed file's name, keep only directory name
         def split_list = changedFile.tokenize('/')
