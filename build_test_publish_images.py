@@ -363,7 +363,6 @@ def _write_dcos_version_to_cluster_profile(build_dir, tf_dir):
     dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format(
         'stable/' + dcos_version)
     with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
-        f.write('\ndcos_version = "{}"\n'.format(dcos_version))
         f.write('custom_dcos_download_path = "{}"\n'.format(dcos_download_url))
 
 
