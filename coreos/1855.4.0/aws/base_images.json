@@ -1,0 +1,20 @@
+{
+  "us-gov-west-1": "ami-98db42f9",
+  "ap-northeast-2": "ami-085e4381942bede7d",
+  "sa-east-1": "ami-09ffd65c1a16012de",
+  "eu-west-2": "ami-02de9d47add3bab7c",
+  "us-west-2": "ami-02dea79d6a7f53d15",
+  "eu-central-1": "ami-0b088568a857b7c27",
+  "us-east-1": "ami-08eda98e6fe1f83d6",
+  "us-east-2": "ami-093e794c03f1534e4",
+  "ca-central-1": "ami-0a984ec3ead59581c",
+  "ap-southeast-1": "ami-0b47d43598dba794f",
+  "ap-northeast-1": "ami-086eb64b7f4485a72",
+  "ap-south-1": "ami-0e920ea4c7e29a7ed",
+  "eu-west-3": "ami-0b8c0daca01d23eaa",
+  "cn-north-1": "ami-00307a08b617fb95f",
+  "cn-northwest-1": "ami-0c0a607177f68f8c4",
+  "eu-west-1": "ami-099b2d1bdd27b4649",
+  "ap-southeast-2": "ami-0609bb67692e98973",
+  "us-west-1": "ami-0a86d340ea7fde077"
+}
