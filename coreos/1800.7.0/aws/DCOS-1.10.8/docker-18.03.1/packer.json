@@ -14,7 +14,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "core",
       "ami_name": "dcos-ami-{{timestamp}}",
-      "ami_description": "coreos/1800.7.0/aws/DCOS-1.11.6/docker-18.03.1",
+      "ami_description": "coreos/1800.7.0/aws/DCOS-1.10.8/docker-18.03.1",
       "ami_regions": [
         "ap-northeast-1",
         "ap-northeast-2",
