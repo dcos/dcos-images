@@ -354,18 +354,6 @@ def packer_validate_and_build(build_dir, dry_run, publish_step):
             publish_dcos_images(build_dir)
 
 
-def _write_dcos_version_to_cluster_profile(build_dir, tf_dir):
-    """ Writing the dcos_version and custom_dcos_download_path cluster profile parameters
-    to desired_cluster_profile.tfvars.
-    """
-    dcos_version = build_dir.split('/')[3][5:]
-    url = "https://downloads.dcos.io/dcos/{}/dcos_generate_config.sh"
-    dcos_download_url = url.format('testing/' + dcos_version) if dcos_version == 'master' else url.format(
-        'stable/' + dcos_version)
-    with open(os.path.join(tf_dir, 'desired_cluster_profile.tfvars'), "a") as f:
-        f.write('\ncustom_dcos_download_path = "{}"\n'.format(dcos_download_url))
-
-
 def _get_agent_ips(tf_dir):
     """ Retrieving both the public and private IPs of agents.
     """
@@ -388,8 +376,6 @@ def setup_terraform(build_dir, tf_dir):
     _terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
 
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, CLUSTER_PROFILE_TFVARS))
-
-    _write_dcos_version_to_cluster_profile(build_dir, tf_dir)
 
     _add_private_ips_to_terraform(tf_dir)
 
