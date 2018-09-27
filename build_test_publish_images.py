@@ -220,10 +220,7 @@ def run_integration_tests(ssh_user, master_public_ips, master_private_ips, priva
     user_and_host = ssh_user + '@' + master_public_ips[0]
 
     # Running integration tests
-    try:
-        subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
-    except Exception as e:
-        print(repr(e))
+    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
 
 
 def run_framework_tests(master_public_ip, tf_dir, s3_bucket='osqual-frameworks-artifacts'):
