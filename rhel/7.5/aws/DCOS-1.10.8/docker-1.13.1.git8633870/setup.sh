@@ -31,7 +31,11 @@ sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/con
 
 sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/pigz-2.3.3-1.el7.centos.x86_64.rpm
 
-sudo yum -y install docker-ce-18.03.1.ce-1.el7.centos
+#Installing RH's fork of docker 1.13.1 through rhui-REGION-rhel-server-extras repository.
+sudo yum install -y docker --enablerepo=rhui-REGION-rhel-server-extras
+sudo ln -s /usr/libexec/docker/docker-runc-current /usr/libexec/docker/docker-runc
+sudo ln -s ../../usr/libexec/docker/docker-proxy-current /usr/bin/docker-proxy
+
 sudo systemctl start docker
 sudo systemctl enable docker
 
