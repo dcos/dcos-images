@@ -8,13 +8,13 @@
     {
       "type": "amazon-ebs",
       "instance_type": "m4.xlarge",
-      "source_ami": "ami-02c71d7a",
+      "source_ami": "ami-0977d7933110e9633",
       "region": "us-west-2",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "centos",
       "ami_name": "dcos-ami-{{timestamp}}",
-      "ami_description": "centos/7.4/aws/DCOS-1.11.3/docker-1.13.1/selinux_disabled",
+      "ami_description": "centos/7.6/aws/DCOS-1.12.0/docker-1.13.1.git8633870/selinux_disabled/",
       "ami_regions": [
         "ap-northeast-1",
         "ap-northeast-2",
