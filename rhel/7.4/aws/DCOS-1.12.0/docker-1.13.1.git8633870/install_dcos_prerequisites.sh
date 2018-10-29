@@ -21,15 +21,7 @@ sudo yum install -y yum-utils \
     device-mapper-persistent-data \
     lvm2
 
-sudo yum-config-manager \
-    --add-repo \
-    https://download.docker.com/linux/centos/docker-ce.repo
-
 sudo yum makecache fast
-
-sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.42-1.gitad8f0f7.el7.noarch.rpm
-
-sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/pigz-2.3.3-1.el7.centos.x86_64.rpm
 
 #Installing RH's fork of docker 1.13.1 through rhui-REGION-rhel-server-extras repository.
 sudo yum install -y docker --enablerepo=rhui-REGION-rhel-server-extras
