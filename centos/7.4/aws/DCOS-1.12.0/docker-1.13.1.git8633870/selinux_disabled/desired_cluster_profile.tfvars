@@ -12,7 +12,7 @@ ssh_key_name = "dcos-images"
 admin_cidr = "0.0.0.0/0"
 
 num_of_masters = "1"
-num_of_private_agents = "5"
+num_of_private_agents = "1"
 num_of_public_agents = "1"
 
-custom_dcos_download_path = "https://downloads.dcos.io/dcos/stable/1.11.3/dcos_generate_config.sh"
+custom_dcos_download_path = "https://downloads.dcos.io/dcos/stable/1.12.0/dcos_generate_config.sh"
