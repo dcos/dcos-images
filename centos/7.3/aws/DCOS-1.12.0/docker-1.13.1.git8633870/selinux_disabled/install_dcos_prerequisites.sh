@@ -16,7 +16,24 @@ sudo tee /etc/systemd/system/docker.service.d/override.conf <<- EOF
 ExecStart=
 ExecStart=/usr/bin/docker daemon --storage-driver=overlay
 EOF
-sudo yum install -y docker-engine-1.13.1
+
+# Removing whatever Docker version is on the ami.
+sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-selinux \
+                  docker-engine-selinux \
+                  docker-engine
+sudo rm -rf /var/lib/docker
+
+# Installing RH's fork of Docker 1.13.1
+sudo yum install -y docker
+sudo ln -s /usr/libexec/docker/docker-runc-current /usr/libexec/docker/docker-runc
+sudo ln -s ../../usr/libexec/docker/docker-proxy-current /usr/bin/docker-proxy
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo yum install -y wget
