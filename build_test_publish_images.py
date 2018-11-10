@@ -5,10 +5,10 @@ import json
 import os
 import re
 import shutil
-import stat
 import subprocess
 import yaml
 import requests
+import traceback
 
 CONFIG_KEY_PUBLISH_DCOS_IMAGES_AFTER = 'publish_dcos_images_after'
 CONFIG_KEY_TESTS_TO_RUN = 'tests_to_run'
@@ -220,7 +220,7 @@ def run_integration_tests(ssh_user, master_public_ips, master_private_ips, priva
     user_and_host = ssh_user + '@' + master_public_ips[0]
 
     # Running integration tests
-    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=False, cwd=tf_dir)
+    subprocess.run(["ssh", "-o", "StrictHostKeyChecking=no", user_and_host, pytest_cmd], check=True, cwd=tf_dir)
 
 
 def run_framework_tests(master_public_ip, tf_dir, s3_bucket='osqual-frameworks-artifacts'):
@@ -402,16 +402,36 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_
         master_public_ips, master_private_ips, agent_ips, public_agent_ips = _get_agent_ips(tf_dir)
 
         # Run Integration Tests.
+        integration_tests_failed = False
         if run_integration:
-            run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips, tf_dir,
-                                  tests)
+            try:
+                run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips,
+                                      tf_dir, tests)
+            except:
+                integration_tests_failed = True
+                print(traceback.format_exc(limit=5))
 
         if publish_step == PUBLISH_STEP_INTEGRATION_TESTS:
             publish_dcos_images(build_dir)
 
         # Run data services framework tests.
+        framework_tests_failed = False
         if run_framework:
-            run_framework_tests(master_public_ips[0], tf_dir)
+            try:
+                run_framework_tests(master_public_ips[0], tf_dir)
+            except:
+                framework_tests_failed = True
+                print(traceback.format_exc(limit=5))
+
+        exception_message = ''
+        if integration_tests_failed:
+            exception_message = 'integration tests '
+        if framework_tests_failed:
+            if exception_message:
+                exception_message += 'and '
+            exception_message += 'framework tests '
+        exception_message = 'failed. See error details in the matching test suite logs.'
+        raise Exception(exception_message)
     finally:
         # Removing private-ip.tf before destroying cluster.
         subprocess.run(rm_private_ip_file_cmd.split(), check=True, cwd=tf_dir)
