@@ -2,7 +2,7 @@ os = "coreos"
 user = "core"
 aws_region = "us-west-2"
 aws_profile = "273854932432_Mesosphere-PowerUser"
-expiration = "12h"
+expiration = "2h"
 
 aws_bootstrap_instance_type = "m3.large"
 aws_master_instance_type = "m4.xlarge"

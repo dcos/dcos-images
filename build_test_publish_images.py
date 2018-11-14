@@ -433,11 +433,12 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_
         exception_message = 'failed. See error details in the matching test suite logs.'
         raise Exception(exception_message)
     finally:
-        # Removing private-ip.tf before destroying cluster.
-        subprocess.run(rm_private_ip_file_cmd.split(), check=True, cwd=tf_dir)
+        # # Removing private-ip.tf before destroying cluster.
+        # subprocess.run(rm_private_ip_file_cmd.split(), check=True, cwd=tf_dir)
 
-        # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
-        subprocess.run(tf_destroy_cmd.split(), check=True, cwd=tf_dir)
+        # # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
+        # subprocess.run(tf_destroy_cmd.split(), check=True, cwd=tf_dir)
+        print('done')
 
 
 def get_tf_build_dir(build_dir):
