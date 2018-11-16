@@ -1,6 +1,7 @@
 os = "coreos"
 user = "core"
 aws_region = "us-west-2"
+expiration = "12h"
 
 aws_bootstrap_instance_type = "m3.large"
 aws_master_instance_type = "m4.xlarge"
