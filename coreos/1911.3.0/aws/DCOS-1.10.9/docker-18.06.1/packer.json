@@ -1,0 +1,56 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "region":         "us-west-2"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "m4.xlarge",
+      "source_ami": "ami-02dea79d6a7f53d15",
+      "region": "us-west-2",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ssh_username": "core",
+      "ami_name": "dcos-ami-{{timestamp}}",
+      "ami_description": "coreos/1855.4.0/aws/DCOS-1.12.0-rc3/docker-18.06.1",
+      "ami_regions": [
+        "ap-northeast-1",
+        "ap-northeast-2",
+        "ap-south-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "ca-central-1",
+        "eu-central-1",
+        "eu-west-1",
+        "eu-west-2",
+        "eu-west-3",
+        "sa-east-1",
+        "us-east-1",
+        "us-east-2",
+        "us-west-1",
+        "us-west-2"
+      ],
+      "ami_groups": "all",
+      "ebs_optimized": true,
+      "ena_support": true,
+      "sriov_support": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "./install_dcos_prerequisites.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "output": "packer_build_history.json",
+        "strip_path": true,
+        "type": "manifest"
+      }
+    ]
+  ]
+}
