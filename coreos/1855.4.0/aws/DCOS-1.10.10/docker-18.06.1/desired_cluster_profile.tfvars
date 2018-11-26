@@ -1,7 +1,6 @@
 os = "coreos"
 user = "core"
 aws_region = "us-west-2"
-expiration = "12h"
 
 aws_bootstrap_instance_type = "m3.large"
 aws_master_instance_type = "m4.xlarge"
@@ -13,7 +12,7 @@ ssh_key_name = "dcos-images"
 admin_cidr = "0.0.0.0/0"
 
 num_of_masters = "1"
-num_of_private_agents = "5"
+num_of_private_agents = "2"
 num_of_public_agents = "1"
 
-custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/pull/3743/commit/73c53ef01084acf29a371fa47113ec7e38bd2e9f/dcos_generate_config.sh"
+custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/pull/3743/commit/ef198af1b08931d21a5ac9d5849bf2e07678a1c5/dcos_generate_config.sh"
