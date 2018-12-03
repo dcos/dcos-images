@@ -1,0 +1,658 @@
+[33mcommit 43c8f592825b31056223fd9544f5a654ba4ac3aa[m[33m ([m[1;36mHEAD -> [m[1;32m1-11-8coreos1911-4-0[m[33m)[m
+Author: VerginiyaStoyanova <vstoyanova.c@mesosphere.io>
+Date:   Wed Dec 5 09:18:52 2018 +0200
+
+    Fixing errors.
+
+[33mcommit 77aca0ea03963222dfa55ff249220b4fec5e9864[m[33m ([m[1;31morigin/1-11-8coreos1911-4-0[m[33m)[m
+Author: VerginiyaStoyanova <vstoyanova.c@mesosphere.io>
+Date:   Mon Dec 3 15:08:23 2018 +0200
+
+    Qualifying DC/OS 1.11.8 against CoreOS 1911.4.0
+
+[33mcommit 4d98d36686c6ebec7767e901f0fcd97b0f53c10a[m
+Author: VerginiyaStoyanova <vstoyanova.c@mesosphere.io>
+Date:   Mon Dec 3 14:32:38 2018 +0200
+
+    Qualifying DC/OS 1.11.8 against CoreOS 1911.4.0
+
+[33mcommit 6f78c1d0a4f3238ee9c7f081ccf6888352aed190[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Fri Nov 9 16:06:55 2018 -0800
+
+    Fix false positives for integration test suite (#100)
+
+[33mcommit cbda0bfc254edecfd372e87dae307b0891ad3779[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Tue Oct 30 09:34:52 2018 -0700
+
+    Qualifying DC/OS 1.12.0 against CoreOS 1855.4.0 (#95)
+    
+    * Qualifying DC/OS 1.12.0-rc3 against CoreOS 1855.4.0
+    
+    * Triggering tests.
+    
+    * Publish dcos_images.yaml for coreos/1855.4.0/aws/DCOS-1.12.0-rc3/docker-18.06.1
+    
+    * Renaming folder
+
+[33mcommit 4a241b0e7a9412bdfee79840db3159e1c90f8a8a[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Tue Oct 30 09:33:44 2018 -0700
+
+    Qualifying DC/OS 1.12.0 against CoreOS 1800.7.0 (#96)
+    
+    * Qualifying DC/OS 1.12.0-rc3 against CoreOS 1800.7.0
+    
+    * Publish dcos_images.yaml for coreos/1800.7.0/aws/DCOS-1.12.0-rc3/docker-18.03.1
+    
+    * Re-naming folder
+
+[33mcommit 4e33c84201d2996ce4402c33d515062b63490a4f[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Tue Oct 30 09:32:03 2018 -0700
+
+    Qualifying DC/OS 1.12.0 against CoreOS 1800.6.0 (#97)
+    
+    * Qualifying DC/OS 1.12.0-rc3 against CoreOS 1800.6.0
+    
+    * Publish dcos_images.yaml for coreos/1800.6.0/aws/DCOS-1.12.0-rc3/docker-18.03.1
+    
+    * Renaming folder.
+
+[33mcommit 29e8a26445a0d794fc2257480d7454b55e7736fc[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Oct 29 14:33:52 2018 -0700
+
+    Qualifying DC/OS 1.12.0-rc3 & RH's fork of Docker 1.13.1 against RHEL 7.3 (#92)
+    
+    * Qualifying DC/OS 1.12.0-beta1 against RHEL 7.3
+    
+    * Qualfying DC/OS 1.12.0-rc3 & RH's fork of Docker 1.13.1 against RHEL 7.3
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.12.0-rc3/docker-1.13.1.git8633870
+    
+    * Fixing pre-req script.
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.12.0/docker-1.13.1.git8633870
+
+[33mcommit ac3e528eded27c8b8da25f9c4ede3e9fcaa87b37[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Oct 29 14:33:14 2018 -0700
+
+    Qualifying DC/OS 1.12.0-rc3 & RH's fork of Docker 1.13.1 against RHEL 7.4 (#91)
+    
+    * Qualifying DC/OS 1.12.0-beta1 against RHEL 7.4
+    
+    * Correcting os & user
+    
+    * Qualifying DC/OS 1.12-rc3 and RH's fork of Docker 1.13.1 against RHEL 7.4
+    
+    * Publish dcos_images.yaml for rhel/7.4/aws/DCOS-1.12-rc3/docker-1.13.1.git8633870
+    
+    * Fixing pre-req script.
+    
+    * Publish dcos_images.yaml for rhel/7.4/aws/DCOS-1.12.0/docker-1.13.1.git8633870
+
+[33mcommit 94bd45035949104c0fe89fb3699abbf716ac57cf[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Oct 29 14:30:32 2018 -0700
+
+    Qualifying DC/OS 1.10.8 & RH's fork of Docker 1.13.1 against RHEL 7.3 (#90)
+    
+    * Qualifying DC/OS 1.10.8 against RHEL 7.3
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.10.8/docker-18.03.1
+    
+    * Qualfying DC/OS 1.10.8 & RH's fork of Docker 1.13.1 against RHEL 7.3
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.10.8/docker-1.13.1.git8633870
+    
+    * Fixing pre-req script.
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.10.8/docker-1.13.1.git8633870
+
+[33mcommit 521e2c9b61a433f04b1d1b12ef81801b4dc4c2d0[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Oct 29 14:29:44 2018 -0700
+
+    Qualifying DC/OS 1.11.6 & RH's fork of Docker 1.13.1 against RHEL 7.3 (#89)
+    
+    * Qualifying DC/OS 1.11.6 against RHEL 7.3
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.11.6/docker-18.03.1
+    
+    * Qualfying DC/OS 1.11.6 & RH's fork of Docker 1.13.1 against RHEL 7.3
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.11.6/docker-1.13.1.git8633870
+    
+    * Fixing pre-req script.
+    
+    * Publish dcos_images.yaml for rhel/7.3/aws/DCOS-1.11.6/docker-1.13.1.git8633870
+
+[33mcommit a69f64d18d2737aef9a97b50526edb196bbd6be3[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Oct 29 14:28:46 2018 -0700
+
+    Qualifying DC/OS 1.10.8 & RH's fork of Docker 1.13.1 against RHEL 7.4 (#87)
+    
+    * Qualifying DC/OS 1.10.8 against RHEL 7.4
+    
+    * Correcting os & user.
+    
+    * Qualifying DC/OS 1.10.8 and RH's fork of 1.13.1 combination against RHEL 7.4
+    
+    * Publish dcos_images.yaml for rhel/7.4/aws/DCOS-1.10.8/docker-1.13.1-75.git8633870.el7_5
+    
+    * Fixing pre-req script.
+    
+    * Publish dcos_images.yaml for rhel/7.4/aws/DCOS-1.10.8/docker-1.13.1.git8633870
+
+[33mcommit f206428be02839f3e57517194d197b5842d7e016[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Oct 29 14:22:42 2018 -0700
+
+    Qualifying DC/OS 1.11.6 & RH's fork of Docker 1.13.1 against RHEL 7.4 (#86)
+    
+    * Qualifying DC/OS 1.11.6 against RHEL 7.4
+    
+    * Correcting os & user.
+    
+    * Qualifying DC/OS 1.11.6 & RH's fork of docker 1.13.1 combination against RHEL 7.4
+    
+    * Publish dcos_images.yaml for rhel/7.4/aws/DCOS-1.11.6/docker-1.13.1-75.git8633870.el7_5
+    
+    * Fixing pre-req script.
+    
+    * Publish dcos_images.yaml for rhel/7.4/aws/DCOS-1.11.6/docker-1.13.1.git8633870
+
+[33mcommit fedf781e6585ef9423419c53e7f46d39843c4e1d[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Thu Oct 25 19:32:01 2018 -0700
+
+    Qualfying DC/OS 1.10.8 & RH's fork of Docker 1.13.1 against RHEL 7.5 (#94)
+    
+    * Qualifying DC/OS 1.10.8 against RHEL 7.5
+    
+    * Publish dcos_images.yaml for rhel/7.5/aws/DCOS-1.10.8/docker-18.03.1
+    
+    * Qualfying DC/OS 1.10.8 & RH's fork of Docker 1.13.1 against RHEL 7.5
+    
+    * Publish dcos_images.yaml for rhel/7.5/aws/DCOS-1.10.8/docker-1.13.1.git8633870
+    
+    * Cleaning up old docker testing.
+    
+    * Addressing review comments.
+    
+    * Triggering integration tests.
+    
+    * Publish dcos_images.yaml for rhel/7.5/aws/DCOS-1.10.8/docker-1.13.1.git8633870
+
+[33mcommit cf0344221bdf252f451a95929879b2cf24586a2f[m
+Author: catsouthard <ccsouthard@gmail.com>
+Date:   Thu Oct 4 15:43:19 2018 -0700
+
+    Qualifying DC/OS 1.12.0-beta1 against CoreOS 1855.4.0 (#68)
+    
+    * Qualifying DCOS 1.12 beta1 against coreOS 1855.4.0
+    
+    * Publish dcos_images.yaml for coreos/1855.4.0/aws/DCOS-1.12.0-beta1/docker-18.03.1
+    
+    * Triggering frameworks tests after dcos-commons rebase.
+    
+    * Removing dcos_download_path from cluster profile.
+    
+    * Adding custom_dcos_download_path to cluster profile.
+    
+    * Publish dcos_images.yaml for coreos/1855.4.0/aws/DCOS-1.12.0-beta1/docker-18.06.1
+    
+    * Muting tests.
+
+[33mcommit f17d9b294b2b8230bd7e4a59ad7af53bb3fb654d[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Thu Oct 4 14:42:21 2018 -0700
+
+    Qualifying DC/OS 1.11.6 against CoreOS 1855.4.0 (#74)
+    
+    * Qualifying DC/OS 1.10.8 against CoreOS 1855.4.0
+    
+    * Qualifying DC/OS 1.11.6 against CoreOS 1855.4.0
+    
+    * Publish dcos_images.yaml for coreos/1855.4.0/aws/DCOS-1.11.6/docker-18.06.1
+    
+    * Muting tests.
+
+[33mcommit 205fb43eb400f426c7d66a12f0ed06ba9ea5bbf6[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Wed Oct 3 10:33:04 2018 -0700
+
+    Fixing RHEL 7.5 os & user. (#84)
+    
+    * Fixing RHEL 7.5 os & user.
+    
+    * Triggering tests.
+    
+    * Publish dcos_images.yaml for rhel/7.5/aws/DCOS-1.10.8/docker-18.03.1
+    
+    * Triggering integration tests, disabling framework tests.
+    
+    * Publish dcos_images.yaml for rhel/7.5/aws/DCOS-1.10.8/docker-18.03.1
+
+[33mcommit 5ed69a3ec82364af56efbfd3fd5e0e1f2db750cd[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Wed Oct 3 10:32:24 2018 -0700
+
+    Qualifying DC/OS 1.11.6 against CoreOS 1800.6.0 (#76)
+    
+    * Qualifying DC/OS 1.11.6 against CoreOS 1800.6.0
+    
+    * Fixing directory name.
+    
+    * Fixing cluster profile.
+    
+    * Publish dcos_images.yaml for coreos/1800.6.0/aws/DCOS-1.11.6/docker-18.03.1
+    
+    * Disabling packer & tests.
+
+[33mcommit 5f37941f8151c7a7bb4c92cc60c828ea59eb6ea4[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Tue Oct 2 14:30:57 2018 -0700
+
+    Qualifying DC/OS 1.12.0-beta1 against CoreOS 1800.6.0 (#77)
+    
+    * Qualifying DC/OS 1.12.0-beta1 against CoreOS 1800.6.0
+    
+    * Publish dcos_images.yaml for coreos/1800.6.0/aws/DCOS-1.12.0-beta1/docker-18.03.1
+    
+    * Disabling running tests.
+    
+    * Disabling packer.
+
+[33mcommit d275bbe4fccb01ede917338db2a7aeb909fcf6fb[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Oct 1 14:03:49 2018 -0700
+
+    Qualifying DC/OS 1.10.8 against RHEL 7.5 (#83)
+    
+    * Qualifying DC/OS 1.10.8 against RHEL 7.5
+    
+    * Publish dcos_images.yaml for rhel/7.5/aws/DCOS-1.10.8/docker-18.03.1
+
+[33mcommit 676a2f95d8b700a44e5a70e95ae99d45a37a68a0[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Fri Sep 28 13:31:21 2018 -0700
+
+    Qualifying DC/OS 1.11.6 against CoreOS 1800.7.0  (#66)
+    
+    * Qualifying CoreOS 1800.7.0 against DC/OS 1.11.6
+    
+    * Publish dcos_images.yaml for coreos/1800.7.0/aws/DCOS-1.11.6/docker-18.03.1
+    
+    * Muting integration tests, only running framework tests.
+    
+    * Muting tests.
+    
+    * Fixing dcos download path.
+
+[33mcommit c1285d3459831f7aa16b8521a8ef9209a42c6564[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Thu Sep 27 15:44:32 2018 -0700
+
+    Qualifying DC/OS 1.12.0-beta1 against CoreOS 1800.7.0 (#67)
+    
+    * Qualifying CoreOS 1800.7.0 against DC/OS 1.11.6
+    
+    * Testing DC/OS 1.12.0-beta1 against CoreOS 1800.7.0
+    
+    * Publish dcos_images.yaml for coreos/1800.7.0/aws/DCOS-1.12.0-beta1/docker-18.03.1
+    
+    * Rebasing & triggering integration/framework tests.
+    
+    * Publish dcos_images.yaml for coreos/1800.7.0/aws/DCOS-1.12.0-beta1/docker-18.03.1
+    
+    * Muting tests.
+    
+    * Removing try & except block.
+
+[33mcommit 59f89c39dc8d6883e2505a3c41e59150aafc0aa7[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Thu Sep 27 12:52:13 2018 -0700
+
+    Removing _write_dcos_version_to_cluster_profile method. (#80)
+
+[33mcommit 95da7e3bf9961f30f7b6df450e14083067728338[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Thu Sep 20 12:59:46 2018 -0700
+
+    Fixing master. (#72)
+
+[33mcommit ce632e66b8d6765aa4617ca6245f292615347249[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Thu Sep 20 12:55:26 2018 -0700
+
+    Removing dcos_version parameter from terraform cluster profile. (#71)
+    
+    * Removing dcos_version parameter from terraform cluster profile.
+    
+    * Fixing error.
+
+[33mcommit 0378fddd861419f6b4cd9b1e898e037bb8615821[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Tue Sep 18 12:40:38 2018 -0700
+
+    Generalizing writing the dcos_version and custom_dcos_download_path. (#70)
+
+[33mcommit 3c3100a387ad0936d81d8e86a226701392e41ea9[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Sep 11 17:14:06 2018 -0700
+
+    Add SELinux enabled enforcing (#64)
+
+[33mcommit 1114324e6f24a9d3f4d16e614a51f7be23aad9fa[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Sep 11 11:38:20 2018 -0700
+
+    Remove deleted files from changeset, adding option to skip test suites (#63)
+
+[33mcommit 79fe84aa93cfe3ca5601771570ecdb5ad78d8dbe[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Thu Aug 30 13:53:03 2018 -0700
+
+    Pinned terraform version. (#60)
+    
+    * Pinned terraform version.
+    
+    * Addressing review comment.
+
+[33mcommit ccc330ca3bea831a4571846b4074cd0695e1ede3[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Wed Aug 29 16:28:38 2018 -0700
+
+    Fixed packer.json replace source ami bug. (#59)
+
+[33mcommit d954d60cee247652b17021a889ee9f7090e88058[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Fri Aug 24 14:08:18 2018 -0700
+
+    Enable log streaming (#56)
+
+[33mcommit 35badcdd4406b1e600de36625317cd1c2b31f048[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Thu Aug 23 11:24:00 2018 -0700
+
+    m4.2xlarge -> m4.xlarge (#53)
+
+[33mcommit 2c14f527dd6cc4b844d5f0374e4c23642ec046f1[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Fri Aug 17 12:02:26 2018 -0700
+
+    Updated desired_cluster_profiles. (#50)
+
+[33mcommit 324cccb0028dc300243c1a9358c23f1987987a3f[m
+Author: Senthil Kumaran <skumaran@gatech.edu>
+Date:   Thu Aug 16 10:10:28 2018 -0700
+
+    unit tests for build test publish AMIs (#44)
+
+[33mcommit 4889c7375044c51be74a4ab16438616e585fe769[m[33m ([m[1;31morigin/branche_3[m[33m)[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Mon Aug 13 21:25:53 2018 -0700
+
+    Running Frameworks Tests on Open DC/OS (#45)
+
+[33mcommit 88ec11657418157827671cdc529ae2eecc745d66[m
+Merge: 1e2aa41 7318447
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Fri Aug 10 11:17:35 2018 -0700
+
+    Merge pull request #46 from dcos/pr_comment
+    
+    Comment jenkins build url on PR
+
+[33mcommit 7318447c10f1c54388754f5bb5ba037040f09dbb[m
+Author: mesosphere_jenkins <mesosphere_jenkins>
+Date:   Thu Aug 9 18:33:23 2018 +0000
+
+    Publish dcos_images.yaml for coreos/1688.4.0/aws/DCOS-1.11.3/docker-17.12.1
+
+[33mcommit 1e13c56aa69f6e41a313d1195b166d8eaca689b4[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Wed Aug 8 18:34:27 2018 -0700
+
+    Comment jenkins build url on PR
+
+[33mcommit 1e2aa41d5690f535c7bfacb5c6bcd502b1ac0a86[m
+Merge: d62b0a8 f04555a
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Aug 7 18:30:24 2018 -0700
+
+    Merge pull request #41 from dcos/readme
+    
+    Complete README
+
+[33mcommit d62b0a88f439be44ee223bbb1cab7b276e40dd53[m
+Merge: be7fecf 58a9e26
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Aug 7 17:50:02 2018 -0700
+
+    Merge pull request #35 from dcos/test_coreos
+    
+    Testing CoreOS.
+
+[33mcommit 58a9e267508c7fa538b2a63e29bb7947566496e7[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Wed Jul 25 23:52:23 2018 -0700
+
+    Testing CoreOS.
+
+[33mcommit f04555a779a3fa874e1c1d419146e67ac64fd5f3[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Tue Aug 7 13:35:35 2018 -0700
+
+    Update README 'How to build new DC/OS images section'
+
+[33mcommit 3433df55e8389ba39c25ad6b2963029f72141d8e[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Mon Aug 6 19:57:55 2018 -0700
+
+    Rename build_test_publish_amis.py -> build_test_publish_images.py
+
+[33mcommit f744a7ebef8b6b301621c896b06397e5e682b6c7[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Mon Aug 6 19:17:49 2018 -0700
+
+    Change flowchart layout
+
+[33mcommit d4b9190bd4fef1736c0033297ef179ddabeca06c[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Fri Aug 3 15:14:22 2018 -0700
+
+    Review changes for README
+
+[33mcommit 20c8e240d08a86e8f1df465596d8c5fa51d22276[m
+Author: cprovencher <cpro1245@gmail.com>
+Date:   Fri Jul 27 23:51:17 2018 -0700
+
+    Complete README
+
+[33mcommit be7fecf0caa58b854e10339076e0ece306eb69ec[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Wed Aug 1 15:40:50 2018 -0700
+
+    Change all ami_name fields to dcos-ami-{{timestamp}} and update ami_description (#40)
+
+[33mcommit eb87c636295286f4c9ca5c4b8f77b76f7a17652b[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Jul 31 15:00:59 2018 -0700
+
+    Add packer.json to mesosphere_jenkins commit (#39)
+
+[33mcommit 1161d885e4e5d21fabca253a89415ff7c16f5380[m
+Merge: 758f4aa def0593
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Jul 31 13:02:34 2018 -0700
+
+    Merge pull request #37 from dcos/clean_dcos_images
+    
+    Separate packer output from dcos_images
+
+[33mcommit def0593866fd164102d178dcba17f02fd4635006[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Mon Jul 30 17:35:10 2018 -0700
+
+    Separate packer output from dcos_images
+
+[33mcommit 758f4aa60d56aa75556088675a6c3acaeed59633[m
+Merge: d2e2939 8e61ca0
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Jul 24 17:10:58 2018 -0700
+
+    Merge pull request #31 from dcos/config_pr
+    
+    Add publish_and_test_config.yaml
+
+[33mcommit 8e61ca074fcdef55dabda5660779f430e875406b[m
+Merge: 4bb6467 d2e2939
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Tue Jul 24 16:14:45 2018 -0700
+
+    Merge branch 'master' into config_pr
+
+[33mcommit d2e29398a6bfb9bcf2ba8c8a09ff9c18662230c0[m
+Author: Senthil Kumaran <skumaran@gatech.edu>
+Date:   Tue Jul 24 16:10:18 2018 -0700
+
+    Test Sync Volume Mounts for CentOS (#30)
+    
+    * Updated CentOS Volume Mounts Example.
+    
+    * Updated Packer json.
+    
+    * Publish dcos_images.json for centos/7.4/aws/DCOS-1.11.3/docker-1.13.1
+
+[33mcommit 4bb646789bc5e6ff1bc296f36ead195b3dd184dc[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Mon Jul 23 17:33:18 2018 -0700
+
+    Add publish_and_test_config.yaml
+
+[33mcommit 00c68986c4aec698cbd8e38b681d4bd72c8f3fda[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Mon Jul 23 17:51:04 2018 -0700
+
+    Add publishing of dcos_images.json from jenkins back to the repo PR (#28)
+    
+    * Add publishing of dcos_images.json from jenkins back to the repo PR DCOS-39312
+    
+    * Publish dcos_images.json for oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1
+
+[33mcommit c33f71468bf19cf732108c99e833de81f9393228[m
+Merge: 08d2747 e5e93a2
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Fri Jul 20 17:13:50 2018 -0700
+
+    Merge pull request #27 from dcos/run_custom_tests
+    
+    [WIP] Adding -k flag to run specific integration tests.
+
+[33mcommit e5e93a223b699d7e903f5b3039693e49f2733788[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Fri Jul 20 16:52:07 2018 -0700
+
+    Addressed review comments & commented packer lines back in.
+
+[33mcommit 08210710374cd55f5604038bed8f1df9f1c534cb[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Fri Jul 20 15:54:11 2018 -0700
+
+    Removing double trigger.
+
+[33mcommit 1f63d42e023b4d9ef10b0d64a842c78a6236dd9c[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Fri Jul 20 14:54:04 2018 -0700
+
+    Removing double trigger.
+
+[33mcommit a4b3ced2d20a4b3bfecbfecef36f3d228e107821[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Fri Jul 20 10:50:58 2018 -0700
+
+    Fixing cluster_profile.
+
+[33mcommit 0e2f3aa834030ccd13c2fd4218f8b3792e995f6e[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Fri Jul 20 10:19:34 2018 -0700
+
+    Changing Jenkinsfile to trigger centos.
+
+[33mcommit cf9c21c7a0dcfa6526afd88b04111f6c08bc99a6[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Thu Jul 19 23:30:53 2018 -0700
+
+    Triggering running against CentOS.
+
+[33mcommit 89c17e40777b802cfe86201a1d82639ed692bb8d[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Thu Jul 19 23:26:54 2018 -0700
+
+    Adding help statement.
+
+[33mcommit ba35fccbfbcc1392a7490fcafe3d4b048a6d08ee[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Thu Jul 19 23:19:47 2018 -0700
+
+    Testing running specific tests.
+
+[33mcommit 07e5fb9be2bd79c3a98de0202c04e8171bf24dfe[m
+Author: Gauri Powale <gpowale@mesosphere.com>
+Date:   Thu Jul 19 21:40:04 2018 -0700
+
+    Adding ability to run specific DC/OS integration tests.
+
+[33mcommit 08d27475f62a4a89f31420aa0de5ae8eca50701e[m
+Author: Charles Provencher <cpro1245@gmail.com>
+Date:   Wed Jul 18 09:35:35 2018 -0700
+
+    Remove parallel builds and add dry run option (#20)
+
+[33mcommit 29d6fee1de5c7c550443f515cb510c1cb1c427b3[m
+Author: gauripowale <30297870+gauripowale@users.noreply.github.com>
+Date:   Tue Jul 17 15:28:31 2018 -0700
+
+    Run integration tests on Terraform. (#22)
+
+[33mcommit cef8dc50e11e335887f7d85893835d37bdac8460[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Thu Jun 28 16:38:51 2018 -0700
+
+    Complete Jenkinsfile and Fix build_and_test_amis.py
+
+[33mcommit 674882328d8f6e7aaf7ecb77f06751a02f5c934e[m
+Author: Colin C <colin@mesosphere.com>
+Date:   Thu Jun 28 14:08:40 2018 -0700
+
+    Add builders
+
+[33mcommit 04e9bdfd98852fc71998183205781a7fe2836ffa[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Wed Jun 27 17:25:18 2018 -0700
+
+    Add Jenkinsfile
+
+[33mcommit 6fc2a60f260fba2c6f5b86ff0fdbd4877912cbcf[m
+Author: Senthil Kumaran <skumaran@gatech.edu>
+Date:   Thu Jun 14 10:28:17 2018 -0700
+
+    Let's start with DCOS Base Images (#1)
+
+[33mcommit 539af36dad7e1e81a46b5613e1ea176aff8aae81[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Wed Jun 13 19:59:29 2018 -0700
+
+    Modify structure to match compatiblity matrix
+
+[33mcommit 0e04876714a614d40d4eaa4735a6e4d677a1a813[m
+Author: Charles Provencher <cprovencher@mesosphere.com>
+Date:   Wed Jun 13 13:52:27 2018 -0700
+
+    Add README and file structure
