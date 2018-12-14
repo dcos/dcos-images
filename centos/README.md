@@ -1,3 +1,9 @@
+CentOS 7.3 Build Notice
+====================
+
+The CentOS 7.3 AMIS with DC/OS pre-requisites installed (located in dcos_images.yaml file) were created manually due to issues with packer since CentOS AMIs are released with an AWS Marketplace code that does not allow one to publish an AMI publicly. The AMI that was used as a base to build these AMIs is the same AMI dcos-launch uses for Centos 7.3.
+
+
 Volume Mounts Example
 =====================
 
