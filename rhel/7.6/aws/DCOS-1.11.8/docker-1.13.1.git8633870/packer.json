@@ -14,7 +14,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "ec2-user",
       "ami_name": "dcos-ami-{{timestamp}}",
-      "ami_description": "rhel/7.6/aws/DCOS-1.10.9/docker-1.13.1.git8633870/",
+      "ami_description": "rhel/7.6/aws/DCOS-1.11.8/docker-1.13.1.git8633870",
       "ami_regions": [
         "ap-northeast-1",
         "ap-northeast-2",
