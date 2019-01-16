@@ -1,0 +1,29 @@
+{
+  "builds": [
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1539937079,
+      "files": null,
+      "artifact_id": "ap-northeast-1:ami-01f3a64ebcc8ebcec,ap-northeast-2:ami-0993ee358e7cad41d,ap-south-1:ami-0219c6a3d0f5a1b24,ap-southeast-1:ami-07a597a028c5d5614,ap-southeast-2:ami-0e111f1ca8ff9c215,ca-central-1:ami-0a272fe85dd018dc8,eu-central-1:ami-06bb1e742dba88b2b,eu-west-1:ami-051df8dc03b347d65,eu-west-2:ami-02d08f12da9b110fb,eu-west-3:ami-069a0e3863bdd0475,sa-east-1:ami-0a99cee44cc82c184,us-east-1:ami-0f7dbd46aa165a001,us-east-2:ami-0d9f87e2c895228ca,us-west-1:ami-0e643164d3301756e,us-west-2:ami-0f97b57adb438f6c0",
+      "packer_run_uuid": "bfd7bb63-7ce4-5bd3-fe29-432f302cae55"
+    },
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1539976720,
+      "files": null,
+      "artifact_id": "ap-northeast-1:ami-0cc74268c61cac339,ap-northeast-2:ami-0581b3aada8a8c471,ap-south-1:ami-0c818eca220fbb5e1,ap-southeast-1:ami-0152ba1af1b190b75,ap-southeast-2:ami-090414385d6241f07,ca-central-1:ami-05c801f4f2c8dabee,eu-central-1:ami-08fbcf68fde459101,eu-west-1:ami-05e63d6b475b2287e,eu-west-2:ami-0f9f6b8b875d2e645,eu-west-3:ami-0da013119537c2045,sa-east-1:ami-0da45842602f3606e,us-east-1:ami-02711b3aee9a4b9aa,us-east-2:ami-0e374a12005647302,us-west-1:ami-071e88463727c7e05,us-west-2:ami-077c9aed03280d51f",
+      "packer_run_uuid": "898f6eaa-0176-9599-32da-c0e8624fb163"
+    },
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1546465277,
+      "files": null,
+      "artifact_id": "ap-northeast-1:ami-0f714fddc2bebabbe,ap-northeast-2:ami-03b6a919baaaa2e33,ap-south-1:ami-07fab83d23f6a869e,ap-southeast-1:ami-0ffcfab0f53189530,ap-southeast-2:ami-08bfef702c6360dfa,ca-central-1:ami-00378ea06f1258f79,eu-central-1:ami-00d2b41ddd8b1a96e,eu-west-1:ami-03e2bde19bdc3bb4b,eu-west-2:ami-0b2e050f3fefbbf85,eu-west-3:ami-0cba24c50e619d3b8,sa-east-1:ami-0fcbeb376812a3956,us-east-1:ami-068cba0e4076b2c10,us-east-2:ami-039ff264ad0606510,us-west-1:ami-0c157f19463a3e4e0,us-west-2:ami-07591326e59e8f242",
+      "packer_run_uuid": "aee7db95-0c86-3b3e-1a8a-11f009ca088d"
+    }
+  ],
+  "last_run_uuid": "aee7db95-0c86-3b3e-1a8a-11f009ca088d"
+}
