@@ -25,7 +25,7 @@ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum install docker-ce-18.09.1
+sudo yum -y install docker-ce-18.09.1
 sudo ln -s /usr/libexec/docker/docker-runc-current /usr/libexec/docker/docker-runc
 sudo ln -s ../../usr/libexec/docker/docker-proxy-current /usr/bin/docker-proxy
 sudo systemctl start docker
