@@ -9,12 +9,12 @@ enabled=1
 gpgcheck=1
 gpgkey=https://yum.dockerproject.org/gpg
 EOF
-# sudo yum -y update --exclude="docker-engine*"
+
 sudo mkdir -p /etc/systemd/system/docker.service.d
 sudo tee /etc/systemd/system/docker.service.d/override.conf <<- EOF
 [Service]
 ExecStart=
-ExecStart=/usr/bin/docker daemon --storage-driver=overlay
+ExecStart=/usr/bin/dockerd -H fd://
 EOF
 
 sudo yum install -y yum-utils \
@@ -25,9 +25,7 @@ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum install docker-ce-18.09.1
-sudo ln -s /usr/libexec/docker/docker-runc-current /usr/libexec/docker/docker-runc
-sudo ln -s ../../usr/libexec/docker/docker-proxy-current /usr/bin/docker-proxy
+sudo yum install -y docker-ce-18.09.1 docker-ce-cli-18.09.1 containerd.io
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo yum install -y wget
