@@ -11,7 +11,6 @@ tests_to_run:
   - test_dcos_diagnostics.py
   - test_dcos_log.py
   - test_endpoints.py
-  - test_exhibitor.py
   - test_groups.yaml
   - test_helpers.py
   - test_mesos.py
