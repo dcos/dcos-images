@@ -1,25 +1,7 @@
 # options: packer_build, dcos_installation, integration_tests, never. Default is dcos_installation. For more details, see README
 # You can also run custom tests with tests_to_run.
-publish_dcos_images_after: dcos_installation
+publish_dcos_images_after: never
 run_framework_tests: false
 run_integration_tests: true
 tests_to_run:
-  - test_applications.py
-  - test_auth.py
-  - test_composition.py
-  - test_dcos_diagnostics.py
-  - test_dcos_log.py
-  - test_endpoints.py
-  - test_helpers.py
   - test_mesos.py
-  - test_meta.py
-  - test_metrics.py
-  - test_metronome.py
-  - test_misc.py
-  - test_networking.py
-  - test_rexray.py
-  - test_rlimit.py
-  - test_service_discovery.py
-  - test_sysctl.py
-  - test_ucr.py
-  - test_units.py
