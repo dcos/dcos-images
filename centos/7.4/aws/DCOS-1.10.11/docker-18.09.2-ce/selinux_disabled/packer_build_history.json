@@ -1,0 +1,13 @@
+{
+  "builds": [
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1550089645,
+      "files": null,
+      "artifact_id": "us-west-2:ami-0dc512b2c9240c408",
+      "packer_run_uuid": "dca8d841-0538-46c6-93f4-986dc1d66369"
+    }
+  ],
+  "last_run_uuid": "dca8d841-0538-46c6-93f4-986dc1d66369"
+}
