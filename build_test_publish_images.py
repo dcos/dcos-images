@@ -180,7 +180,7 @@ def update_source_image_in_packer_json(build_dir):
 
 
 def _add_private_ips_to_terraform(tf_dir):
-    """ Creates an output file for terraform that will supply private ips for cluster agents. This is temporary it
+    """ Creates an output file for terraform that will supply private ips for cluster agents. This is temporary as it
     should be added permanently in terraform-dcos.
     """
     content = """
@@ -430,11 +430,12 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_
             if exception_message:
                 exception_message += 'and '
             exception_message += 'framework tests '
-        exception_message = 'failed. See error details in the matching test suite logs.'
-        raise Exception(exception_message)
+        if exception_message:
+            exception_message += 'failed. See error details in the matching test suite logs.'
+            raise Exception(exception_message)
     finally:
         # Removing private-ip.tf before destroying cluster.
-        subprocess.run(rm_private_ip_file_cmd.split(), check=True, cwd=tf_dir)
+        subprocess.run(rm_private_ip_file_cmd.split(), check=False, cwd=tf_dir)
 
         # Whether terraform manages to create the cluster successfully or not, attempt to delete the cluster
         subprocess.run(tf_destroy_cmd.split(), check=True, cwd=tf_dir)
