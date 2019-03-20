@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
+
 sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
 [dockerrepo]
 name=Docker Repository

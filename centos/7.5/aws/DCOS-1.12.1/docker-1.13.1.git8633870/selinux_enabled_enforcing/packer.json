@@ -14,7 +14,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "centos",
       "ami_name": "dcos-ami-{{timestamp}}",
-      "ami_description": "centos/7.5/aws/DCOS-1.12.1/docker-1.13.1.git8633870/selinux_enabled_enforcing",
+      "ami_description": "centos/7.5/aws/DCOS-1.12.1/docker-1.13.1.git8633870/selinux_enabled_enforcing/",
       "ami_regions": [
         "ap-northeast-1",
         "ap-northeast-2",
@@ -104,16 +104,15 @@
     },
     {
     "type": "shell",
+    "script": "install_dcos_prerequisites.sh"
+    },
+    {
+    "type": "shell",
     "inline_shebang": "/bin/bash -e",
     "inline": [
     "sudo mv /tmp/dcos_vol_setup.sh /usr/local/sbin/",
     "sudo chmod 0755 /usr/local/sbin/dcos_vol_setup.sh",
     "sudo /tmp/configure_dcos_system.sh"]
-    },
-    {
-    "execute_command": "{{ .Vars }} sudo -E -S bash -c \"cat {{ .Path }} > ~/install_dcos_prerequisites.sh && chmod +x ~/install_dcos_prerequisites.sh && (crontab -l 2>/dev/null; echo '@reboot ~/install_dcos_prerequisites.sh') | crontab -\"",
-    "type": "shell",
-    "script": "./install_dcos_prerequisites.sh"
     }
 
   ],
