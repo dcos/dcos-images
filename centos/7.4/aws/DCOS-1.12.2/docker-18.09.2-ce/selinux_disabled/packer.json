@@ -113,7 +113,7 @@
     "sudo mv /tmp/dcos_vol_setup.sh /usr/local/sbin/",
     "sudo chmod 0755 /usr/local/sbin/dcos_vol_setup.sh",
     "sudo /tmp/configure_dcos_system.sh"]
-    },
+    }
 
   ],
   "post-processors": [
