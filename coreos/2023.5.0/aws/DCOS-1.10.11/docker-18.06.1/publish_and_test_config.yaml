@@ -5,7 +5,6 @@ run_integration_tests: true
 tests_to_run:
   - test_applications.py
   - test_auth.py
-  - test_checks.py
   - test_composition.py
   - test_dcos_diagnostics.py
   - test_dcos_log.py
@@ -14,7 +13,6 @@ tests_to_run:
   - test_mesos.py
   - test_meta.py
   - test_metrics.py
-  - test_metronome.py
   - test_misc.py
   - test_networking.py
   - test_rexray.py
