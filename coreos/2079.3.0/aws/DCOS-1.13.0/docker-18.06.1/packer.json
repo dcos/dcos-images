@@ -8,7 +8,7 @@
     {
       "type": "amazon-ebs",
       "instance_type": "m4.xlarge",
-      "source_ami": "ami-0a4f49b2488e15346",
+      "source_ami": "ami-09bf93c5ba7995cc8",
       "region": "us-west-2",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
