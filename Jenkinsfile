@@ -84,9 +84,14 @@ node('mesos-ubuntu') {
   }
 
   stage("Get terraform") {
-    shcmd("""apt-get install -y curl &&
-          curl -L -O https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip &&
-          unzip ./terraform*.zip &&
+    shcmd("""apt-get install -y wget curl &&
+          terraform_latest_version=\$(curl -s "https://api.github.com/repos/hashicorp/terraform/releases/latest" | grep "tag_name" | grep -Po "(\\d|\\.)+")
+          base_url="https://releases.hashicorp.com/terraform/{version}/terraform_{version}_linux_amd64.zip"
+          terraform_download_url=\$(echo \${base_url} | sed "s/{version}/\$terraform_latest_version/g")
+          zip="terraform.zip"
+          wget --output-document="\$zip" "\$terraform_download_url" &&
+          unzip "\$zip" &&
+          rm "\$zip" &&
           chmod +x terraform &&
           mv terraform /usr/local/bin &&
           terraform --help"""
