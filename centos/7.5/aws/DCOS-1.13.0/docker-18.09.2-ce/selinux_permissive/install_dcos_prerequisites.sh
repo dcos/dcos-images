@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-sudo setenforce 0 && \
-sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
+# setting selinux to permissive
+sudo setenforce 0
+
 sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
 [dockerrepo]
 name=Docker Repository

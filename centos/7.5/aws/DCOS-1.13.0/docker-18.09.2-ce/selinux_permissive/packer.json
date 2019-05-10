@@ -14,7 +14,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "centos",
       "ami_name": "dcos-ami-{{timestamp}}",
-      "ami_description": "centos/7.5/aws/DCOS-1.13.0/docker-18.09.2-ce/selinux_disabled",
+      "ami_description": "centos/7.5/aws/DCOS-1.13.0/docker-18.09.2-ce/selinux_permissive",
       "ami_regions": [
         "ap-northeast-1",
         "ap-northeast-2",
@@ -95,7 +95,7 @@
     {
     "type": "file",
     "source": "./dcos_vol_setup.sh",
-    "destination": "/tmp/dcos_vol_setup.sh"
+    "destination": "/usr/dcos_vol_setup.sh"
     },
     {
     "type": "file",
@@ -113,8 +113,19 @@
     "sudo mv /tmp/dcos_vol_setup.sh /usr/local/sbin/",
     "sudo chmod 0755 /usr/local/sbin/dcos_vol_setup.sh",
     "sudo /tmp/configure_dcos_system.sh"]
+    },
+    {
+      "type": "shell",
+      "script": "rexray_nvme_support.sh"
+    },
+    {
+      "type": "shell",
+      "script": "install_dss_modules.sh"
+    },
+    {
+      "type": "shell",
+      "script": "mount_noexec_nosuid_nodev.sh"
     }
-
   ],
   "post-processors": [
     [
