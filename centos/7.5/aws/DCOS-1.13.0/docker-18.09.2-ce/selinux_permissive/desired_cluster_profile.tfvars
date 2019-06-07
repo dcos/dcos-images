@@ -16,3 +16,4 @@ num_of_private_agents = "2"
 num_of_public_agents = "1"
 
 custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.13.0/dcos_generate_config.sh"
+tags={owner = "dcos-images", expiration = "10h"}
