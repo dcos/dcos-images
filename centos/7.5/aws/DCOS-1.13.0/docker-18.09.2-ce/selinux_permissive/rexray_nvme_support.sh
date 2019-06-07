@@ -1,3 +1,5 @@
+set -ex
+
 # Install the nvme cli
 sudo yum install -y nvme-cli
 

@@ -1,3 +1,5 @@
+set -ex
+
 ## Adding raid1 & dm_raid modules
 sudo curl https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/i915/kbl_guc_ver9_14.bin -o kbl_guc_ver9_14.bin
 sudo curl https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/i915/bxt_guc_ver8_7.bin -o bxt_guc_ver8_7.bin

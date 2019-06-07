@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -ex
+
 # setting selinux to permissive
 sudo setenforce 0
 
