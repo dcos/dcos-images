@@ -8,7 +8,8 @@ sudo cp kbl_guc_ver9_14.bin /lib/firmware/i915/kbl_guc_ver9_14.bin
 sudo cp bxt_guc_ver8_7.bin /lib/firmware/i915/bxt_guc_ver8_7.bin
 
 # load the modules
-sudo modprobe dm_raid raid1
+sudo modprobe dm_raid
+sudo modprobe raid1
 
 # Load RAID-related kernel modules on boot
 sudo bash -c "echo 'dm_raid' >> /etc/modules-load.d/modules.conf"
