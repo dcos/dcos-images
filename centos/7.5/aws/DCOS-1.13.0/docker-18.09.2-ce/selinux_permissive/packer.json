@@ -136,6 +136,11 @@
       "destination": "/tmp/mount_tmp_noexec.sh"
     },
     {
+      "type": "file",
+      "source": "./mount_tmp_noexec.service",
+      "destination": "/tmp/mount_tmp_noexec.service"
+    },
+    {
       "type": "shell",
       "inline_shebang": "/bin/bash",
       "inline": [
@@ -144,7 +149,10 @@
       "sudo bash -c \"echo '/tmp /var/tmp none rw,noexec,nosuid,nodev,bind 0 0' >> /etc/fstab\"",
       "sudo mv /tmp/mount_tmp_noexec.sh /usr/local/sbin/mount_tmp_noexec.sh",
       "sudo chmod +x /usr/local/sbin/mount_tmp_noexec.sh",
-      "sudo bash -c \"(crontab -l 2> /dev/null; echo '@reboot mount_tmp_noexec.sh') | crontab -\""
+      "sudo mv /tmp/mount_tmp_noexec.service /lib/systemd/system",
+      "sudo chmod 644 /etc/systemd/system/mount_tmp_noexec.service",
+      "sudo systemctl start mount_tmp_noexec",
+      "sudo systemctl enable mount_tmp_noexec"
       ]
     }
   ],
