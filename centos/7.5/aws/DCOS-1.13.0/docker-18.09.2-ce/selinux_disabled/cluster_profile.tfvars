@@ -1,5 +1,3 @@
-os = "centos"
-user = "centos"
 aws_region = "us-west-2"
 
 aws_bootstrap_instance_type = "m5.large"
@@ -17,3 +15,4 @@ num_of_public_agents = "1"
 
 custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.13.0/dcos_generate_config.sh"
 tags={owner = "dcos-images", expiration = "10h"}
+enable_os_setup_script = false
