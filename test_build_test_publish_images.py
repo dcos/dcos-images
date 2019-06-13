@@ -15,14 +15,17 @@ class TestBuildPublishAmis(unittest.TestCase):
         self._tf_build_dir = "some-dir/temp"
         self._run_integration_tests = True
         self._run_framework_tests = True
+        self._ssh_user = 'centos'
 
     @mock.patch("build_test_publish_images.shutil")
     @mock.patch("build_test_publish_images.setup_cluster_and_test")
     @mock.patch("build_test_publish_images.setup_terraform")
     @mock.patch("build_test_publish_images.packer_validate_and_build")
     @mock.patch("build_test_publish_images.get_tf_build_dir")
+    @mock.patch("build_test_publish_images.get_ssh_user_from_packer_json", new_callable=lambda: lambda _: 'centos')
     def test_execute_qualification_process(
             self,
+            mock_get_ssh_user_from_packer_json,
             mock_tf_build_dir,
             mock_packer_validate_and_build,
             mock_setup_terraform,
@@ -40,7 +43,7 @@ class TestBuildPublishAmis(unittest.TestCase):
             self._run_framework_tests)
 
         mock_packer_validate_and_build.assert_called_with(self._build_dir, self._dry_run, self._publish_step)
-        mock_setup_terraform.assert_called_with(self._build_dir, self._tf_build_dir)
+        mock_setup_terraform.assert_called_with(self._build_dir, self._tf_build_dir, self._ssh_user)
 
         mock_setup_cluster_and_test.assert_called_with(
                 self._build_dir,
@@ -49,7 +52,8 @@ class TestBuildPublishAmis(unittest.TestCase):
                 self._tests,
                 self._publish_step,
                 self._run_integration_tests,
-                self._run_framework_tests)
+                self._run_framework_tests,
+                self._ssh_user)
 
         mock_shutil.rmtree.assert_called_with(self._tf_build_dir, ignore_errors=True)
 
@@ -58,8 +62,10 @@ class TestBuildPublishAmis(unittest.TestCase):
     @mock.patch("build_test_publish_images.setup_terraform")
     @mock.patch("build_test_publish_images.packer_validate_and_build")
     @mock.patch("build_test_publish_images.get_tf_build_dir")
+    @mock.patch("build_test_publish_images.get_ssh_user_from_packer_json", new_callable=lambda: lambda _: 'centos')
     def test_execute_qualification_process_terraform_setup_error(
             self,
+            mock_get_ssh_user_from_packer_json,
             mock_tf_build_dir,
             mock_packer_validate_and_build,
             mock_setup_terraform,
@@ -91,8 +97,10 @@ class TestBuildPublishAmis(unittest.TestCase):
     @mock.patch("build_test_publish_images.setup_terraform")
     @mock.patch("build_test_publish_images.packer_validate_and_build")
     @mock.patch("build_test_publish_images.get_tf_build_dir")
+    @mock.patch("build_test_publish_images.get_ssh_user_from_packer_json", new_callable=lambda: lambda _: 'centos')
     def test_execute_qualification_process_terraform_cluster_launch_error(
             self,
+            mock_get_ssh_user_from_packer_json,
             mock_tf_build_dir,
             mock_packer_validate_and_build,
             mock_setup_terraform,
@@ -115,7 +123,7 @@ class TestBuildPublishAmis(unittest.TestCase):
             pass
 
         mock_packer_validate_and_build.assert_called_with(self._build_dir, self._dry_run, self._publish_step)
-        mock_setup_terraform.assert_called_with(self._build_dir, self._tf_build_dir)
+        mock_setup_terraform.assert_called_with(self._build_dir, self._tf_build_dir, 'centos')
 
         mock_setup_cluster_and_test.assert_called_with(
                 self._build_dir,
@@ -124,6 +132,7 @@ class TestBuildPublishAmis(unittest.TestCase):
                 self._tests,
                 self._publish_step,
                 self._run_integration_tests,
-                self._run_framework_tests)
+                self._run_framework_tests,
+                self._ssh_user)
 
         mock_shutil.rmtree.assert_called_with(self._tf_build_dir, ignore_errors=True)

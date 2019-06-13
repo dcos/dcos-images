@@ -74,8 +74,8 @@ node('mesos-ubuntu') {
   }
 
   stage("Get packer") {
-    shcmd("""apt-get install -y curl &&
-          curl -L -O https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
+    shcmd("""apt-get install -y wget &&
+          wget https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
           unzip ./packer*.zip &&
           chmod +x packer &&
           mv packer /usr/local/bin &&
@@ -85,7 +85,7 @@ node('mesos-ubuntu') {
 
   stage("Get terraform") {
     shcmd("""apt-get install -y wget &&
-          curl -L -O https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip &&
+          wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip &&
           unzip ./terraform*.zip &&
           chmod +x terraform &&
           mv terraform /usr/local/bin &&

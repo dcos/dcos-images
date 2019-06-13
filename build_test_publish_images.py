@@ -22,7 +22,7 @@ PUBLISH_STEP_PACKER_BUILD = "packer_build"
 
 TEST_CONFIG_YAML = 'publish_and_test_config.yaml'
 
-TERRAFORM_DCOS_VERSION_PIN = "4150973cb1474a8d3710cb2c9c17668ab675f431"
+TERRAFORM_DCOS_VERSION_PIN = "b64ac5f527ba63ca2db433cef4c9ea65a9dd8334"
 
 # files used in qualification process.
 
@@ -70,7 +70,7 @@ def prepare_terraform(build_dir, tf_dir, ami, ssh_user):
     init_cmd = _tf_init_cmd + platform
     subprocess.run(init_cmd.split(), check=True, cwd=tf_dir)
 
-    return vars, platform, cluster_profile
+    return cluster_profile
 
 
 def _find_files_with_name(path, name):
