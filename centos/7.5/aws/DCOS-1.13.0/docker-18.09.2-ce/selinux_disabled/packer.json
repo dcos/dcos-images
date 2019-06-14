@@ -123,7 +123,8 @@
         "sudo chown root:root /usr/local/sbin/ebs-nvme-mapping.sh",
         "sudo chmod 700 /usr/local/sbin/ebs-nvme-mapping.sh",
         "# Tell udev to reload its list of rules",
-        "sudo udevadm control --reload"
+        "sudo udevadm control --reload",
+        "sudo udevadm trigger"
       ]
     },
     {
@@ -149,7 +150,7 @@
       "sudo bash -c \"echo '/tmp /var/tmp none rw,noexec,nosuid,nodev,bind 0 0' >> /etc/fstab\"",
       "sudo mv /tmp/mount_tmp_noexec.sh /usr/local/sbin/mount_tmp_noexec.sh",
       "sudo chmod +x /usr/local/sbin/mount_tmp_noexec.sh",
-      "sudo mv /tmp/mount_tmp_noexec.service /lib/systemd/system",
+      "sudo mv /tmp/mount_tmp_noexec.service /etc/systemd/system",
       "sudo chmod 644 /etc/systemd/system/mount_tmp_noexec.service",
       "sudo systemctl start mount_tmp_noexec",
       "sudo systemctl enable mount_tmp_noexec"
