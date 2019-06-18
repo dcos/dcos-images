@@ -22,91 +22,19 @@ PUBLISH_STEP_PACKER_BUILD = "packer_build"
 
 TEST_CONFIG_YAML = 'publish_and_test_config.yaml'
 
-TERRAFORM_VERSION_PIN = "2f9264b43a3f42974204bcd320c41ab2c237f96f"
+TERRAFORM_DCOS_VERSION_PIN = "22583e002848f77c2ac403b125fe7e22f83d10fd"
 
 # files used in qualification process.
 
 BASE_IMAGES_JSON = 'base_images.json'
 BUILD_HISTORY_JSON = 'packer_build_history.json'
-CLUSTER_PROFILE_TFVARS = 'desired_cluster_profile.tfvars'
+CLUSTER_PROFILE_TFVARS = 'cluster_profile.tfvars'
 DCOS_IMAGES_YAML = 'dcos_images.yaml'
 PACKER_JSON = 'packer.json'
 SETUP_SH = 'setup.sh'
 TEMPDIR_FOR_TF = 'temp'
 
 DEFAULT_AWS_REGION = 'us-west-2'
-
-VARIABLES_TF = """
-variable "aws_default_os_user" {
- type = "map"
-   default = {
-    {var.os}  = "{ssh_user}"
-   }
-}
-
-variable "aws_ami" {
- type = "map"
-   default = {
-    {var.os_var.region} = "{ami}"
-  }
-}
-"""
-
-
-def _terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name):
-    new_os = os.path.join(tf_dir, 'modules/dcos-tested-aws-oses/platform/cloud/{}/{}'.format(platform, os_name))
-    os.makedirs(new_os)
-
-    vars_path = os.path.join(tf_dir, 'modules/dcos-tested-aws-oses/variables.tf')
-
-    with open(vars_path, 'w') as f:
-        vars_string = vars_string.replace('{ami}', ami)
-        f.write(vars_string)
-
-    shutil.copyfile(os.path.join(build_dir, SETUP_SH), os.path.join(new_os, SETUP_SH))
-
-
-def _generate_variables_tf(ssh_user, cluster_profile, platform):
-    vars_tf = VARIABLES_TF.replace('{ssh_user}', ssh_user)
-
-    os_name = None
-    region = None
-
-    with open(cluster_profile) as f:
-        for line in f.readlines():
-            if os_name and region:
-                break
-
-            m = re.search('".+"', line)
-
-            if m:
-                value = m.group(0)[1:-1]
-            else:
-                raise Exception('desired_cluster_profile.tfvars syntax error. Bad line: ' + line)
-
-            if not os_name:
-                m = re.search('\s*os\s*=', line)
-                if m:
-                    os_name = value
-                    vars_tf = vars_tf.replace('{var.os}', os_name)
-
-            if not region:
-                if '{}_region'.format(platform) in line:
-                    region = value
-    err = ''
-
-    if os_name is None:
-        err += 'required os variable not found in desired_cluster_profile.tfvars\n'
-
-    if region is None:
-        err += 'required {}_region variable not found in desired_cluster_profile.tfvars'.format(platform)
-
-    if err:
-        raise Exception(err)
-
-    vars_tf = vars_tf.replace('{var.os_var.region}', '{}_{}'.format(os_name, region))
-
-    return vars_tf, os_name
 
 
 def get_ssh_user_from_packer_json(build_dir):
@@ -115,7 +43,7 @@ def get_ssh_user_from_packer_json(build_dir):
     return ssh_user
 
 
-def prepare_terraform(build_dir, tf_dir):
+def prepare_terraform(build_dir, tf_dir, ami, ssh_user):
     """Preparing the terraform directory and its variables before attempting to build any AMI with packer.
 
     If there's an error with terraform, we want to catch it right from the start and avoid building an AMI
@@ -123,22 +51,26 @@ def prepare_terraform(build_dir, tf_dir):
 
     :param build_dir: Input directory for building DC/OS Image.
     :param tf_dir: Directory for doing terraform operations.
+    :param ami: AWS AMI to use for the instances.
+    :param ssh_user: ssh_user for the AMI
     :return:
     """
-    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos?ref={}/'.format(TERRAFORM_VERSION_PIN)
+    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos?ref={}/'.format(TERRAFORM_DCOS_VERSION_PIN)
 
     # Our input is assumed in the format.
     # <OS>/<version>/<platform>/<DCOS-version>
     platform = build_dir.split('/')[2]
 
-    ssh_user = get_ssh_user_from_packer_json(build_dir)
     cluster_profile = os.path.join(build_dir, CLUSTER_PROFILE_TFVARS)
-    vars, os_name = _generate_variables_tf(ssh_user, cluster_profile, platform)
+    with open(cluster_profile, 'a') as f:
+        f.write('\n')
+        f.write('ssh_user = "{}"'.format(ssh_user))
+        f.write('aws_ami = "{}"'.format(ami))
 
     init_cmd = _tf_init_cmd + platform
     subprocess.run(init_cmd.split(), check=True, cwd=tf_dir)
 
-    return vars, platform, cluster_profile, os_name
+    return cluster_profile
 
 
 def _find_files_with_name(path, name):
@@ -367,25 +299,19 @@ def _get_agent_ips(tf_dir):
     return master_public_ips, master_private_ips, private_agent_private_ips, public_agent_private_ips
 
 
-def setup_terraform(build_dir, tf_dir):
+def setup_terraform(build_dir, tf_dir, ssh_user):
     with open(os.path.join(build_dir, DCOS_IMAGES_YAML)) as f:
         ami = yaml.load(f)[DEFAULT_AWS_REGION]
 
-    vars_string, platform, cluster_profile, os_name = prepare_terraform(build_dir, tf_dir)
-
-    _terraform_add_os(build_dir, tf_dir, platform, vars_string, ami, os_name)
-
+    cluster_profile = prepare_terraform(build_dir, tf_dir, ami, ssh_user)
     shutil.copyfile(cluster_profile, os.path.join(tf_dir, CLUSTER_PROFILE_TFVARS))
-
     _add_private_ips_to_terraform(tf_dir)
 
 
-def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_integration, run_framework):
-    ssh_user = get_ssh_user_from_packer_json(build_dir)
-
-    tf_plan_cmd = 'terraform plan -var-file desired_cluster_profile.tfvars'
-    tf_apply_cmd = 'terraform apply -var-file desired_cluster_profile.tfvars -auto-approve'
-    tf_destroy_cmd = 'terraform destroy -var-file desired_cluster_profile.tfvars -auto-approve'
+def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_integration, run_framework, ssh_user):
+    tf_plan_cmd = 'terraform plan -var-file cluster_profile.tfvars'
+    tf_apply_cmd = 'terraform apply -var-file cluster_profile.tfvars -auto-approve'
+    tf_destroy_cmd = 'terraform destroy -var-file cluster_profile.tfvars -auto-approve'
     rm_private_ip_file_cmd = "rm private-ip.tf"
 
     if dry_run:
@@ -465,8 +391,9 @@ def execute_qualification_process(build_dir, dry_run, tests, publish_step, run_i
     tf_build_dir = get_tf_build_dir(build_dir)
 
     try:
-        setup_terraform(build_dir, tf_build_dir)
-        setup_cluster_and_test(build_dir, tf_build_dir, dry_run, tests, publish_step, run_integration, run_framework)
+        ssh_user = get_ssh_user_from_packer_json(build_dir)
+        setup_terraform(build_dir, tf_build_dir, ssh_user)
+        setup_cluster_and_test(build_dir, tf_build_dir, dry_run, tests, publish_step, run_integration, run_framework, ssh_user)
     finally:
         shutil.rmtree(tf_build_dir, ignore_errors=True)
 
