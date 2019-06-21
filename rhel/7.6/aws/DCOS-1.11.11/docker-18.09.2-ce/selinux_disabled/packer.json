@@ -139,6 +139,11 @@
       "destination": "/tmp/mount_tmp_noexec.sh"
     },
     {
+      "type": "file",
+      "source": "./mount_tmp_noexec.service",
+      "destination": "/tmp/mount_tmp_noexec.service"
+    },
+    {
       "type": "shell",
       "inline_shebang": "/bin/bash",
       "inline": [
