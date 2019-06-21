@@ -1,5 +1,3 @@
-os = "rhel"
-user = "ec2-user"
 aws_region = "us-west-2"
 
 aws_bootstrap_instance_type = "m5.large"
@@ -12,7 +10,10 @@ ssh_key_name = "dcos-images"
 admin_cidr = "0.0.0.0/0"
 
 num_of_masters = "1"
-num_of_private_agents = "5"
+num_of_private_agents = "2"
 num_of_public_agents = "1"
 
 custom_dcos_download_path = "https://downloads.dcos.io/dcos/stable/1.11.11/dcos_generate_config.sh"
+tags={owner = "dcos-images", expiration = "10h"}
+enable_os_setup_script = false
+
