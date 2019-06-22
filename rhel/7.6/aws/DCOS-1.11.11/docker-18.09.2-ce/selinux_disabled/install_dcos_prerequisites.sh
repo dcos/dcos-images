@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
-#setting selinux to permissive
-sudo set setenforce 0
+# setting selinux to permissive
+sudo setenforce 0
 sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
 
 sudo sed -i '$ d' /etc/resolv.conf
