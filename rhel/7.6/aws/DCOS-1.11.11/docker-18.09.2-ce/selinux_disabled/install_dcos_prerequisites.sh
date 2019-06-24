@@ -5,20 +5,33 @@ set -ex
 sudo setenforce 0
 sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
 
-sudo sed -i '$ d' /etc/resolv.conf
-sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
+sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
+[dockerrepo]
+name=Docker Repository
+baseurl=https://yum.dockerproject.org/repo/main/centos/7
+enabled=1
+gpgcheck=1
+gpgkey=https://yum.dockerproject.org/gpg
+EOF
 
-sudo yum install -y yum-utils
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo tee /etc/systemd/system/docker.service.d/override.conf <<- EOF
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd -H fd://
+EOF
 
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum makecache fast
+sudo yum install -y yum-utils \
+  device-mapper-persistent-data \
+  lvm2
 
-sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.74-1.el7.noarch.rpm
-sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/pigz-2.3.3-1.el7.centos.x86_64.rpm
+sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
 
 sudo yum install -y docker-ce-18.09.2 docker-ce-cli-18.09.2 containerd.io
 sudo systemctl start docker
-
+sudo systemctl enable docker
 sudo yum install -y wget
 sudo yum install -y git
 sudo yum install -y unzip
