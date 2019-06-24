@@ -15,5 +15,5 @@ num_of_public_agents = "1"
 
 custom_dcos_download_path = "https://downloads.dcos.io/dcos/stable/1.11.11/dcos_generate_config.sh"
 tags={owner = "dcos-images", expiration = "10h"}
-enable_os_setup_script = false
+enable_os_setup_script = true
 
