@@ -15,6 +15,7 @@ sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/pig
 
 sudo yum install -y docker-ce-18.09.2 docker-ce-cli-18.09.2 containerd.io
 sudo systemctl start docker
+sudo systemctl enable docker
 
 sudo yum install -y wget
 sudo yum install -y git
