@@ -7,8 +7,15 @@
       "files": null,
       "artifact_id": "ap-northeast-1:ami-0f99148283a841b61,ap-northeast-2:ami-0dc820cfda63ef0ae,ap-south-1:ami-07f3d16abfa7feb7c,ap-southeast-1:ami-05e4cd9148e08ae74,ap-southeast-2:ami-0d9d453d4a451495c,ca-central-1:ami-02ae1ae44c2060572,eu-central-1:ami-0674586a53c460342,eu-west-1:ami-0525dd092d15fd5b6,eu-west-2:ami-0cdb9f23bfbaf4cf1,eu-west-3:ami-08d8931b2a28abd5d,sa-east-1:ami-062ec290209d96c38,us-east-1:ami-05d77274e09620951,us-east-2:ami-010434cbae5ca19b7,us-west-1:ami-0db311b0b2ea9d967,us-west-2:ami-0c113a55a02cb7a4f",
       "packer_run_uuid": "1a20ed95-6887-ab66-238a-4b277e53ecd3"
+    },
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1561645087,
+      "files": null,
+      "artifact_id": "us-east-1:ami-09e922b3465b3207b,us-west-2:ami-05a11685dc2e7aaca",
+      "packer_run_uuid": "0b27ec65-21b7-54d8-aa3c-809c1f907112"
     }
   ],
-  "last_run_uuid": "1a20ed95-6887-ab66-238a-4b277e53ecd3"
+  "last_run_uuid": "0b27ec65-21b7-54d8-aa3c-809c1f907112"
 }
-
