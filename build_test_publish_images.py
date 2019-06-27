@@ -22,7 +22,7 @@ PUBLISH_STEP_PACKER_BUILD = "packer_build"
 
 TEST_CONFIG_YAML = 'publish_and_test_config.yaml'
 
-TERRAFORM_DCOS_VERSION_PIN = "22583e002848f77c2ac403b125fe7e22f83d10fd"
+TERRAFORM_DCOS_VERSION_PIN = "34a873ab27462a9a2c016034d2289357182d727a"
 
 # files used in qualification process.
 
