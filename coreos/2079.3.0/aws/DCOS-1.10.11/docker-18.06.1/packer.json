@@ -22,10 +22,8 @@
       "ami_groups": "all",
       "ebs_optimized": true,
       "ena_support": true,
-      "sriov_support": true
-    }
-  ],
-  "ami_block_device_mappings": [
+      "sriov_support": true,
+      "ami_block_device_mappings": [
         {
           "device_name": "/dev/sde",
           "volume_type": "gp2",
