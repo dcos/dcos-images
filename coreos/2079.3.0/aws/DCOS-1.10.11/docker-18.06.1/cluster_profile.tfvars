@@ -9,7 +9,7 @@ ssh_key_name = "dcos-images"
 # Inbound Master Access
 admin_cidr = "0.0.0.0/0"
 
-num_of_masters = "1"
+num_of_masters = "3"
 num_of_private_agents = "2"
 num_of_public_agents = "1"
 
