@@ -16,26 +16,65 @@
       "ami_name": "dcos-ami-{{timestamp}}",
       "ami_description": "coreos/2023.5.0/aws/DCOS-1.13.0/docker-18.06.1",
       "ami_regions": [
-        "ap-northeast-1",
-        "ap-northeast-2",
-        "ap-south-1",
-        "ap-southeast-1",
-        "ap-southeast-2",
-        "ca-central-1",
-        "eu-central-1",
-        "eu-west-1",
-        "eu-west-2",
-        "eu-west-3",
-        "sa-east-1",
         "us-east-1",
-        "us-east-2",
-        "us-west-1",
         "us-west-2"
       ],
       "ami_groups": "all",
       "ebs_optimized": true,
       "ena_support": true,
-      "sriov_support": true
+      "sriov_support": true,
+      "ami_block_device_mappings": [
+        {
+          "device_name": "/dev/sde",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdf",
+          "volume_type": "gp2",
+          "volume_size": 100,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdg",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdh",
+          "volume_type": "gp2",
+          "volume_size": 20,
+          "delete_on_termination": true
+        }
+      ],
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/sde",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdf",
+          "volume_type": "gp2",
+          "volume_size": 100,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdg",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdh",
+          "volume_type": "gp2",
+          "volume_size": 20,
+          "delete_on_termination": true
+        }
+      ]
     }
   ],
   "provisioners": [
