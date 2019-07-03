@@ -333,12 +333,11 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_
             try:
                 run_integration_tests(ssh_user, master_public_ips, master_private_ips, agent_ips, public_agent_ips,
                                       tf_dir, tests)
+                if publish_step == PUBLISH_STEP_INTEGRATION_TESTS:
+                    publish_dcos_images(build_dir)
             except:
                 integration_tests_failed = True
                 print(traceback.format_exc(limit=5))
-
-        if publish_step == PUBLISH_STEP_INTEGRATION_TESTS:
-            publish_dcos_images(build_dir)
 
         # Run data services framework tests.
         framework_tests_failed = False
