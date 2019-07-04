@@ -12,9 +12,10 @@ admin_cidr = "0.0.0.0/0"
 num_of_masters = "1"
 num_of_private_agents = "2"
 num_of_public_agents = "1"
+dcos_oauth_enabled = "false"
 
 custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.13.2/dcos_generate_config.sh"
 enable_os_setup_script = true
 
 owner = "dcos-images"
-expiration = "3h"
+expiration = "1h"
