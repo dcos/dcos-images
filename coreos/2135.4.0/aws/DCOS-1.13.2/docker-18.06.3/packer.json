@@ -33,7 +33,7 @@
     },
     {
       "type": "shell",
-      "script": "install_dss_modules.sh"
+      "script": "./install_dss_modules.sh"
     }
   ],
   "post-processors": [
