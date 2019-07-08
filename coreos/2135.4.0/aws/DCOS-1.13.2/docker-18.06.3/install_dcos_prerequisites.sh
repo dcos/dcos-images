@@ -11,7 +11,7 @@ sudo mkdir -p /etc/systemd/system/docker.service.d
 sudo tee /etc/systemd/system/docker.service.d/override.conf <<- EOF
 [Service]
 ExecStart=
-ExecStart=/usr/bin/dockerd --default-ulimit nofile=65536:65536 -H fd://
+ExecStart=/usr/bin/dockerd -H fd://
 EOF
 
 sudo systemctl restart docker # Restarting docker to ensure its ready. Seems like its not during first usage
