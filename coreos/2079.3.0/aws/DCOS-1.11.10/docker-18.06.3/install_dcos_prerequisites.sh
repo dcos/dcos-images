@@ -2,7 +2,7 @@
 
 sudo systemctl disable locksmithd
 sudo systemctl stop locksmithd
-udo systemctl mask locksmithd
+sudo systemctl mask locksmithd
 
 sudo systemctl disable update-engine # Disabling automatic updates.
 sudo systemctl stop update-engine
