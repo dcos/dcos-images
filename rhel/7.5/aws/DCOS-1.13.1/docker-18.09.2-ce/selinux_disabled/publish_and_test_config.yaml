@@ -4,4 +4,4 @@ run_framework_tests: false
 run_integration_tests: true
 tests_to_run:
   - test_packaging.py
-  - -k "not test_mom_installation"
+  - -k 'not test_mom_installation'
