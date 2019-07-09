@@ -58,10 +58,9 @@ the pull request, but it also skips building them at all. This would be to only 
 current images. The 'tests_to_run' field allows you to run only specific integration tests. If you omit this field, they
 will all run.
 
-- **setup.sh**  
-Unlike install_dcos_prerequisites.sh, this script won't be baked in DC/OS images. Instead it will only be ran by
-terraform when the cluster comes up for a pull request. This can be useful for something that needs to be done on every
-boot. In many cases, this file can be empty, **but it still needs to exist**.
+- **setup.sh (deprecated, no longer required)**
+This script used to be ran on every cluster launch before DC/OS installation. Instead, now we configure systemd services
+in the AMIs for commands that need to be ran on every boot.
 
 ### Flowchart footnotes
 __*1__: In the case where we just want to test the image without rebuilding a new one, we can configure
