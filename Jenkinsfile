@@ -73,57 +73,58 @@ node('mesos-ubuntu') {
     }
   }
 
-  stage("Get packer") {
-    shcmd("""apt-get install -y wget &&
-          wget https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
-          unzip ./packer*.zip &&
-          chmod +x packer &&
-          mv packer /usr/local/bin &&
-          packer --help"""
-    )
-  }
-
-  stage("Get terraform") {
-    shcmd("""apt-get install -y wget &&
-          wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip &&
-          unzip ./terraform*.zip &&
-          chmod +x terraform &&
-          mv terraform /usr/local/bin &&
-          terraform --help"""
-    )
-  }
-
-  stage("Test build_and_test_amis.py (dry run)") {
-    sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
-      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        sh('python3 -u build_test_publish_images.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
-      }
-    }
-  }
-
   branches = [:]
   for (p in paths) {
-    stage ("Building path ${p}"){
-      branches["Branch_${p}"] = {
+    stages{
+      stage("Get packer") {
+        shcmd("""apt-get install -y wget &&
+              wget https://releases.hashicorp.com/packer/1.2.4/packer_1.2.4_linux_amd64.zip &&
+              unzip ./packer*.zip &&
+              chmod +x packer &&
+              mv packer /usr/local/bin &&
+              packer --help"""
+        )
+      }
+
+      stage("Get terraform") {
+        shcmd("""apt-get install -y wget &&
+              wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip &&
+              unzip ./terraform*.zip &&
+              chmod +x terraform &&
+              mv terraform /usr/local/bin &&
+              terraform --help"""
+        )
+      }
+
+      stage("Test build_and_test_amis.py (dry run)") {
         sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
-          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
-                           string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN')]) {
-            // setting up git to be able to push back dcos_images.yaml back to the PR
-            shcmd("""git config --global push.default matching &&
-                  git remote remove origin &&
-                  git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git"""
-            )
-            withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
-                     "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
-                     "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
-              println("Building path ${p}")
-              sh("python3 -u build_test_publish_images.py ${p}")
+          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+            sh('python3 -u build_test_publish_images.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
+          }
+        }
+      }
+
+      stage ("Building path ${p}"){
+        branches["Branch_${p}"] = {
+          sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
+            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
+                             string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN')]) {
+              // setting up git to be able to push back dcos_images.yaml back to the PR
+              shcmd("""git config --global push.default matching &&
+                    git remote remove origin &&
+                    git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git"""
+              )
+              withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
+                       "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
+                       "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
+                println("Building path ${p}")
+                sh("python3 -u build_test_publish_images.py ${p}")
+              }
             }
           }
         }
       }
     }
   }
-
   parallel branches
 }
