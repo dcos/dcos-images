@@ -1,0 +1,9 @@
+[Unit]
+Description=Mount tmp noexec,nosuid,nodev at startup
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /usr/local/sbin/mount_tmp_noexec.sh
+
+[Install]
+WantedBy=multi-user.target
