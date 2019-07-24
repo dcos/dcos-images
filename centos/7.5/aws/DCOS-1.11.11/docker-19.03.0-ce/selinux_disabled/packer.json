@@ -130,15 +130,6 @@
     {
       "type": "shell",
       "script": "install_dss_modules.sh"
-    },
-    {
-      "type": "shell",
-      "inline_shebang": "/bin/bash",
-      "inline": [
-      "sudo bash -c \"echo 'tmpfs /dev/shm tmpfs defaults,nodev,nosuid,noexec 0 0' >> /etc/fstab\"",
-      "sudo bash -c \"echo 'tmpfs /tmp tmpfs defaults,nodev,nosuid,noexec 0 0' >> /etc/fstab\"",
-      "sudo bash -c \"echo '/tmp /var/tmp none rw,noexec,nosuid,nodev,bind 0 0' >> /etc/fstab\""
-      ]
     }
   ],
   "post-processors": [
