@@ -8,7 +8,7 @@
     {
       "type": "amazon-ebs",
       "instance_type": "m4.xlarge",
-      "source_ami": "ami-036affea69a1101c9",
+      "source_ami": "ami-28e07e50",
       "region": "us-west-2",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
@@ -130,31 +130,6 @@
     {
       "type": "shell",
       "script": "install_dss_modules.sh"
-    },
-    {
-      "type": "file",
-      "source": "./mount_tmp_noexec.sh",
-      "destination": "/tmp/mount_tmp_noexec.sh"
-    },
-    {
-      "type": "file",
-      "source": "./mount_tmp_noexec.service",
-      "destination": "/tmp/mount_tmp_noexec.service"
-    },
-    {
-      "type": "shell",
-      "inline_shebang": "/bin/bash",
-      "inline": [
-      "sudo bash -c \"echo 'tmpfs /dev/shm tmpfs defaults,nodev,nosuid,noexec 0 0' >> /etc/fstab\"",
-      "sudo bash -c \"echo 'tmpfs /tmp tmpfs defaults,nodev,nosuid,noexec 0 0' >> /etc/fstab\"",
-      "sudo bash -c \"echo '/tmp /var/tmp none rw,noexec,nosuid,nodev,bind 0 0' >> /etc/fstab\"",
-      "sudo mv /tmp/mount_tmp_noexec.sh /usr/local/sbin/mount_tmp_noexec.sh",
-      "sudo chmod +x /usr/local/sbin/mount_tmp_noexec.sh",
-      "sudo mv /tmp/mount_tmp_noexec.service /etc/systemd/system",
-      "sudo chmod 644 /etc/systemd/system/mount_tmp_noexec.service",
-      "sudo systemctl start mount_tmp_noexec",
-      "sudo systemctl enable mount_tmp_noexec"
-      ]
     }
   ],
   "post-processors": [
