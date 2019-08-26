@@ -26,6 +26,7 @@ TERRAFORM_DCOS_VERSION_PIN = "e462b4e18282664931802fd47f1552c402d0e638"
 
 # files used in qualification process.
 
+BASE_IMAGES_JSON = 'base_images.json'
 BUILD_HISTORY_JSON = 'packer_build_history.json'
 CLUSTER_PROFILE_TFVARS = 'cluster_profile.tfvars'
 DCOS_IMAGES_YAML = 'dcos_images.yaml'
