@@ -8,10 +8,7 @@ sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
 sudo yum install -y yum-utils
 
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum makecache fast
-
-sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.74-1.el7.noarch.rpm
-sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/pigz-2.3.3-1.el7.centos.x86_64.rpm
+sudo yum makecache
 
 sudo yum install -y docker-ce-18.09.2 docker-ce-cli-18.09.2 containerd.io
 sudo systemctl enable docker
