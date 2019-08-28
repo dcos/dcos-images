@@ -13,7 +13,7 @@ num_of_masters = "1"
 num_of_private_agents = "2"
 num_of_public_agents = "1"
 
-custom_dcos_download_path = "https://downloads.mesosphere.io/dcos-enterprise/testing/1.13.4/commit/7d6a010432ccaf595a082f3ef5fd1bcc7a13d80f/dcos_generate_config.ee.sh"
+custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.13.4/commit/7a518dc4ec0c95333cc874d1b95c92f91c90bb45/dcos_generate_config.sh"
 enable_os_setup_script = false
 
 owner = "dcos-images"
