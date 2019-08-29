@@ -22,7 +22,7 @@ PUBLISH_STEP_PACKER_BUILD = "packer_build"
 
 TEST_CONFIG_YAML = 'publish_and_test_config.yaml'
 
-TERRAFORM_DCOS_VERSION_PIN = "e462b4e18282664931802fd47f1552c402d0e638"
+TERRAFORM_DCOS_VERSION_PIN = "34a873ab27462a9a2c016034d2289357182d727a"
 
 # files used in qualification process.
 
@@ -55,7 +55,7 @@ def prepare_terraform(build_dir, tf_dir, ami, ssh_user):
     :param ssh_user: ssh_user for the AMI
     :return:
     """
-    _tf_init_cmd = 'terraform init -from-module github.com/gauripowale/terraform-dcos?ref={}/'.format(TERRAFORM_DCOS_VERSION_PIN)
+    _tf_init_cmd = 'terraform init -from-module github.com/dcos/terraform-dcos?ref={}/'.format(TERRAFORM_DCOS_VERSION_PIN)
 
     # Our input is assumed in the format.
     # <OS>/<version>/<platform>/<DCOS-version>
