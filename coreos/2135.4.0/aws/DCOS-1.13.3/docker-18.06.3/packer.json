@@ -1,0 +1,48 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "region":         "us-west-2"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "m5.xlarge",
+      "source_ami": "ami-0a7e0ff8d31da1836",
+      "region": "us-west-2",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ssh_username": "core",
+      "ami_name": "dcos-ami-{{timestamp}}",
+      "ami_description": "coreos/2135.4.0/aws/DCOS-1.13.3/docker-18.06.3",
+      "ami_regions": [
+        "us-east-1",
+        "us-west-2"
+      ],
+      "ami_groups": "all",
+      "associate_public_ip_address": true,
+      "ebs_optimized": true,
+      "ena_support": true,
+      "sriov_support": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "./install_dcos_prerequisites.sh"
+    },
+    {
+      "type": "shell",
+      "script": "./install_dss_modules.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "output": "packer_build_history.json",
+        "strip_path": true,
+        "type": "manifest"
+      }
+    ]
+  ]
+}
