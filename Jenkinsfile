@@ -104,7 +104,8 @@ node('mesos-ubuntu') {
   stage("Build, test and publish images") {
     sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
-                       string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN')]) {
+                       string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN'),
+                       string(credentialsId: 'DCOS_LICENSE_1.13', variable: 'DCOS_1.13_LICENSE')]) {
         // setting up git to be able to push back dcos_images.yaml back to the PR
         shcmd("""git config --global push.default matching &&
               git remote remove origin &&
@@ -112,7 +113,8 @@ node('mesos-ubuntu') {
         )
         withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
                  "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
-                 "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
+                 "PULL_REQUEST_ID=${env.CHANGE_ID}",
+                 "TF_VAR_DCOS_1.13_LICENSE=${DCOS_1.13_LICENSE}"]) {
           for (p in paths) {
             println("Building path ${p}")
             sh("python3 -u build_test_publish_images.py ${p}")
