@@ -105,8 +105,7 @@ node('mesos-ubuntu') {
     sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
       withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'a20fbd60-2528-4e00-9175-ebe2287906cf', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
                        string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN'),
-                       file(credentialsId: 'DCOS_1_13_LICENSE', variable: 'DCOS_1_13_LICENSE')
-                       ]) {
+                       string(credentialsId: 'DCOS_1_13_LICENSE', variable: 'DCOS_1_13_LICENSE')]) {
         // setting up git to be able to push back dcos_images.yaml back to the PR
         shcmd("""git config --global push.default matching &&
               git remote remove origin &&
