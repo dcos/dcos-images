@@ -15,7 +15,7 @@ num_of_public_agents = "1"
 
 custom_dcos_download_path = "https://downloads.mesosphere.com/dcos-enterprise/stable/1.14.0-alpha/dcos_generate_config.ee.sh"
 dcos_variant = "ee"
-dcos_license_key_contents = "${var.DCOS_1_13_LICENSE}"
+dcos_license_key_contents = "${file("./license.txt")}"
 enable_os_setup_script = false
 
 owner = "dcos-images"

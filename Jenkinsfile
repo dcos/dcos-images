@@ -113,8 +113,8 @@ node('mesos-ubuntu') {
         )
         withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
                  "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
-                 "PULL_REQUEST_ID=${env.CHANGE_ID}",
-                 "TF_VAR_DCOS_1_13_LICENSE=${DCOS_1_13_LICENSE}"]) {
+                 "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
+          fileWrite(file: "license.txt", text: ${DCOS_1_13_LICENSE})
           for (p in paths) {
             println("Building path ${p}")
             sh("python3 -u build_test_publish_images.py ${p}")
