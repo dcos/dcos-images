@@ -320,7 +320,8 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_
 
     try:
         print('Directory where we are runnint terraform apply:' + str(tf_dir))
-        print('License file: ' + str(os.system('ls -la /tmp/licnse.txt')))
+        if os.path.exists('/tmp/license.txt') and os.path.getsize('/tmp/license.txt') > 0:
+            print('File /tmp/license.txt exists and not empty')
         subprocess.run(tf_apply_cmd.split(), check=True, cwd=tf_dir)
 
         if publish_step == PUBLISH_STEP_DCOS_INSTALLATION:
