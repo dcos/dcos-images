@@ -62,10 +62,22 @@ def prepare_terraform(build_dir, tf_dir, ami, ssh_user):
     platform = build_dir.split('/')[2]
 
     cluster_profile = os.path.join(build_dir, CLUSTER_PROFILE_TFVARS)
+
+    # Determine, if DC/OS variant is EE, add dcos_license_key_contents
+    # to CLUSTER_PROFILE_TFVARS in that case
+    with open(cluster_profile, 'r') as f:
+        content = f.read()
+        variant_ee = re.search('dcos_variant.+"ee"', content)
+
     with open(cluster_profile, 'a') as f:
         f.write('\n')
         f.write('ssh_user = "{}"'.format(ssh_user))
+        f.write('\n')
         f.write('aws_ami = "{}"'.format(ami))
+
+        if variant_ee:
+            f.write('\n')
+            f.write('dcos_license_key_contents = "${file("' + os.environ['DCOS_1_13_LICENSE'] + '")}"')
 
     init_cmd = _tf_init_cmd + platform
     subprocess.run(init_cmd.split(), check=True, cwd=tf_dir)

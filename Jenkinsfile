@@ -115,11 +115,10 @@ node('mesos-ubuntu') {
               git remote remove origin &&
               git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git"""
         )
-        shcmd('echo "${env.DCOS_1_13_LICENSE}" > /tmp/license.txt')
-        sh("ls -l /tmp/license.txt")
         withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
                  "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
-                 "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
+                 "PULL_REQUEST_ID=${env.CHANGE_ID}",
+                 "DCOS_1_13_LICENSE=${DCOS_1_13_LICENSE}"]) {
           for (p in paths) {
             println("Building path ${p}")
             sh("python3 -u build_test_publish_images.py ${p}")
