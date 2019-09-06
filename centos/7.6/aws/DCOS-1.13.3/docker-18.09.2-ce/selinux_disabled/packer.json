@@ -86,11 +86,6 @@
     },
     {
       "type": "file",
-      "source": "/tmp/license.txt",
-      "destination": "/tmp/license.txt"
-    },
-    {
-      "type": "file",
       "source": "./configure_dcos_system.sh",
       "destination": "/tmp/configure_dcos_system.sh"
     },
