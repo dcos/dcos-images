@@ -272,7 +272,7 @@ def _get_config_info(build_dir):
 
 def packer_validate_and_build(build_dir, dry_run, publish_step):
     _PACKER_VALIDATE_COMMAND = "packer validate {packer_file}".format(packer_file=PACKER_JSON)
-    _PACKER_BUILD_COMMAND = "packer build {packer_file}".format(packer_file=PACKER_JSON)
+    _PACKER_BUILD_COMMAND = "PACKER_LOG=1 packer build {packer_file}".format(packer_file=PACKER_JSON)
 
     update_source_image_in_packer_json(build_dir)
 
