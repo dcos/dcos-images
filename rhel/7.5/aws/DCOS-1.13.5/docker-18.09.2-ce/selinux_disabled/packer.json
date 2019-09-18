@@ -1,0 +1,144 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "region":         "us-west-2"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "m4.xlarge",
+      "source_ami": "ami-28e07e50",
+      "region": "us-west-2",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ssh_username": "ec2-user",
+      "ami_name": "dcos-ami-{{timestamp}}",
+      "ami_description": "rhel/7.5/aws/DCOS-1.13.5/docker-18.09.2-ce/selinux_disabled",
+      "ami_regions": [
+        "us-east-1",
+        "us-west-2"
+      ],
+      "ami_groups": "all",
+      "associate_public_ip_address": true,
+      "ebs_optimized": true,
+      "ena_support": true,
+      "sriov_support": true,
+      "ami_block_device_mappings": [
+        {
+          "device_name": "/dev/sde",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdf",
+          "volume_type": "gp2",
+          "volume_size": 100,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdg",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdh",
+          "volume_type": "gp2",
+          "volume_size": 20,
+          "delete_on_termination": true
+        }
+      ],
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/sde",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdf",
+          "volume_type": "gp2",
+          "volume_size": 100,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdg",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdh",
+          "volume_type": "gp2",
+          "volume_size": 20,
+          "delete_on_termination": true
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./dcos_vol_setup.sh",
+      "destination": "/tmp/dcos_vol_setup.sh"
+    },
+    {
+      "type": "file",
+      "source": "./configure_dcos_system.sh",
+      "destination": "/tmp/configure_dcos_system.sh"
+    },
+    {
+      "type": "shell",
+      "script": "install_dcos_prerequisites.sh"
+    },
+    {
+      "type": "shell",
+      "inline_shebang": "/bin/bash",
+      "inline": [
+        "sudo mv /tmp/dcos_vol_setup.sh /usr/local/sbin/",
+        "sudo chmod 0755 /usr/local/sbin/dcos_vol_setup.sh",
+        "sudo /tmp/configure_dcos_system.sh"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "./ebs-nvme-mapping.sh",
+      "destination": "/tmp/ebs-nvme-mapping.sh"
+    },
+    {
+      "type": "file",
+      "source": "./999-aws-ebs-nvme.rules",
+      "destination": "/tmp/999-aws-ebs-nvme.rules"
+    },
+    {
+      "type": "shell",
+      "inline_shebang": "/bin/bash",
+      "inline": [
+        "sudo mv /tmp/ebs-nvme-mapping.sh /usr/local/sbin",
+        "sudo mv /tmp/999-aws-ebs-nvme.rules /etc/udev/rules",
+        "sudo yum install -y nvme-cli",
+        "# Set file permissions on helper script",
+        "sudo chown root:root /usr/local/sbin/ebs-nvme-mapping.sh",
+        "sudo chmod 700 /usr/local/sbin/ebs-nvme-mapping.sh",
+        "# Tell udev to reload its list of rules",
+        "sudo udevadm control --reload",
+        "sudo udevadm trigger"
+      ]
+    },
+    {
+      "type": "shell",
+      "script": "install_dss_modules.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "output": "packer_build_history.json",
+        "strip_path": true,
+        "type": "manifest"
+      }
+    ]
+  ]
+}
