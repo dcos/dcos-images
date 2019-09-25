@@ -64,7 +64,7 @@ function main {
   fi
 
   noncritical echo -n "Waiting for $device to come online"
-  retry=5
+  retry=15
   until test -b "$device"; do
     noncritical sleep 1; noncritical echo -n .;
     let retry=retry-1
@@ -74,7 +74,8 @@ function main {
   done
   noncritical echo
   local formated
-  mkfs.xfs -n ftype=1 -L ${label} $device > /dev/null 2>&1 && formated=true || formated=false
+  # mkfs.xfs -n ftype=1 -L ${label} $device > /dev/null 2>&1 && formated=true || formated=false
+  mkfs.xfs -n ftype=1 -L ${label} $device && formated=true || formated=false
   if [ "$formated" = true ]
   then
     noncritical echo "Setting up device mount"
