@@ -19,6 +19,7 @@ node('mesos-ubuntu') {
   }
 
   checkout scm
+  return
   def paths = []
   def jenkins_git_user = "mesosphere_jenkins"
   def branch = ""
