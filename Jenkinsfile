@@ -89,8 +89,7 @@ node('mesos-ubuntu') {
           unzip ./terraform*.zip &&
           chmod +x terraform &&
           mv terraform /usr/local/bin &&
-          terraform --help
-          export TF_LOG=DEBUG"""
+          terraform --help"""
     )
   }
 
