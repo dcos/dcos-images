@@ -89,7 +89,8 @@ node('mesos-ubuntu') {
           unzip ./terraform*.zip &&
           chmod +x terraform &&
           mv terraform /usr/local/bin &&
-          terraform --help"""
+          terraform --help
+          cat /etc/resolv.conf"""
     )
   }
 
