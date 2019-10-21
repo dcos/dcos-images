@@ -309,8 +309,8 @@ def setup_terraform(build_dir, tf_dir, ssh_user):
 
 
 def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_integration, run_framework, ssh_user):
-    tf_plan_cmd = 'TF_LOG=DEBUG terraform plan -var-file cluster_profile.tfvars'
-    tf_apply_cmd = 'TF_LOG=DEBUG terraform apply -var-file cluster_profile.tfvars -auto-approve'
+    tf_plan_cmd = 'terraform plan -var-file cluster_profile.tfvars'
+    tf_apply_cmd = 'terraform apply -var-file cluster_profile.tfvars -auto-approve'
     tf_destroy_cmd = 'terraform destroy -var-file cluster_profile.tfvars -auto-approve'
     rm_private_ip_file_cmd = "rm private-ip.tf"
 
