@@ -37,7 +37,7 @@ node('mesos-ubuntu') {
   stage("Run unit tests") {
     sh("python3 -um unittest")
   }
-  return
+
   stage("Set up git repo") {
     // Jenkins checks out the changes in a detached head state with no concept of what to fetch remotely. So here we
     // change the git config so that fetch will pull all changes from all branches from the remote repository
