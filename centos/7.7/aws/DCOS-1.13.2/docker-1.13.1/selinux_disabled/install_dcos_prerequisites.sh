@@ -25,7 +25,7 @@ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum install -y docker-ce-1.13.1 docker-ce-cli-1.13.1 containerd.io
+sudo yum install -y docker
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo yum install -y wget
