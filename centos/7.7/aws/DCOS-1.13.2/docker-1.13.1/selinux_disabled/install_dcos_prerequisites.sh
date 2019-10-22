@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 sudo setenforce 0 && \
-sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
+sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=permissive/g' /etc/sysconfig/selinux
 sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
 [dockerrepo]
 name=Docker Repository
@@ -25,7 +25,7 @@ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum install -y docker-ce-19.03.0 docker-ce-cli-19.03.0 containerd.io
+sudo yum install -y docker-ce-1.13.1 docker-ce-cli-1.13.1 containerd.io
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo yum install -y wget
