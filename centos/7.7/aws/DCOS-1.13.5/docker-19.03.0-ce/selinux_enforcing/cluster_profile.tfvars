@@ -1,4 +1,4 @@
-aws_region = "us-west-2"
+aws_region = "us-east-1"
 
 aws_bootstrap_instance_type = "m4.xlarge"
 aws_master_instance_type = "m4.xlarge"
