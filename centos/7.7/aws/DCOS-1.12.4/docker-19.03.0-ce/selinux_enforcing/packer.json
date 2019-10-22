@@ -103,31 +103,6 @@
       ]
     },
     {
-      "type": "file",
-      "source": "./ebs-nvme-mapping.sh",
-      "destination": "/tmp/ebs-nvme-mapping.sh"
-    },
-    {
-      "type": "file",
-      "source": "./999-aws-ebs-nvme.rules",
-      "destination": "/tmp/999-aws-ebs-nvme.rules"
-    },
-    {
-      "type": "shell",
-      "inline_shebang": "/bin/bash",
-      "inline": [
-        "sudo mv /tmp/ebs-nvme-mapping.sh /usr/local/sbin",
-        "sudo mv /tmp/999-aws-ebs-nvme.rules /etc/udev/rules",
-        "sudo yum install -y nvme-cli",
-        "# Set file permissions on helper script",
-        "sudo chown root:root /usr/local/sbin/ebs-nvme-mapping.sh",
-        "sudo chmod 700 /usr/local/sbin/ebs-nvme-mapping.sh",
-        "# Tell udev to reload its list of rules",
-        "sudo udevadm control --reload",
-        "sudo udevadm trigger"
-      ]
-    },
-    {
       "type": "shell",
       "script": "install_dss_modules.sh"
     }
