@@ -25,7 +25,7 @@ sudo yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
 
-sudo yum install -y docker-ce-19.03.0 docker-ce-cli-19.03.0 containerd.io
+sudo yum install -y --nobest docker-ce docker-ce-cli containerd.io
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo yum install -y wget
@@ -38,6 +38,5 @@ sudo yum install -y bind-utils
 sudo yum install -y ntp
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
-sudo getent group nogroup || sudo groupadd nogroup
 sudo getent group docker || sudo groupadd docker
 sudo touch /opt/dcos-prereqs.installed
