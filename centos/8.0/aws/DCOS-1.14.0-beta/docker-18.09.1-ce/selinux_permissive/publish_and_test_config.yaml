@@ -1,5 +1,13 @@
 # options: packer_build, dcos_installation, integration_tests, never. Default is dcos_installation. For more details, see README
 # You can also run custom tests with tests_to_run.
+
+# Muted test(s): 
+# test_blkio_stats() : https://jira.mesosphere.com/browse/DCOS-49023?focusedCommentId=296675&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-296675
+# test_task_prom_metrics_not_filtered() : https://jira.mesosphere.com/browse/DCOS-59632
+# test_prom_metrics_containers_app_bridge() : https://jira.mesosphere.com/browse/DCOS-59634
+#
 publish_dcos_images_after: integration_tests
 run_framework_tests: false
 run_integration_tests: true
+tests_to_run:
+  - -k 'not test_blkio_stats and not test_task_prom_metrics_not_filtered and not test_prom_metrics_containers_app_bridge'
