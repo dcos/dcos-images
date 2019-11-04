@@ -1,5 +1,5 @@
 os = "oracle"
-user = "opc"
+ssh_user = "ec2-user"
 aws_region = "us-west-2"
 
 aws_bootstrap_instance_type = "m5.large"
@@ -15,7 +15,7 @@ num_of_masters = "1"
 num_of_private_agents = "2"
 num_of_public_agents = "1"
 
-custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.13.4/commit/7a518dc4ec0c95333cc874d1b95c92f91c90bb45/dcos_generate_config.sh"
+custom_dcos_download_path = "https://downloads.dcos.io/dcos/stable/1.13.4/dcos_generate_config.sh"
 enable_os_setup_script = false
 
 owner = "dcos-images"
