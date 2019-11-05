@@ -1,10 +1,10 @@
 #aws_region = "us-west-2"
 #aws_availability_zone = "us-west-2a"
 
-aws_bootstrap_instance_type = "m4.xlarge"
-aws_master_instance_type = "m4.xlarge"
-aws_agent_instance_type = "m4.xlarge"
-aws_public_agent_instance_type = "m4.xlarge"
+aws_bootstrap_instance_type = "m5.xlarge"
+aws_master_instance_type = "m5.xlarge"
+aws_agent_instance_type = "m5.xlarge"
+aws_public_agent_instance_type = "m5.xlarge"
 
 ssh_key_name = "dcos-images"
 # Inbound Master Access
