@@ -14,7 +14,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "ec2-user",
       "ami_name": "dcos-ami-{{timestamp}}",
-      "ami_description": "rhel/7.7/aws/DCOS-1.14.0-2.0/docker-19.03.0-ce/selinux_enforcing",
+      "ami_description": "rhel/7.7/aws/DCOS-1.14.0-2.0/docker-19.03.4-ce/selinux_enforcing",
       "ami_regions": [
         "us-east-1",
         "us-west-2"
