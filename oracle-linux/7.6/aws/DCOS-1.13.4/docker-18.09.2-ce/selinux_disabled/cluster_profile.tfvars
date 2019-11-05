@@ -1,3 +1,6 @@
+os = "rhel"
+ssh_user = "ec2-user"
+
 aws_region = "us-west-2"
 
 aws_bootstrap_instance_type = "m5.large"
