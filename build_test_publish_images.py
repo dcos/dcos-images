@@ -279,7 +279,7 @@ def packer_validate_and_build(build_dir, dry_run, publish_step):
     subprocess.run(_PACKER_VALIDATE_COMMAND.split(), check=True, cwd=build_dir)
 
     if not dry_run and publish_step != PUBLISH_STEP_NEVER:
-        subprocess.run(_PACKER_BUILD_COMMAND, check=True, shell=True, cwd=build_dir, env={'PACKER_LOG': '1'})
+        subprocess.run(_PACKER_BUILD_COMMAND.split(), check=True, cwd=build_dir)
         extract_dcos_images(build_dir)
 
         if publish_step == PUBLISH_STEP_PACKER_BUILD:
