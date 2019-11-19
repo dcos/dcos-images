@@ -2,8 +2,8 @@
 sudo setenforce 0 && \
 sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
 
-sudo sed -i '$ d' /etc/resolv.conf
-sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
+#sudo sed -i '$ d' /etc/resolv.conf
+#sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
 
 sudo yum install -y yum-utils
 
