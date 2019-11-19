@@ -15,9 +15,7 @@ num_of_masters = "1"
 num_of_private_agents = "2"
 num_of_public_agents = "1"
 
-dcos_resolvers = <<EOF
- - "169.254.169.254"
-EOF
+dcos_resolvers = ["169.254.169.254"]
 
 custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/pull/6326/dcos_generate_config.sh"
 enable_os_setup_script = false
