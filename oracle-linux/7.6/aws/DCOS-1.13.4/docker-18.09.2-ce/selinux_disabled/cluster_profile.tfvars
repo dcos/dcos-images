@@ -2,7 +2,7 @@ ssh_user = "ec2-user"
 
 aws_region = "us-west-2"
 
-aws_bootstrap_instance_type = "m5.large"
+aws_bootstrap_instance_type = "m5.xlarge"
 aws_master_instance_type = "m5.xlarge"
 aws_agent_instance_type = "m5.xlarge"
 aws_public_agent_instance_type = "m5.xlarge"
