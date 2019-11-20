@@ -13,8 +13,7 @@ num_of_masters = "1"
 num_of_private_agents = "2"
 num_of_public_agents = "1"
 
-custom_dcos_download_path = "https://downloads.dcos.io/dcos/stable/2.0.0/dcos_generate_config.sh"
-
+custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.13.6/dcos_generate_config.sh"
 enable_os_setup_script = false
 
 owner = "dcos-images"
