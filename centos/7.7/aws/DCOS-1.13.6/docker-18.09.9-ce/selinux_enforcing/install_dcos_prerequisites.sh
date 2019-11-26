@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-sudo sed -i '$ d' /etc/resolv.conf
-sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
-
 sudo setenforce 1 && \
 sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=enforcing/g' /etc/sysconfig/selinux
 sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
@@ -41,6 +38,5 @@ sudo yum install -y bind-utils
 sudo yum install -y ntp
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
-sudo getent group nogroup || sudo groupadd nogroup
 sudo getent group docker || sudo groupadd docker
 sudo touch /opt/dcos-prereqs.installed
