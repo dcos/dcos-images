@@ -1,5 +1,6 @@
 #aws_region = "us-west-2"
 
+availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
 aws_bootstrap_instance_type = "m4.large"
 aws_master_instance_type = "m4.xlarge"
 aws_agent_instance_type = "m4.xlarge"
