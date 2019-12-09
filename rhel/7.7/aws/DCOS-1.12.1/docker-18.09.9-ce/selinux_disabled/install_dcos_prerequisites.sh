@@ -22,6 +22,7 @@ sudo -E yum-config-manager \
     "$DOCKERURL/rhel/docker-ee.repo"
 
 sudo yum -y install docker-ee-18.09.9 docker-ee-cli-18.09.9 containerd.io
+sudo systemctl enable docker
 sudo systemctl start docker
 
 sudo yum install -y wget
