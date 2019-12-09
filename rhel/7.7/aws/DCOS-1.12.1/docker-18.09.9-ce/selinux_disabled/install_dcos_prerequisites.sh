@@ -8,7 +8,7 @@ sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
 export DOCKERURL="https://storebits.docker.com/ee/m/sub-b02bc8f1-2d50-45f7-a1bd-2d020928b6e5"
 
 sudo -E sh -c 'echo "$DOCKERURL/rhel" > /etc/yum/vars/dockerurl'
-sudo sh -c 'echo "7.7" > /etc/yum/vars/dockerosversion'
+sudo sh -c 'echo "7" > /etc/yum/vars/dockerosversion'
 
 sudo yum install -y yum-utils \
   device-mapper-persistent-data \
