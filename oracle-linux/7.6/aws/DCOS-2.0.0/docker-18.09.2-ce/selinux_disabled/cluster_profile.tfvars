@@ -1,10 +1,9 @@
 ssh_user = "ec2-user"
-aws_region = "us-west-2"
 
-aws_bootstrap_instance_type = "m5.large"
-aws_master_instance_type = "m5.xlarge"
-aws_agent_instance_type = "m5.xlarge"
-aws_public_agent_instance_type = "m5.xlarge"
+aws_bootstrap_instance_type = "m4.large"
+aws_master_instance_type = "m4.xlarge"
+aws_agent_instance_type = "m4.xlarge"
+aws_public_agent_instance_type = "m4.xlarge"
 
 ssh_key_name = "dcos-images"
 # Inbound Master Access
