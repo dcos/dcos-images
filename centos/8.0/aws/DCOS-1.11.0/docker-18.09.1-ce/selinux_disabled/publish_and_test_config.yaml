@@ -2,9 +2,10 @@
 # You can also run custom tests with tests_to_run.
 # Muted test(s): 
 # test_blkio_stats() : https://jira.mesosphere.com/browse/DCOS-49023?focusedCommentId=296675&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-296675
+#  - -k 'not test_blkio_stats'
 #
 publish_dcos_images_after: integration_tests
 run_framework_tests: false
 run_integration_tests: true
 tests_to_run:
-  - -k 'not test_blkio_stats'
+  - -k 'test_vip'
