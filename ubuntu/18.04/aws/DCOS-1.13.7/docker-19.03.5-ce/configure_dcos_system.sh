@@ -116,6 +116,10 @@ EOF
 systemctl daemon-reload
 systemctl enable $(basename "${update_hosts_unit}")
 
+sudo systemctl disable systemd-resolved.service
+sudo systemctl stop systemd-resolved.service
+
+sudo rm /etc/resolv.conf && sudo ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 # Make sure we wait until all the data is written to disk, otherwise
 # Packer might quit too early before the large files are deleted
