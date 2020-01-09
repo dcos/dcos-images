@@ -41,9 +41,9 @@ sudo ln -s /bin/mkdir /usr/bin/mkdir
 sudo ln -s /usr/sbin/useradd /usr/bin/useradd
 sudo ln -s /usr/sbin/groupadd /usr/bin/groupadd
 
-sudo systemctl disable systemd-resolved.service
-sudo systemctl stop systemd-resolved.service
+#sudo systemctl disable systemd-resolved.service
+#sudo systemctl stop systemd-resolved.service
 
-sudo rm /etc/resolv.conf && sudo ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+#sudo rm /etc/resolv.conf && sudo ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 sudo touch /opt/dcos-prereqs.installed
