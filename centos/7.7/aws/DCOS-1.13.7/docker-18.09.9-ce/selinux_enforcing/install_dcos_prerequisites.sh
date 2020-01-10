@@ -1,31 +1,41 @@
 #!/usr/bin/env bash
 sudo setenforce 1 && \
 sudo sed -i --follow-symlinks 's/^SELINUX=.*/SELINUX=enforcing/g' /etc/sysconfig/selinux
-sudo tee /etc/yum.repos.d/docker.repo <<-'EOF'
-[dockerrepo]
-name=Docker Repository
-baseurl=https://yum.dockerproject.org/repo/main/centos/7
+
+yumreposdir="/etc/yum.repos.d/"
+sudo mkdir ${yumreposdir}/oldrepos
+sudo mv ${yumreposdir}/CentOS-* ${yumreposdir}/oldrepos
+
+sudo tee ${yumreposdir}/centos77-repos.repo <<-'EOF'
+[local-base]
+name=CentOS Base
+baseurl=http://mirror.web-ster.com/centos/7.7.1908/os/$basearch/
+gpgcheck=0
 enabled=1
-gpgcheck=1
-gpgkey=https://yum.dockerproject.org/gpg
+[local-updates]
+name=CentOS Updates
+baseurl=http://mirror.web-ster.com/centos/7.7.1908/updates/$basearch/
+gpgcheck=0
+enabled=1
+[local-extras]
+name=CentOS Extras
+baseurl=http://mirror.web-ster.com/centos/7.7.1908/extras/$basearch/
+gpgcheck=0
+enabled=1
+[local-docker-ce]
+name=Docker Repository
+baseurl=https://download.docker.com/linux/centos/7/$basearch/stable
+enabled=1
+gpgcheck=0
+#gpgkey=https://yum.dockerproject.org/gpg
 EOF
 
-sudo mkdir -p /etc/systemd/system/docker.service.d
-sudo tee /etc/systemd/system/docker.service.d/override.conf <<- EOF
-[Service]
-ExecStart=
-ExecStart=/usr/bin/dockerd -H fd://
-EOF
+sudo yum clean all
+sudo yum repolist -v
 
-sudo yum install -y yum-utils \
-  device-mapper-persistent-data \
-  lvm2
-
-sudo yum-config-manager \
-    --add-repo \
-    https://download.docker.com/linux/centos/docker-ce.repo
-
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 sudo yum install -y docker-ce-18.09.9 docker-ce-cli-18.09.9 containerd.io
+
 sudo systemctl start docker
 sudo systemctl enable docker
 sudo yum install -y wget
