@@ -93,17 +93,18 @@ node('mesos-ubuntu') {
     )
   }
 
-  stage("Test build_and_test_amis.py (dry run)") {
-    sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
-      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: '9345ef4c-42cf-4a87-b36d-b05f6d132ce9', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-        sh('python3 -u build_test_publish_images.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
-      }
-    }
-  }
+//  stage("Test build_and_test_amis.py (dry run)") {
+//    sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
+//      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: '9345ef4c-42cf-4a87-b36d-b05f6d132ce9', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+//        sh('python3 -u build_test_publish_images.py "oracle-linux/7.4/aws/DCOS-1.11.3/docker-1.13.1" --dry-run')
+//      }
+//    }
+//  }
 
   branches = [:]
   for (p in paths) {
     branches["${p}"] = {
+      def ploc = p
       stage("Build, test and publish images") {
         sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
           withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: '9345ef4c-42cf-4a87-b36d-b05f6d132ce9', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
@@ -116,8 +117,8 @@ node('mesos-ubuntu') {
             withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
                      "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
                      "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
-                      println("Building path ${p}")
-                      sh("python3 -u build_test_publish_images.py ${p}")
+                      println("Building path ${ploc}")
+                      sh("python3 -u build_test_publish_images.py ${ploc}")
             }
           }
         }
