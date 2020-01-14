@@ -115,7 +115,7 @@ node('mesos-ubuntu') {
                  "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
           parallel paths
           node {
-            println("Building path ${paths}")
+            println("Building path")
           }
           //  sh("python3 -u build_test_publish_images.py ${p}")
 
