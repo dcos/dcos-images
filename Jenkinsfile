@@ -121,14 +121,13 @@ node('mesos-ubuntu') {
                     node {
                       println("Building path ${p}")
                     }
-
                   }
                 }
               }
             }
           //}
           //sh("python3 -u build_test_publish_images.py ${p}")
-          println("Step ${p}")
+          parallel println("Step ${p}")
         }
       }
     }
