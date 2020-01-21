@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+sudo sed -i '$ d' /etc/resolv.conf
+sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
+
+sudo tee /etc/modules-load.d/overlay.conf <<-'EOF'
+overlay
+EOF
+
 sudo apt-get update
 sudo apt-get -y install \
   apt-transport-https \
