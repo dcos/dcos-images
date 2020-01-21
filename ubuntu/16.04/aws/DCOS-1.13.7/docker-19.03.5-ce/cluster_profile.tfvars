@@ -15,4 +15,4 @@ custom_dcos_download_path = "https://downloads.dcos.io/dcos/testing/1.13.7/dcos_
 enable_os_setup_script = false
 
 owner = "dcos-images"
-expiration = "3h"
+expiration = "1h"
