@@ -39,6 +39,7 @@ sudo ln -s /bin/ln /usr/bin/ln
 sudo ln -s /bin/mkdir /usr/bin/mkdir
 sudo ln -s /usr/sbin/useradd /usr/bin/useradd
 sudo ln -s /usr/sbin/groupadd /usr/bin/groupadd
+sudo ln -s  /bin/systemctl /usr/bin/systemctl
 
 #sudo systemctl disable systemd-resolved.service
 #sudo systemctl stop systemd-resolved.service
