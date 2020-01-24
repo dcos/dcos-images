@@ -16,7 +16,6 @@
       "ami_name": "dcos-ami-{{timestamp}}",
       "ami_description": "ubuntu/16.04/aws/DCOS-1.13.7/docker-19.03.5-ce",
       "ami_regions": [
-        "us-east-1",
         "us-west-2"
       ],
       "ami_groups": "all",
