@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+echo ">>> Disable systemd-resolved.service"
+sudo systemctl disable systemd-resolved.service
+sudo systemctl stop systemd-resolved.service
+
+sudo rm /etc/resolv.conf && sudo ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+sudo sed -i '$ d' /etc/resolv.conf
+sudo sed -i '/^nameserver.*$/d' /etc/resolv.conf
+sudo bash -c 'echo -e "nameserver 8.8.8.8\n" >> /etc/resolv.conf'
 
 echo ">>> Update /etc/hosts on boot"
 update_hosts_script=/usr/local/sbin/dcos-update-etc-hosts
