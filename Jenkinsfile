@@ -123,6 +123,6 @@ node('mesos-ubuntu') {
         }
       }
     }
-  }
   parallel branches
+  }
 }
