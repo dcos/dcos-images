@@ -368,8 +368,8 @@ def setup_cluster_and_test(build_dir, tf_dir, dry_run, tests, publish_step, run_
 
 def get_tf_build_dir(build_dir):
 
-    tf_build_dir = os.path.join(build_dir, TEMPDIR_FOR_TF + '/' + '_'.join(build_dir.split('/')))
-    os.makedirs(tf_build_dir)
+    tf_build_dir = os.path.join(build_dir, TEMPDIR_FOR_TF)
+    os.mkdir(tf_build_dir)
     return tf_build_dir
 
 
