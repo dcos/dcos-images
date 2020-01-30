@@ -3,8 +3,10 @@ import argparse
 import copy
 import json
 import os
+import random
 import re
 import shutil
+import string
 import subprocess
 import yaml
 import requests
@@ -32,7 +34,7 @@ CLUSTER_PROFILE_TFVARS = 'cluster_profile.tfvars'
 DCOS_IMAGES_YAML = 'dcos_images.yaml'
 PACKER_JSON = 'packer.json'
 SETUP_SH = 'setup.sh'
-TEMPDIR_FOR_TF = 'temp'
+TEMPDIR_FOR_TF = 'temp' + ''.join(random.choice(string.ascii_lowercase) for i in range(4))
 
 DEFAULT_AWS_REGION = 'us-west-2'
 
