@@ -3,6 +3,5 @@
 publish_dcos_images_after: integration_tests
 run_framework_tests: false
 run_integration_tests: true
-# Muting known failing test, see https://jira.mesosphere.com/browse/DCOS-62478
-#tests_to_run:
-#  - -k 'test_networking'
+tests_to_run:
+  - -k 'test_networking'
