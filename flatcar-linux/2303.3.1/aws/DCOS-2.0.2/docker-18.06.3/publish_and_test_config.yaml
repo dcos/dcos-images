@@ -5,4 +5,4 @@ publish_dcos_images_after: integration_tests
 run_framework_tests: false
 run_integration_tests: true
 tests_to_run:
-  - -k 'not test_executor_metrics_metadata'
+  - -k 'test_ipv6 and test_vip_ipv6 and test_vip and test_ip_per_container and test_app_networking_mode_with_defined_container_port and test_app_networking_mode_with_defined_container_port and test_service_discovery_docker_overlay'
