@@ -1,0 +1,119 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "region":         "us-west-2"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "m4.xlarge",
+      "source_ami": "ami-003d8924a33dc0fd7",
+      "region": "us-west-2",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ssh_username": "centos",
+      "ami_name": "dcos-ami-{{timestamp}}",
+      "ami_description": "centos/7.7/aws/DCOS-2.0.2/docker-18.09.9-ce/selinux_enforcing",
+      "ami_regions": [
+        "us-east-1",
+        "us-west-2"
+      ],
+      "ami_groups": "all",
+      "associate_public_ip_address": true,
+      "ebs_optimized": true,
+      "ena_support": true,
+      "sriov_support": true,
+      "ami_block_device_mappings": [
+        {
+          "device_name": "/dev/sde",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdf",
+          "volume_type": "gp2",
+          "volume_size": 100,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdg",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdh",
+          "volume_type": "gp2",
+          "volume_size": 20,
+          "delete_on_termination": true
+        }
+      ],
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/sde",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdf",
+          "volume_type": "gp2",
+          "volume_size": 100,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdg",
+          "volume_type": "gp2",
+          "volume_size": 50,
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdh",
+          "volume_type": "gp2",
+          "volume_size": 20,
+          "delete_on_termination": true
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./dcos_vol_setup.sh",
+      "destination": "/tmp/dcos_vol_setup.sh"
+    },
+    {
+      "type": "file",
+      "source": "./configure_dcos_system.sh",
+      "destination": "/tmp/configure_dcos_system.sh"
+    },
+    {
+      "type": "shell",
+      "script": "install_dcos_prerequisites.sh"
+    },
+    {
+      "type": "shell",
+      "inline_shebang": "/bin/bash",
+      "inline": [
+        "sudo mv /tmp/dcos_vol_setup.sh /usr/local/sbin/",
+        "sudo chmod 0755 /usr/local/sbin/dcos_vol_setup.sh",
+        "sudo /tmp/configure_dcos_system.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "script": "install_dss_modules.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "output": "packer_build_history.json",
+        "strip_path": true,
+        "type": "manifest"
+      }
+    ]
+  ]
+}
