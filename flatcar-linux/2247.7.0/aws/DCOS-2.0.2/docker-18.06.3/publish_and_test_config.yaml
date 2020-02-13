@@ -5,4 +5,4 @@ publish_dcos_images_after: integration_tests
 run_framework_tests: false
 run_integration_tests: true
 tests_to_run:
-  - -k 'test_ipv6 or test_vip_ipv6 or test_vip or test_ip_per_container or test_app_networking_mode_with_defined_container_port or test_app_networking_mode_with_defined_container_port or test_service_discovery_docker_overlay'
+  - -k 'test_service_discovery_docker_overlay'
