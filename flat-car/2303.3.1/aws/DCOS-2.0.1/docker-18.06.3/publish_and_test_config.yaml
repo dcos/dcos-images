@@ -3,4 +3,4 @@ publish_dcos_images_after: integration_tests
 run_framework_tests: false
 run_integration_tests: true
 tests_to_run:
-  - -k 'test_service_discovery_docker_overlay'
+  - -k 'not test_executor_metrics_metadata and not test_metrics_agent_statsd'
