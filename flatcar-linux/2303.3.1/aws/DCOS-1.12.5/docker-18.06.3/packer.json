@@ -7,7 +7,7 @@
   "builders": [
     {
       "type": "amazon-ebs",
-      "instance_type": "m5.xlarge",
+      "instance_type": "m5.large",
       "source_ami": "ami-014436c61e95d301f",
       "region": "us-west-2",
       "access_key": "{{user `aws_access_key`}}",
