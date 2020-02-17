@@ -101,24 +101,27 @@ node('mesos-ubuntu') {
     }
   }
 
-  stage("Build, test and publish images") {
-    sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
-      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: '9345ef4c-42cf-4a87-b36d-b05f6d132ce9', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
-                       string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN')]) {
-        // setting up git to be able to push back dcos_images.yaml back to the PR
-        shcmd("""git config --global push.default matching &&
-              git remote remove origin &&
-              git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git"""
-        )
-        withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
-                 "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
-                 "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
-          for (p in paths) {
-            println("Building path ${p}")
-            sh("python3 -u build_test_publish_images.py ${p}")
+  branches = [:]
+  for (p in paths) {
+    String s = "${p}"
+    branches["${s}"] = {
+      sshagent(['9b6c492f-f2cd-4c79-80dd-beb1238082da']) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: '9345ef4c-42cf-4a87-b36d-b05f6d132ce9', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'],
+                           string(credentialsId: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN', variable: 'DCOS_IMAGES_PERSONAL_ACCESS_TOKEN')]) {
+            // setting up git to be able to push back dcos_images.yaml back to the PR
+            shcmd("""git config --global push.default matching &&
+                  git remote remove origin &&
+                  git remote add origin https://mesosphere-ci:${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}@github.com/dcos/dcos-images.git"""
+            )
+          withEnv(["JENKINS_BUILD_URL=${env.BUILD_URL}",
+                   "DCOS_IMAGES_PERSONAL_ACCESS_TOKEN=${DCOS_IMAGES_PERSONAL_ACCESS_TOKEN}",
+                   "PULL_REQUEST_ID=${env.CHANGE_ID}"]) {
+                    println("Building path ${s}")
+                    sh("python3 -u build_test_publish_images.py ${s}")
           }
         }
       }
     }
   }
+  parallel branches
 }
