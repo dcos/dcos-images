@@ -7,7 +7,15 @@
       "files": null,
       "artifact_id": "us-east-1:ami-0495d23d27010da6d,us-west-2:ami-0217280d817bec38f",
       "packer_run_uuid": "14ae19bf-2b50-7bb2-ab1f-ba0ff6a5e0a3"
+    },
+    {
+      "name": "amazon-ebs",
+      "builder_type": "amazon-ebs",
+      "build_time": 1582124585,
+      "files": null,
+      "artifact_id": "us-east-1:ami-06dc4cc9c2e817828,us-west-2:ami-0e009630e556bf301",
+      "packer_run_uuid": "da92b205-c4d9-5ea0-ca62-346ad7673ea6"
     }
   ],
-  "last_run_uuid": "14ae19bf-2b50-7bb2-ab1f-ba0ff6a5e0a3"
+  "last_run_uuid": "da92b205-c4d9-5ea0-ca62-346ad7673ea6"
 }
