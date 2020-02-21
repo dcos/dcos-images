@@ -1,3 +1,5 @@
+aws_region = "us-west-2"
+
 aws_bootstrap_instance_type = "m5.large"
 aws_master_instance_type = "m5.xlarge"
 aws_agent_instance_type = "m5.xlarge"
@@ -15,4 +17,4 @@ custom_dcos_download_path = "https://downloads.dcos.io/dcos/stable/1.12.5/dcos_g
 enable_os_setup_script = false
 
 owner = "dcos-images"
-expiration = "1h"
+expiration = "3h"
