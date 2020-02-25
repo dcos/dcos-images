@@ -1,0 +1,9 @@
+# options: packer_build, dcos_installation, integration_tests, never. Default is dcos_installation. For more details, see README
+# Muted tests:
+# test_executor_metrics_metadata: https://jira.d2iq.com/browse/D2IQ-56252
+# test_ipv6, test_vip_ipv6, test_vip, test_ip_per_container, test_app_networking_mode_with_defined_container_port, test_service_discovery_docker_overlay: https://jira.d2iq.com/browse/DCOS_OSS-5932
+publish_dcos_images_after: integration_tests
+run_framework_tests: false
+run_integration_tests: true
+tests_to_run:
+  - -k 'not test_ipv6 and not test_vip_ipv6 and not test_vip and not test_ip_per_container and not test_app_networking_mode_with_defined_container_port and not test_service_discovery_docker_overlay and not test_executor_metrics_metadata and not test_app_with_container_mode_with_defined_container_port'
