@@ -1,0 +1,43 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "region":         "us-west-2"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "m4.xlarge",
+      "source_ami": "ami-064a66c638569c37c",
+      "region": "us-west-2",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "ssh_username": "ec2-user",
+      "ami_name": "dcos-ami-{{uuid}}",
+      "ami_description": "oracle-linux/7.6/aws/DCOS-1.13.7/docker-19.03.5-ce/selinux_enforcing",
+      "ami_regions": [
+        "us-west-2"
+      ],
+      "ami_groups": "all",
+      "associate_public_ip_address": true,
+      "ebs_optimized": true,
+      "ena_support": true,
+      "sriov_support": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "./install_dcos_prerequisites.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "output": "packer_build_history.json",
+        "strip_path": true,
+        "type": "manifest"
+      }
+    ]
+  ]
+}
