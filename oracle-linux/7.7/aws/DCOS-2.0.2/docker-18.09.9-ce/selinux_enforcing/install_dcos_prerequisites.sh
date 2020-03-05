@@ -30,5 +30,5 @@ sudo systemctl start ntpd
 sudo getent group docker || sudo groupadd docker
 sudo iptables -D INPUT -j REJECT --reject-with icmp-host-prohibited
 sudo iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited
-sudo service iptables save
+sudo iptables-save
 sudo touch /opt/dcos-prereqs.installed
