@@ -10,7 +10,7 @@ sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 sudo yum makecache fast
 
-sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-1.el7_6.noarch.rpm
+sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/container-selinux-2.107-3.el7.noarch.rpm
 sudo yum install -y http://mirror.centos.org/centos/7/extras/x86_64/Packages/pigz-2.3.3-1.el7.centos.x86_64.rpm
 
 sudo yum install -y docker-ce-19.03.5 docker-ce-cli-19.03.5 containerd.io
@@ -28,7 +28,7 @@ sudo yum install -y ntp
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
 sudo getent group docker || sudo groupadd docker
-sudo iptables -D INPUT -j REJECT --reject-with icmp-host-prohibited
-sudo iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited
-sudo service iptables save
+sudo systemctl stop firewalld
+sudo systemctl disable firewalld
+sudo systemctl mask --now firewalld
 sudo touch /opt/dcos-prereqs.installed
