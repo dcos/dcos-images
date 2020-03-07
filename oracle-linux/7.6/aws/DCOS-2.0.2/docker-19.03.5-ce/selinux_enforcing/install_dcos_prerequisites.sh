@@ -28,7 +28,7 @@ sudo yum install -y ntp
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
 sudo getent group docker || sudo groupadd docker
-sudo systemctl stop firewalld
-sudo systemctl disable firewalld
-sudo systemctl mask --now firewalld
+sudo service iptables save
+sudo service iptables stop
+sudo chkconfig iptables off
 sudo touch /opt/dcos-prereqs.installed
