@@ -14,7 +14,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "ec2-user",
       "ami_name": "dcos-ami-{{uuid}}",
-      "ami_description": "oracle-linux/7.7/aws/DCOS-1.12.5/docker-19.03.5-ce/selinux_enforcing",
+      "ami_description": "oracle-linux/7.7/aws/DCOS-2.0.2/docker-19.03.5/selinux_enforcing",
       "ami_regions": [
         "us-west-2"
       ],
