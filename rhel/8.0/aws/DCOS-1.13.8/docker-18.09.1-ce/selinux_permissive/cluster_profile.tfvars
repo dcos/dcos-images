@@ -1,5 +1,3 @@
-#aws_region = "us-west-2"
-
 aws_bootstrap_instance_type = "m5.large"
 aws_master_instance_type = "m5.xlarge"
 aws_agent_instance_type = "m5.xlarge"
