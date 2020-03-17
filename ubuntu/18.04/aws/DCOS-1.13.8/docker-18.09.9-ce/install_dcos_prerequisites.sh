@@ -20,7 +20,7 @@ sudo add-apt-repository \
       stable"
 sudo apt-get update
 
-sudo apt-get -y install docker-ce="5:18.09.9~3-0~ubuntu-xenial" docker-ce-cli="5:18.09.9~3-0~ubuntu-xenial" containerd.io
+sudo apt-get -y install docker-ce="5:18.09.9~3-0~ubuntu-bionic" docker-ce-cli="5:18.09.9~3-0~ubuntu-bionic" containerd.io
 
 sudo systemctl start docker
 sudo systemctl enable docker

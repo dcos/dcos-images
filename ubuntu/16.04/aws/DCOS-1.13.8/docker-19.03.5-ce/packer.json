@@ -13,7 +13,7 @@
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "ubuntu",
-      "ami_name": "dcos-ami-{{timestamp}}",
+      "ami_name": "dcos-ami-{{uuid}}",
       "ami_description": "ubuntu/16.04/aws/DCOS-1.13.8/docker-19.03.5-ce",
       "ami_regions": [
         "us-west-2"
