@@ -1,0 +1,8 @@
+# options: packer_build, dcos_installation, integration_tests, never. Default is dcos_installation. For more details, see README
+# You can also run custom tests with tests_to_run.
+publish_dcos_images_after: never
+run_framework_tests: false
+run_integration_tests: false
+# Muting flaky test test_dcos_cni_l4lb: https://jira.d2iq.com/browse/D2IQ-65663
+#tests_to_run:
+#  - -k 'not test_dcos_cni_l4lb'
