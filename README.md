@@ -1,8 +1,6 @@
 # dcos-images
 
-The reference for DC/OS images and how to build them.  
-The goal of this repo is to standardize, across all DC/OS users and developers, the usage and build process of OS cloud
-images to run DC/OS.
+Repository is used to qualify DC/OS releases against CentOS and RHEL operating systems.
 
 ## Find which DC/OS image to use
 Look for the dcos_images.yaml file in the directory path that matches your requirements.  
@@ -105,3 +103,14 @@ enough tests pass to qualify the new operating system, then either merge the pul
 the pull request with bug fixes. If they just want to retrigger the tests due to potential test flakiness, they should
 push a new commit to do so, which would include a change to publish_and_test_config.yaml with the field
 'publish_dcos_images_after: never' to avoid rebuilding identical new images.
+
+## Running Locally
+
+This code can be executed locally by following theose steps:
+
+1) Add a your ssh public key to your AWS account
+2) Change `ssh_key_name` (of the ssh key used in step 1) https://github.com/dcos/dcos-images/blob/master/flatcar-linux/2303.3.1/aws/DCOS-2.0.2/docker-18.06.3/cluster_profile.tfvars#L8
+4) Add your ssh private key to your terminal session via `ssh-add yourkey`
+3) Installing Terraform `tfenv install 0.11.14`
+4) Execution of intgeration tests can be disabled in: https://github.com/dcos/dcos-images/blob/master/flatcar-linux/2303.3.1/aws/DCOS-2.0.2/docker-18.06.3/publish_and_test_config.yaml#L7
+5) Provisioning of a cluster is done by: `python3 -u build_test_publish_images.py flatcar-linux/2411.1.1/aws/DCOS-2.0.2/docker-18.06.3`
