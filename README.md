@@ -106,7 +106,7 @@ push a new commit to do so, which would include a change to publish_and_test_con
 
 ## Running Locally
 
-This code can be executed locally by following theose steps:
+This code can be executed locally by following these steps:
 
 1) Add a your ssh public key to your AWS account
 2) Change `ssh_key_name` (of the ssh key used in step 1) https://github.com/dcos/dcos-images/blob/master/flatcar-linux/2303.3.1/aws/DCOS-2.0.2/docker-18.06.3/cluster_profile.tfvars#L8
