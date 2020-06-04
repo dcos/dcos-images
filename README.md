@@ -1,6 +1,7 @@
-# dcos-images
+[![Build Status](https://jenkins.mesosphere.com/service/jenkins/job/dcos-images/job/PR-538/1/badge/icon)](https://jenkins.mesosphere.com/service/jenkins/job/dcos-images/)
+# dcos-images (OS Qualification Testing)
 
-Repository is used to qualify DC/OS releases against CentOS and RHEL operating systems.
+Repository is used to qualify DC/OS releases against CentOS, RHEL and Flatcar Linux operating systems.
 
 ## Find which DC/OS image to use
 Look for the dcos_images.yaml file in the directory path that matches your requirements.  
