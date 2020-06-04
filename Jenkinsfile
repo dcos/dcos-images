@@ -3,6 +3,7 @@
 @Library('sec_ci_libs@v2-latest') _
 
 def master_branches = ["master", ] as String[]
+addEmbeddableBadgeConfiguration(id: "dcos-images", link: "https://jenkins.mesosphere.com/service/jenkins/job/dcos-images/")
 
 // using mesos node because it's a lightweight alpine docker image instead of full VM
 node('mesos') {
@@ -10,7 +11,6 @@ node('mesos') {
     user_is_authorized(master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify')
   }
 }
-def osQualificationBadge = addEmbeddableBadgeConfiguration(id: "osQualificationBuild", subject: "OS Qualification Build", link: "https://jenkins.mesosphere.com/service/jenkins/job/dcos-images/")
 
 node('mesos-ubuntu') {
   def shcmd = { String command ->
