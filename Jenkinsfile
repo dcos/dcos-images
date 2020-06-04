@@ -10,6 +10,7 @@ node('mesos') {
     user_is_authorized(master_branches, '8b793652-f26a-422f-a9ba-0d1e47eb9d89', '#tools-notify')
   }
 }
+def osQualificationBadge = addEmbeddableBadgeConfiguration(id: "osQualificationBuild", subject: "OS Qualification Build", link: "https://jenkins.mesosphere.com/service/jenkins/job/dcos-images/")
 
 node('mesos-ubuntu') {
   def shcmd = { String command ->
