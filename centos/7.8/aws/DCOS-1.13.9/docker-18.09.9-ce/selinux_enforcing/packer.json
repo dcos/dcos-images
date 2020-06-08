@@ -16,7 +16,6 @@
       "ami_name": "dcos-ami-{{uuid}}",
       "ami_description": "centos/7.8/aws/DCOS-1.13.9/docker-18.09.9-ce/selinux_enforcing",
       "ami_regions": [
-        "us-east-1",
         "us-west-2"
       ],
       "ami_groups": "all",
