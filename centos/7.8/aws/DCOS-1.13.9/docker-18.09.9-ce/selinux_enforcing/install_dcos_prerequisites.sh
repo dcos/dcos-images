@@ -6,7 +6,7 @@ yumreposdir="/etc/yum.repos.d/"
 sudo mkdir ${yumreposdir}/oldrepos
 sudo mv ${yumreposdir}/CentOS-* ${yumreposdir}/oldrepos
 
-sudo tee ${yumreposdir}/centos77-repos.repo <<-'EOF'
+sudo tee ${yumreposdir}/centos78-repos.repo <<-'EOF'
 [local-base]
 name=CentOS Base
 baseurl=http://mirror.web-ster.com/centos/7.7.1908/os/$basearch/

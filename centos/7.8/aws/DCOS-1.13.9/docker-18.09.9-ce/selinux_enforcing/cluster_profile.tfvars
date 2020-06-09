@@ -1,5 +1,4 @@
-#aws_region = "us-west-2"
-aws_availability_zone = "us-west-2a"
+aws_region = "us-west-2"
 
 aws_bootstrap_instance_type = "m5.xlarge"
 aws_master_instance_type = "m5.xlarge"
