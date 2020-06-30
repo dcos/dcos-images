@@ -114,5 +114,5 @@ This code can be executed locally by following these steps:
 4) Add your ssh private key to your terminal session via `ssh-add yourkey`
 3) Installing Terraform `tfenv install 0.11.14`
 4) Execution of intgeration tests can be disabled in: https://github.com/dcos/dcos-images/blob/master/flatcar-linux/2303.3.1/aws/DCOS-2.0.2/docker-18.06.3/publish_and_test_config.yaml#L7
-5) Cluster destroy at the end of the testrun is configured by: https://github.com/dcos/dcos-images/blob/master/build_test_publish_images.py#L365-L368
+5) Cluster destroy at the end of the testrun is configured by: https://github.com/dcos/dcos-images/blob/master/build_test_publish_images.py#L365-L368 and https://github.com/dcos/dcos-images/blob/master/build_test_publish_images.py#L399
 6) Provisioning of a cluster is done by: `python3 -u build_test_publish_images.py flatcar-linux/2411.1.1/aws/DCOS-2.0.2/docker-18.06.3`
