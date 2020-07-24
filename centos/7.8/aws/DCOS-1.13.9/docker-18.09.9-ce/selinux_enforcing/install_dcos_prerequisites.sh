@@ -9,17 +9,17 @@ sudo mv ${yumreposdir}/CentOS-* ${yumreposdir}/oldrepos
 sudo tee ${yumreposdir}/centos78-repos.repo <<-'EOF'
 [local-base]
 name=CentOS Base
-baseurl=http://mirror.web-ster.com/centos/7.7.1908/os/$basearch/
+baseurl=http://mirror.web-ster.com/centos/7.8.2003/os/$basearch/
 gpgcheck=0
 enabled=1
 [local-updates]
 name=CentOS Updates
-baseurl=http://mirror.web-ster.com/centos/7.7.1908/updates/$basearch/
+baseurl=http://mirror.web-ster.com/centos/7.8.2003/updates/$basearch/
 gpgcheck=0
 enabled=1
 [local-extras]
 name=CentOS Extras
-baseurl=http://mirror.web-ster.com/centos/7.7.1908/extras/$basearch/
+baseurl=http://mirror.web-ster.com/centos/7.8.2003/extras/$basearch/
 gpgcheck=0
 enabled=1
 [local-docker-ce]
