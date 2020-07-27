@@ -124,4 +124,5 @@ node('mesos-ubuntu') {
     }
   }
   parallel branches
+  deleteDir() // Cleaning up workspace
 }
