@@ -100,7 +100,7 @@
         "sudo mv /tmp/dcos_vol_setup.sh /usr/local/sbin/",
         "sudo chmod 0755 /usr/local/sbin/dcos_vol_setup.sh",
         "sudo chmod 0755 /tmp/configure_dcos_system.sh",
-        "sudo /tmp/configure_dcos_system.sh"
+        "sudo bash -x /tmp/configure_dcos_system.sh"
       ]
     },
     {
