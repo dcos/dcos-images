@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -o errexit -o nounset -o pipefail
+set -o errexit -o nounset -o pipefail -x
 
 echo ">>> In configure_dcos_system.sh:"
 
