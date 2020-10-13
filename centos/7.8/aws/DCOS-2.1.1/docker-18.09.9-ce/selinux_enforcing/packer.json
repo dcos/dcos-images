@@ -14,7 +14,7 @@
       "secret_key": "{{user `aws_secret_key`}}",
       "ssh_username": "centos",
       "ami_name": "dcos-ami-{{uuid}}",
-      "ami_description": "centos/7.8/aws/DCOS-1.13.9/docker-18.09.9-ce/selinux_enforcing",
+      "ami_description": "centos/7.8/aws/DCOS-2.1.1/docker-18.09.9-ce/selinux_enforcing",
       "ami_regions": [
         "us-west-2"
       ],
